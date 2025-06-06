@@ -1,0 +1,266 @@
+ <Grid container style={{ marginBottom: 2 }} spacing={3}>
+          <Grid item xs={12}>
+            <Paper className={classes.paper}>
+              <Grid container item xs={12} spacing={1}>
+                <Grid container item xs={12} spacing={1}>
+                  <Grid container item xs={12} spacing={1}>
+                    <Grid container item xs={6} spacing={1}>
+                      <TextField
+                        fullWidth
+                        width="20%"
+                        size="small"
+                        variant="outlined"
+                        id="vSwrname"
+                        label="Software Name"
+                        SelectProps={{
+                          native: true,
+                        }}
+                        // helperText="Please type software name"
+                        value={swrheader.vOrderno}
+                        values={(values.vOrderno = swrnumber.vOrderno)}
+                        onChange={(event) => {
+                          // todo
+
+                          setswrheader({
+                            ...swrheader,
+                            vOrderno: event.target.value,
+                          });
+                        }}
+                      >
+                        <option />
+                      </TextField>
+                    </Grid>
+                    <Grid container item xs={3} spacing={1}>
+                      <h2>&nbsp; Current Version :　</h2>
+                      <h2>&nbsp; {values.vOrderno}</h2>
+                    </Grid>
+                    /*
+                    <Grid item xs={3} spacing={1} backgroundColor="#E0E0E0">
+                      <Box
+                        component="img"
+                        sx={{
+                          height: 233,
+                          width: 350,
+                          maxHeight: { xs: 233, md: 167 },
+                          maxWidth: { xs: 350, md: 250 },
+                        }}
+                        alt="The house from the offer."
+                        src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&w=350&dpr=2"
+                      />
+                      {/* <h2>&nbsp; Request Date :　</h2>
+                      <h2>&nbsp; {values.vOrderno}</h2> */}
+                    </Grid>
+                    */
+                  </Grid>
+                  <Grid container item xs={12} spacing={1}>
+                    <Grid item xs={1} spacing={1}>
+                      <TextField
+                        select
+                        fullWidth
+                        size="small"
+                        variant="outlined"
+                        id="vType"
+                        label="Type"
+                        SelectProps={{
+                          native: true,
+                        }}
+                        // helperText="Please select your order"
+                        value={swrheader.vType}
+                        values={(values.vType = swrheader.vType)}
+                        onChange={(event) => {
+                          // todo
+
+                          setswrheader({
+                            ...swrheader,
+                            vType: event.target.value,
+                          });
+                        }}
+                      >
+                        <option />
+                        {SWRTYPE.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </TextField>
+                    </Grid>
+                    <Grid item xs={3} spacing={1}>
+                      <TextField
+                        // disabled={editdisable}
+                        fullWidth
+                        required
+                        type="date"
+                        size="small"
+                        id="vFinishDate"
+                        label="Finish Date"
+                        variant="outlined"
+                        InputLabelProps={{ shrink: true, required: true }}
+                        onChange={(event) => {
+                          console.log(event.target.value);
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={3} md={1}>
+                      <Button
+                        fullWidth
+                        type="submit"
+                        id="vSubmit"
+                        variant="contained"
+                        color="secondary"
+                        onClick={(event) => {
+                          values.vSubmit = "Search";
+                          values.vStatus = "00";
+                        }}
+                      >
+                        SEARCH
+                      </Button>
+                    </Grid>
+                    <Grid item xs={3} md={1}>
+                      <Button
+                        fullWidth
+                        type="submit"
+                        id="vSubmit"
+                        variant="contained"
+                        color="secondary"
+                        onClick={(event) => {
+                          values.vSubmit = "CREATE";
+                          values.vStatus = "00";
+                        }}
+                      >
+                        CREATE
+                      </Button>
+                    </Grid>
+                    <Grid item xs={3} md={1}>
+                      <Button
+                        fullWidth
+                        type="submit"
+                        id="vSubmit"
+                        variant="contained"
+                        color="secondary"
+                        onClick={(event) => {
+                          values.vSubmit = "SAVE";
+                          values.vStatus = "00";
+                        }}
+                      >
+                        SAVE
+                      </Button>
+                    </Grid>
+                  </Grid>
+
+                  <Grid container item xs={12} spacing={1}>
+                    <Grid item xs={1} spacing={1}>
+                      <TextField
+                        fullWidth
+                        width="20%"
+                        size="small"
+                        variant="outlined"
+                        id="vReference"
+                        label="Reference"
+                        value={swrnumber.vReference}
+                        values={(values.vReference = swrnumber.vReference)}
+                        onChange={(event) => {
+                          setswrnumber({
+                            ...swrnumber,
+                            vReference: event.target.value,
+                          });
+                        }}
+                      ></TextField>
+                    </Grid>
+                    <Grid item xs={1} spacing={1}>
+                      <TextField
+                        fullWidth
+                        width="20%"
+                        size="small"
+                        variant="outlined"
+                        id="vName"
+                        label="NAME"
+                        value={swrnumber.vName}
+                        values={(values.vName = swrnumber.vName)}
+                        onChange={(event) => {
+                          setswrnumber({
+                            ...swrnumber,
+                            vName: event.target.value,
+                          });
+                        }}
+                      ></TextField>
+                    </Grid>
+                    <Grid item xs={1} spacing={1}>
+                      <TextField
+                        fullWidth
+                        width="20%"
+                        size="small"
+                        variant="outlined"
+                        id="vLine"
+                        label="LINE"
+                        value={swrnumber.vLine}
+                        values={(values.vLine = swrnumber.vLine)}
+                        onChange={(event) => {
+                          setswrnumber({
+                            ...swrnumber,
+                            vLine: event.target.value,
+                          });
+                        }}
+                      ></TextField>
+                    </Grid>
+                    <Grid item xs={1} spacing={1}>
+                      <TextField
+                        fullWidth
+                        width="20%"
+                        size="small"
+                        variant="outlined"
+                        id="vType"
+                        label="TYPE"
+                        value={swrnumber.vType}
+                        values={(values.vType = swrnumber.vType)}
+                        onChange={(event) => {
+                          setswrnumber({
+                            ...swrnumber,
+                            vType: event.target.value,
+                          });
+                        }}
+                      ></TextField>
+                    </Grid>
+                    <Grid item xs={1} spacing={1}>
+                      <TextField
+                        fullWidth
+                        width="20%"
+                        size="small"
+                        variant="outlined"
+                        id="vRemark1"
+                        label="REMARK 1"
+                        value={swrnumber.vRemark1}
+                        values={(values.vRemark1 = swrnumber.vRemark1)}
+                        onChange={(event) => {
+                          setswrnumber({
+                            ...swrnumber,
+                            vRemark1: event.target.value,
+                          });
+                        }}
+                      ></TextField>
+                    </Grid>
+                    <Grid item xs={1} spacing={1}>
+                      <TextField
+                        required
+                        fullWidth
+                        width="20%"
+                        size="small"
+                        variant="outlined"
+                        id="vRemark2"
+                        label="REMARK 2"
+                        value={swrnumber.vRemark2}
+                        values={(values.vRemark2 = swrnumber.vRemark2)}
+                        onChange={(event) => {
+                          setswrnumber({
+                            ...swrnumber,
+                            vRemark2: event.target.value,
+                          });
+                        }}
+                      ></TextField>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <br />
+            </Paper>
+          </Grid>
+        </Grid>

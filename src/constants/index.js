@@ -1,0 +1,680 @@
+// Split
+
+export const HTTP_SPLITBM_SUCCESS = "HTTP_SPLITBM_SUCCESS";
+export const HTTP_SPLITBM_FETCHING = "HTTP_SPLITBM_FETCHING";
+export const HTTP_SPLITBM_FAILED = "HTTP_SPLITBM_FAILED";
+export const HTTP_SPLITBM_CLEAR = " HTTP_SPLITBM_CLEAR";
+
+// Getinvoiceid
+
+export const HTTP_GETINVOICEID_SUCCESS = "HTTP_GETINVOICEID_SUCCESS";
+export const HTTP_GETINVOICEID_FETCHING = "HTTP_GETINVOICEID_FETCHING";
+export const HTTP_GETINVOICEID_FAILED = "HTTP_GETINVOICEID_FAILED";
+export const HTTP_GETINVOICEID_CLEAR = " HTTP_GETINVOICEID_CLEAR";
+
+// Getpayer
+
+export const HTTP_GETPAYER_SUCCESS = "HTTP_GETPAYER_SUCCESS";
+export const HTTP_GETPAYER_FETCHING = "HTTP_GETPAYER_FETCHING";
+export const HTTP_GETPAYER_FAILED = "HTTP_GETPAYER_FAILED";
+export const HTTP_GETPAYER_CLEAR = "HTTP_GETPAYER_CLEAR";
+
+// LOGIN
+export const HTTP_LOGIN_FETCHING = "HTTP_LOGIN_FETCHING";
+export const HTTP_LOGIN_FAILED = "HTTP_LOGIN_FAILED";
+export const HTTP_LOGIN_SUCCESS = "HTTP_LOGIN_SUCCESS";
+export const HTTP_LOGIN_LOGOUT = "HTTP_LOGIN_LOGOUT";
+
+//  HTTP_CREATEID_SUCCESS,
+
+export const HTTP_CREATEID_SUCCESS = "HTTP_CREATEID_SUCCESS";
+export const HTTP_CREATEID_FETCHING = "HTTP_CREATEID_FETCHING";
+export const HTTP_CREATEID_FAILED = "HTTP_CREATEID_FAILED";
+export const HTTP_CREATEID_CLEAR = "HTTP_CREATEID_CLEAR";
+
+//HTTP_UPLOAD_SUCCESS
+
+export const HTTP_UPLOAD_FETCHING = "HTTP_UPLOAD_FETCHING";
+export const HTTP_UPLOAD_FAILED = "HTTP_UPLOAD_FAILED";
+export const HTTP_UPLOAD_SUCCESS = "HTTP_UPLOAD_SUCCESS";
+export const HTTP_UPLOAD_CLEAR = "HTTP_UPLOAD_CLEAR";
+
+export const HTTP_LOCATION_FETCHING = "HTTP_LOCATION_FETCHING";
+export const HTTP_LOCATION_FAILED = "HTTP_LOCATION_FAILED";
+export const HTTP_LOCATION_SUCCESS = "HTTP_LOCATION_SUCCESS";
+export const HTTP_LOCATION_CLEAR = "HTTP_LOCATION_CLEAR";
+
+// GETIMAGE
+export const HTTP_GETIMAGE_FETCHING = "HTTP_GETIMAGE_FETCHING";
+export const HTTP_GETIMAGE_FAILED = "HTTP_GETIMAGE_FAILED";
+export const HTTP_GETIMAGE_SUCCESS = "HTTP_GETIMAGE_SUCCESS";
+export const HTTP_GETIMAGE_CLEAR = "HTTP_GETIMAGE_CLEAR";
+
+//SCHEDULE
+
+export const HTTP_SCHEDULE_SUCCESS = "HTTP_SCHEDULE_SUCCESS";
+export const HTTP_SCHEDULE_FETCHING = "HTTP_SCHEDULE_FETCHING";
+export const HTTP_SCHEDULE_FAILED = "HTTP_SCHEDULE_FAILED";
+export const HTTP_SCHEDULE_CLEAR = "HTTP_SCHEDULE_CLEAR";
+
+// Showvisitor
+
+export const HTTP_SHOWVISITOR_SUCCESS = "HTTP_SHOWVISITOR_SUCCESS";
+export const HTTP_SHOWVISITOR_FETCHING = "HTTP_SHOWVISITOR_FETCHING";
+export const HTTP_SHOWVISITOR_FAILED = "HTTP_SHOWVISITOR_FAILED";
+export const HTTP_SHOWVISITOR_CLEAR = "HTTP_SHOWVISITOR_CLEAR";
+
+// ROOMCARD
+
+export const HTTP_ROOMCARD_SUCCESS = "HTTP_ROOMCARD_SUCCESS";
+export const HTTP_ROOMCARD_FETCHING = "HTTP_ROOMCARD_FETCHING";
+export const HTTP_ROOMCARD_FAILED = "HTTP_ROOMCARD_FAILED";
+export const HTTP_ROOMCARD_CLEAR = "HTTP_ROOMCARD_CLEAR";
+
+// CHECKOUT
+export const HTTP_CHECKOUT_SUCCESS = "HTTP_CHECKOUT_SUCCESS";
+export const HTTP_CHECKOUT_FETCHING = "HTTP_CHECKOUT_FETCHING";
+export const HTTP_CHECKOUT_FAILED = "HTTP_CHECKOUT_FAILED";
+export const HTTP_CHECKOUT_CLEAR = "HTTP_CHECKOUT_CLEAR";
+
+//OPERATIONDATA
+
+export const HTTP_OPERATIONDATA_SUCCESS = "HTTP_OPERATIONDATA_SUCCESS";
+export const HTTP_OPERATIONDATA_FETCHING = "HTTP_OPERATIONDATA_FETCHING";
+export const HTTP_OPERATIONDATA_FAILED = "HTTP_OPERATIONDATA_FAILED";
+export const HTTP_OPERATIONDATA_CLEAR = "HTTP_OPERATIONDATA_CLEAR";
+
+// ORDERID
+
+export const HTTP_ORDERID_SUCCESS = "HTTP_ORDERID_SUCCESS";
+export const HTTP_ORDERID_FETCHING = "HTTP_ORDERID_FETCHING";
+export const HTTP_ORDERID_FAILED = "HTTP_ORDERID_FAILED";
+export const HTTP_ORDERID_CLEAR = "HTTP_ORDERID_CLEAR";
+
+// FOLLOWER
+
+export const HTTP_FOLLOWER_SUCCESS = "HTTP_FOLLOWER_SUCCESS";
+export const HTTP_FOLLOWER_FETCHING = "HTTP_FOLLOWER_FETCHING";
+export const HTTP_FOLLOWER_FAILED = "HTTP_FOLLOWER_FAILED";
+export const HTTP_FOLLOWER_CLEAR = "HTTP_FOLLOWER_CLEAR";
+
+//  EMPLOYEE
+
+export const HTTP_EMPLOYEE_SUCCESS = "HTTP_EMPLOYEE_SUCCESS";
+export const HTTP_EMPLOYEE_FETCHING = "HTTP_EMPLOYEE_FETCHING";
+export const HTTP_EMPLOYEE_FAILED = "HTTP_EMPLOYEE_FAILED";
+export const HTTP_EMPLOYEE_CLEAR = "HTTP_EMPLOYEE_CLEAR";
+
+//VISITOR HEADER
+
+export const HTTP_VISITORHEADER_SUCCESS = "HTTP_VISITORHEADER_SUCCESS";
+export const HTTP_VISITORHEADER_FETCHING = "HTTP_VISITORHEADER_FETCHING";
+export const HTTP_VISITORHEADER_FAILED = "HTTP_VISITORHEADER_FAILED";
+export const HTTP_VISITORHEADER_CLEAR = "HTTP_VISITORHEADER_CLEAR";
+
+//DEV
+
+export const HTTP_SWRDEV_SUCCESS = "HTTP_SWRDEV_SUCCESS";
+export const HTTP_SWRDEV_FETCHING = "HTTP_SWRDEV_FETCHING";
+export const HTTP_SWRDEV_FAILED = "HTTP_SWRDEV_FAILED";
+export const HTTP_SWRDEV_CLEAR = "HTTP_SWRDEV_CLEAR";
+
+// GETID
+export const HTTP_SWRID_SUCCESS = "HTTP_SWRID_SUCCESS";
+export const HTTP_SWRID_FETCHING = "HTTP_SWRID_FETCHING";
+export const HTTP_SWRID_FAILED = "HTTP_SWRID_FAILED";
+export const HTTP_SWRID_CLEAR = "HTTP_SWRID_CLEAR";
+// COMPANY
+export const HTTP_COMPANY_FETCHING = "HTTP_COMPANY_FETCHING";
+export const HTTP_COMPANY_FAILED = "HTTP_COMPANY_FAILED";
+export const HTTP_COMPANY_SUCCESS = "HTTP_COMPANY_SUCCESS";
+export const HTTP_COMPANY_CLEAR = "HTTP_COMPANY_CLEAR";
+
+// PERIOD
+export const HTTP_PERIOD_FETCHING = "HTTP_PERIOD_FETCHING";
+export const HTTP_PERIOD_FAILED = "HTTP_PERIOD_FAILED";
+export const HTTP_PERIOD_SUCCESS = "HTTP_PERIOD_SUCCESS";
+export const HTTP_PERIOD_CLEAR = "HTTP_PERIOD_CLEAR";
+
+// WAREHOUSE
+export const HTTP_WAREHOUSE_FETCHING = "HTTP_WAREHOUSE_FETCHING";
+export const HTTP_WAREHOUSE_FAILED = "HTTP_WAREHOUSE_FAILED";
+export const HTTP_WAREHOUSE_SUCCESS = "HTTP_WAREHOUSE_SUCCESS";
+export const HTTP_WAREHOUSE_CLEAR = "HTTP_WAREHOUSE_CLEAR";
+
+// BU
+export const HTTP_BU_FETCHING = "HTTP_BU_FETCHING";
+export const HTTP_BU_FAILED = "HTTP_BU_FAILED";
+export const HTTP_BU_SUCCESS = "HTTP_BU_SUCCESS";
+export const HTTP_BU_CLEAR = "HTTP_BU_CLEAR";
+
+// DEPARTMENT
+export const HTTP_DEPARTMENT_FETCHING = "HTTP_DEPARTMENT_FETCHING";
+export const HTTP_DEPARTMENT_FAILED = "HTTP_DEPARTMENT_FAILED";
+export const HTTP_DEPARTMENT_SUCCESS = "HTTP_DEPARTMENT_SUCCESS";
+export const HTTP_DEPARTMENT_CLEAR = "HTTP_DEPARTMENT_CLEAR";
+
+// COSTCENTER
+export const HTTP_COSTCENTER_FETCHING = "HTTP_COSTCENTER_FETCHING";
+export const HTTP_COSTCENTER_FAILED = "HTTP_COSTCENTER_FAILED";
+export const HTTP_COSTCENTER_SUCCESS = "HTTP_COSTCENTER_SUCCESS";
+export const HTTP_COSTCENTER_CLEAR = "HTTP_COSTCENTER_CLEAR";
+
+// APPROVE
+export const HTTP_APPROVE_FETCHING = "HTTP_APPROVE_FETCHING";
+export const HTTP_APPROVE_FAILED = "HTTP_APPROVE_FAILED";
+export const HTTP_APPROVE_SUCCESS = "HTTP_APPROVE_SUCCESS";
+export const HTTP_APPROVE_CLEAR = "HTTP_APPROVE_CLEAR";
+
+// BUYER
+export const HTTP_BUYER_FETCHING = "HTTP_BUYER_FETCHING";
+export const HTTP_BUYER_FAILED = "HTTP_BUYER_FAILED";
+export const HTTP_BUYER_SUCCESS = "HTTP_BUYER_SUCCESS";
+export const HTTP_BUYER_CLEAR = "HTTP_BUYER_CLEAR";
+
+// ITEM
+export const HTTP_ITEM_FETCHING = "HTTP_ITEM_FETCHING";
+export const HTTP_ITEM_FAILED = "HTTP_ITEM_FAILED";
+export const HTTP_ITEM_SUCCESS = "HTTP_ITEM_SUCCESS";
+export const HTTP_ITEM_CLEAR = "HTTP_ITEM_CLEAR";
+
+// ITEMDETAIL
+export const HTTP_ITEMDETAIL_FETCHING = "HTTP_ITEMDETAIL_FETCHING";
+export const HTTP_ITEMDETAIL_FAILED = "HTTP_ITEMDETAIL_FAILED";
+export const HTTP_ITEMDETAIL_SUCCESS = "HTTP_ITEMDETAIL_SUCCESS";
+export const HTTP_ITEMDETAIL_CLEAR = "HTTP_ITEMDETAIL_CLEAR";
+
+// ITEMUNIT
+export const HTTP_ITEMUNIT_FETCHING = "HTTP_ITEMUNIT_FETCHING";
+export const HTTP_ITEMUNIT_FAILED = "HTTP_ITEMUNIT_FAILED";
+export const HTTP_ITEMUNIT_SUCCESS = "HTTP_ITEMUNIT_SUCCESS";
+export const HTTP_ITEMUNIT_CLEAR = "HTTP_ITEMUNIT_CLEAR";
+
+// MARHEAD
+export const HTTP_MARHEAD_FETCHING = "HTTP_MARHEAD_FETCHING";
+export const HTTP_MARHEAD_FAILED = "HTTP_MARHEAD_FAILED";
+export const HTTP_MARHEAD_SUCCESS = "HTTP_MARHEAD_SUCCESS";
+export const HTTP_MARHEAD_CLEAR = "HTTP_MARHEAD_CLEAR";
+
+// MARDETAILHEAD
+export const HTTP_MARDETAIL_FETCHING = "HTTP_MARDETAIL_FETCHING";
+export const HTTP_MARDETAIL_FAILED = "HTTP_MARDETAIL_FAILED";
+export const HTTP_MARDETAIL_SUCCESS = "HTTP_MARDETAIL_SUCCESS";
+export const HTTP_MARDETAIL_CLEAR = "HTTP_MARDETAIL_CLEAR";
+
+// MARNUMBER
+export const HTTP_MARNUMBER_FETCHING = "HTTP_MARNUMBER_FETCHING";
+export const HTTP_MARNUMBER_FAILED = "HTTP_MARNUMBER_FAILED";
+export const HTTP_MARNUMBER_SUCCESS = "HTTP_MARNUMBER_SUCCESS";
+export const HTTP_MARNUMBER_CLEAR = "HTTP_MARNUMBER_CLEAR";
+
+// MARFILE
+export const HTTP_MARFILE_FETCHING = "HTTP_MARFILE_FETCHING";
+export const HTTP_MARFILE_FAILED = "HTTP_MARFILE_FAILED";
+export const HTTP_MARFILE_SUCCESS = "HTTP_MARFILE_SUCCESS";
+export const HTTP_MARFILE_CLEAR = "HTTP_MARFILE_CLEAR";
+
+// SWRRFILE
+export const HTTP_SWRFILE_FETCHING = "HTTP_SWRFILE_FETCHING";
+export const HTTP_SWRFILE_FAILED = "HTTP_SWRFILE_FAILED";
+export const HTTP_SWRFILE_SUCCESS = "HTTP_SWRFILE_SUCCESS";
+export const HTTP_SWRFILE_CLEAR = "HTTP_SWRFILE_CLEAR";
+
+// // SWRHEADER
+export const HTTP_SWRHEADER_SUCCESS = "HTTP_SWRHEADER_SUCCESS";
+export const HTTP_SWRHEADER_FETCHING = "HTTP_SWRHEADER_FETCHING";
+export const HTTP_SWRHEADER_FAILED = "HTTP_SWRHEADER_FAILED";
+export const HTTP_SWRHEADER_CLEAR = "HTTP_SWRHEADER_CLEAR";
+
+// SWRRFILENumber
+export const HTTP_SWRFILENUMBER_FETCHING = "HTTP_SWRFILENUMBER_FETCHING";
+export const HTTP_SWRFILENUMBER_FAILED = "HTTP_SWRFILENUMBER_FAILED";
+export const HTTP_SWRFILENUMBER_SUCCESS = "HTTP_SWRFILENUMBER_SUCCESS";
+export const HTTP_SWRFILENUMBER_CLEAR = "HTTP_SWRFILENUMBER_CLEAR";
+
+// FILEDETAIL
+export const HTTP_FILEDETAIL_FETCHING = "HTTP_FILEDETAIL_FETCHING";
+export const HTTP_FILEDETAIL_FAILED = "HTTP_FILEDETAIL_FAILED";
+export const HTTP_FILEDETAIL_SUCCESS = "HTTP_FILEDETAIL_SUCCESS";
+export const HTTP_FILEDETAIL_CLEAR = "HTTP_FILEDETAIL_CLEAR";
+
+////////////////////////////////////////////////////////////
+
+// PHGROUP
+export const HTTP_PHGROUP_FETCHING = "HTTP_PHGROUP_FETCHING";
+export const HTTP_PHGROUP_FAILED = "HTTP_PHGROUP_FAILED";
+export const HTTP_PHGROUP_SUCCESS = "HTTP_PHGROUP_SUCCESS";
+export const HTTP_PHGROUP_CLEAR = "HTTP_PHGROUP_CLEAR";
+
+// PHBUYER
+export const HTTP_PHBUYER_FETCHING = "HTTP_PHBUYER_FETCHING";
+export const HTTP_PHBUYER_FAILED = "HTTP_PHBUYER_FAILED";
+export const HTTP_PHBUYER_SUCCESS = "HTTP_PHBUYER_SUCCESS";
+export const HTTP_PHBUYER_CLEAR = "HTTP_PHBUYER_CLEAR";
+
+// SUPPLIER
+export const HTTP_SUPPLIER_FETCHING = "HTTP_SUPPLIER_FETCHING";
+export const HTTP_SUPPLIER_FAILED = "HTTP_SUPPLIER_FAILED";
+export const HTTP_SUPPLIER_SUCCESS = "HTTP_SUPPLIER_SUCCESS";
+export const HTTP_SUPPLIER_CLEAR = "HTTP_SUPPLIER_CLEAR";
+
+// PRNUMBER
+export const HTTP_PRNUMBER_FETCHING = "HTTP_PRNUMBER_FETCHING";
+export const HTTP_PRNUMBER_FAILED = "HTTP_PRNUMBER_FAILED";
+export const HTTP_PRNUMBER_SUCCESS = "HTTP_PRNUMBER_SUCCESS";
+export const HTTP_PRNUMBER_CLEAR = "HTTP_PRNUMBER_CLEAR";
+
+// PRNUMBERBUYER
+export const HTTP_PRNUMBERBUYER_FETCHING = "HTTP_PRNUMBERBUYER_FETCHING";
+export const HTTP_PRNUMBERBUYER_FAILED = "HTTP_PRNUMBERBUYER_FAILED";
+export const HTTP_PRNUMBERBUYER_SUCCESS = "HTTP_PRNUMBERBUYER_SUCCESS";
+export const HTTP_PRNUMBERBUYER_CLEAR = "HTTP_PRNUMBERBUYER_CLEAR";
+
+// PRHEAD
+export const HTTP_PRHEAD_FETCHING = "HTTP_PRHEAD_FETCHING";
+export const HTTP_PRHEAD_FAILED = "HTTP_PRHEAD_FAILED";
+export const HTTP_PRHEAD_SUCCESS = "HTTP_PRHEAD_SUCCESS";
+export const HTTP_PRHEAD_CLEAR = "HTTP_PRHEAD_CLEAR";
+
+// PRHEADAPPROVE
+export const HTTP_PRHEADAPPROVE_FETCHING = "HTTP_PRHEADAPPROVE_FETCHING";
+export const HTTP_PRHEADAPPROVE_FAILED = "HTTP_PRHEADAPPROVE_FAILED";
+export const HTTP_PRHEADAPPROVE_SUCCESS = "HTTP_PRHEADAPPROVE_SUCCESS";
+export const HTTP_PRHEADAPPROVE_CLEAR = "HTTP_PRHEADAPPROVE_CLEAR";
+
+// PRDETAIL
+export const HTTP_PRDETAIL_FETCHING = "HTTP_PRDETAIL_FETCHING";
+export const HTTP_PRDETAIL_FAILED = "HTTP_PRDETAIL_FAILED";
+export const HTTP_PRDETAIL_SUCCESS = "HTTP_PRDETAIL_SUCCESS";
+export const HTTP_PRDETAIL_CLEAR = "HTTP_PRDETAIL_CLEAR";
+
+// PRDETAILBUYER
+export const HTTP_PRDETAILBUYER_FETCHING = "HTTP_PRDETAILBUYER_FETCHING";
+export const HTTP_PRDETAILBUYER_FAILED = "HTTP_PRDETAILBUYER_FAILED";
+export const HTTP_PRDETAILBUYER_SUCCESS = "HTTP_PRDETAILBUYER_SUCCESS";
+export const HTTP_PRDETAILBUYER_CLEAR = "HTTP_PRDETAILBUYER_CLEAR";
+
+// PRCONFIRMBUYER
+export const HTTP_PRCONFIRMBUYER_FETCHING = "HTTP_PRCONFIRMBUYER_FETCHING";
+export const HTTP_PRCONFIRMBUYER_FAILED = "HTTP_PRCONFIRMBUYER_FAILED";
+export const HTTP_PRCONFIRMBUYER_SUCCESS = "HTTP_PRCONFIRMBUYER_SUCCESS";
+export const HTTP_PRCONFIRMBUYER_CLEAR = "HTTP_PRCONFIRMBUYER_CLEAR";
+
+// PRCONFIRM
+export const HTTP_PRCONFIRM_FETCHING = "HTTP_PRCONFIRM_FETCHING";
+export const HTTP_PRCONFIRM_FAILED = "HTTP_PRCONFIRM_FAILED";
+export const HTTP_PRCONFIRM_SUCCESS = "HTTP_PRCONFIRM_SUCCESS";
+export const HTTP_PRCONFIRM_CLEAR = "HTTP_PRCONFIRM_CLEAR";
+
+// MONTH
+export const HTTP_MONTH_FETCHING = "HTTP_MONTH_FETCHING";
+export const HTTP_MONTH_FAILED = "HTTP_MONTH_FAILED";
+export const HTTP_MONTH_SUCCESS = "HTTP_MONTH_SUCCESS";
+export const HTTP_MONTH_CLEAR = "HTTP_MONTH_CLEAR";
+
+// STATUS
+export const HTTP_STATUS_FETCHING = "HTTP_STATUS_FETCHING";
+export const HTTP_STATUS_FAILED = "HTTP_STATUS_FAILED";
+export const HTTP_STATUS_SUCCESS = "HTTP_STATUS_SUCCESS";
+export const HTTP_STATUS_CLEAR = "HTTP_STATUS_CLEAR";
+
+// STATUS
+export const HTTP_SENDEMAIL_FETCHING = "HTTP_SENDEMAIL_FETCHING";
+export const HTTP_SENDEMAIL_FAILED = "HTTP_SENDEMAIL_FAILED";
+export const HTTP_SENDEMAIL_SUCCESS = "HTTP_SENDEMAIL_SUCCESS";
+export const HTTP_SENDEMAIL_CLEAR = "HTTP_SENDEMAIL_CLEAR";
+
+// STATUS
+export const HTTP_SENDEMAILPP_FETCHING = "HTTP_SENDEMAILPP_FETCHING";
+export const HTTP_SENDEMAILPP_FAILED = "HTTP_SENDEMAILPP_FAILED";
+export const HTTP_SENDEMAILPP_SUCCESS = "HTTP_SENDEMAILPP_SUCCESS";
+export const HTTP_SENDEMAILPP_CLEAR = "HTTP_SENDEMAILPP_CLEAR";
+
+// GENPO
+export const HTTP_GENPO_FETCHING = "HTTP_GENPO_FETCHING";
+export const HTTP_GENPO_FAILED = "HTTP_GENPO_FAILED";
+export const HTTP_GENPO_SUCCESS = "HTTP_GENPO_SUCCESS";
+export const HTTP_GENPO_CLEAR = "HTTP_GENPO_CLEAR";
+
+// CAPEX
+export const HTTP_CAPEX_FETCHING = "HTTP_CAPEX_FETCHING";
+export const HTTP_CAPEX_FAILED = "HTTP_CAPEX_FAILED";
+export const HTTP_CAPEX_SUCCESS = "HTTP_CAPEX_SUCCESS";
+export const HTTP_CAPEX_CLEAR = "HTTP_CAPEX_CLEAR";
+
+// DEPTANDCOST
+export const HTTP_DEPTANDCOST_FETCHING = "HTTP_DEPTANDCOST_FETCHING";
+export const HTTP_DEPTANDCOST_FAILED = "HTTP_DEPTANDCOST_FAILED";
+export const HTTP_DEPTANDCOST_SUCCESS = "HTTP_DEPTANDCOST_SUCCESS";
+export const HTTP_DEPTANDCOST_CLEAR = "HTTP_DEPTANDCOST_CLEAR";
+
+// MONITORINGRECEIPT
+export const HTTP_MONITORINGRECEIPT_FETCHING =
+  "HTTP_MONITORINGRECEIPT_FETCHING";
+export const HTTP_MONITORINGRECEIPT_FAILED = "HTTP_MONITORINGRECEIPT_FAILED";
+export const HTTP_MONITORINGRECEIPT_SUCCESS = "HTTP_MONITORINGRECEIPT_SUCCESS";
+export const HTTP_MONITORINGRECEIPT_CLEAR = "HTTP_MONITORINGRECEIPT_CLEAR";
+
+// DELIVERY
+export const HTTP_DELIVERY_FETCHING = "HTTP_DELIVERY_FETCHING";
+export const HTTP_DELIVERY_FAILED = "HTTP_DELIVERY_FAILED";
+export const HTTP_DELIVERY_SUCCESS = "HTTP_DELIVERY_SUCCESS";
+export const HTTP_DELIVERY_CLEAR = "HTTP_DELIVERY_CLEAR";
+
+// PAYMENT
+export const HTTP_PAYMENT_FETCHING = "HTTP_PAYMENT_FETCHING";
+export const HTTP_PAYMENT_FAILED = "HTTP_PAYMENT_FAILED";
+export const HTTP_PAYMENT_SUCCESS = "HTTP_PAYMENT_SUCCESS";
+export const HTTP_PAYMENT_CLEAR = "HTTP_PAYMENT_CLEAR";
+
+// TEXTM3
+export const HTTP_TEXTM3_FETCHING = "HTTP_TEXTM3_FETCHING";
+export const HTTP_TEXTM3_FAILED = "HTTP_TEXTM3_FAILED";
+export const HTTP_TEXTM3_SUCCESS = "HTTP_TEXTM3_SUCCESS";
+export const HTTP_TEXTM3_CLEAR = "HTTP_TEXTM3_CLEAR";
+
+// CHARGE
+export const HTTP_CHARGE_FETCHING = "HTTP_CHARGE_FETCHING";
+export const HTTP_CHARGE_FAILED = "HTTP_CHARGE_FAILED";
+export const HTTP_CHARGE_SUCCESS = "HTTP_CHARGE_SUCCESS";
+export const HTTP_CHARGE_CLEAR = "HTTP_CHARGE_CLEAR";
+
+// EXPENITURE
+export const HTTP_EXPENITURE_FETCHING = "HTTP_EXPENITURE_FETCHING";
+export const HTTP_EXPENITURE_FAILED = "HTTP_EXPENITURE_FAILED";
+export const HTTP_EXPENITURE_SUCCESS = "HTTP_EXPENITURE_SUCCESS";
+export const HTTP_EXPENITURE_CLEAR = "HTTP_EXPENITURE_CLEAR";
+
+// ADRNUMBER
+export const HTTP_ADRNUMBER_FETCHING = "HTTP_ADRNUMBER_FETCHING";
+export const HTTP_ADRNUMBER_FAILED = "HTTP_ADRNUMBER_FAILED";
+export const HTTP_ADRNUMBER_SUCCESS = "HTTP_ADRNUMBER_SUCCESS";
+export const HTTP_ADRNUMBER_CLEAR = "HTTP_ADRNUMBER_CLEAR";
+
+// ADRHEAD
+export const HTTP_ADRHEAD_FETCHING = "HTTP_ADRHEAD_FETCHING";
+export const HTTP_ADRHEAD_FAILED = "HTTP_ADRHEAD_FAILED";
+export const HTTP_ADRHEAD_SUCCESS = "HTTP_ADRHEAD_SUCCESS";
+export const HTTP_ADRHEAD_CLEAR = "HTTP_ADRHEAD_CLEAR";
+
+// ADRDETAIL
+export const HTTP_ADRDETAIL_FETCHING = "HTTP_ADRDETAIL_FETCHING";
+export const HTTP_ADRDETAIL_FAILED = "HTTP_ADRDETAIL_FAILED";
+export const HTTP_ADRDETAIL_SUCCESS = "HTTP_ADRDETAIL_SUCCESS";
+export const HTTP_ADRDETAIL_CLEAR = "HTTP_ADRDETAIL_CLEAR";
+
+// ACCOUNTANT
+export const HTTP_ACCOUNTANT_FETCHING = "HTTP_ACCOUNTANT_FETCHING";
+export const HTTP_ACCOUNTANT_FAILED = "HTTP_ACCOUNTANT_FAILED";
+export const HTTP_ACCOUNTANT_SUCCESS = "HTTP_ACCOUNTANT_SUCCESS";
+export const HTTP_ACCOUNTANT_CLEAR = "HTTP_ACCOUNTANT_CLEAR";
+
+// MAIN_REQUEST
+export const HTTP_MAIN_REQUEST_FETCHING = "HTTP_MAIN_REQUEST_FETCHING";
+export const HTTP_MAIN_REQUEST_FAILED = "HTTP_MAIN_REQUEST_FAILED";
+export const HTTP_MAIN_REQUEST_SUCCESS = "HTTP_MAIN_REQUEST_SUCCESS";
+export const HTTP_MAIN_REQUEST_CLEAR = "HTTP_MAIN_REQUEST_CLEAR";
+
+// Error Code
+export const E_PICKER_CANCELLED = "E_PICKER_CANCELLED";
+export const E_PICKER_CANNOT_RUN_CAMERA_ON_SIMULATOR =
+  "E_PICKER_CANNOT_RUN_CAMERA_ON_SIMULATOR";
+export const E_PERMISSION_MISSING = "E_PERMISSION_MISSING";
+export const E_PICKER_NO_CAMERA_PERMISSION = "E_PICKER_NO_CAMERA_PERMISSION";
+export const E_USER_CANCELLED = "E_USER_CANCELLED";
+export const E_UNKNOWN = "E_UNKNOWN";
+export const E_DEVELOPER_ERROR = "E_DEVELOPER_ERROR";
+export const TIMEOUT_NETWORK = "ECONNABORTED"; // request service timeout
+export const NOT_CONNECT_NETWORK = "NOT_CONNECT_NETWORK";
+
+//////////////// Localization Begin ////////////////
+export const NETWORK_CONNECTION_MESSAGE =
+  "Cannot connect to server, Please try again.";
+export const NETWORK_TIMEOUT_MESSAGE =
+  "A network timeout has occurred, Please try again.";
+export const UPLOAD_PHOTO_FAIL_MESSAGE =
+  "An error has occurred. The photo was unable to upload.";
+
+// export const apiUrl = "http://localhost:8080/adr_api/";
+// export const apiUrl = "http://192.200.9.106:8080/adr_api/";
+export const apiUrl = `${process.env.REACT_APP_API_URL}`;
+export const imageUrl = "http://localhost:8080";
+
+export const server = {
+  RETURNPARENT_URL: `visitor_api/data/returnparent`,
+
+  RETURNNORMAL_URL: `visitor_api/data/returnnormal`,
+
+  DELETEID_URL: `visitor_api/data/deleteid`,
+
+  GETITEM_URL: `visitor_api/data/getitem`,
+
+  GETPAYER_URL: `visitor_api/data/getpayer`,
+
+  UPDATEONLY_URL: `visitor_api/data/updateonly`,
+
+  UPLOADSTATEMENT_URL: `visitor_api/data/uploadstatement`,
+
+  SAVEID_URL: `visitor_api/data/saveid`,
+
+  //getinvoiceid
+
+  GETINVOICEID_URL: `visitor_api/data/getivoiceid`,
+
+  // UPDATEANDGETID
+
+  UPDATEANDGETID_URL: `visitor_api/data/updateandgetid`,
+
+  //SPLITBM
+
+  SPLITBM_URL: `visitor_api/data/splitbm`,
+
+  // SEND EMAIL PP
+  SENDEMAILPP_URL: `visitor_api/data/sendemailpp`,
+
+  SENDEMAILWITHOUTAUTHEN_URL: `visitor_api/data/sendemailppwithoutauthen`,
+
+  SENDEMAILXX_URL: `visitor_api/data/sendemailxx`,
+
+  SENDEMAILFAP_URL: `visitor_api/data/sendemailppFAP`,
+
+  // UPDATEFOLLOWER
+
+  UPDATEFOLLOWER_URL: `visitor_api/data/updatefollower`,
+  DELETEFOLLOWER_URL: `visitor_api/data/deletefollower`,
+
+  // ROOMCARD
+  updateROOMCARD_URL: `visitor_api/data/updateroomcard`,
+
+  updateEMP_URL: `visitor_api/data/updateemp`,
+
+  // CHECKOUT
+  CHECKOUT_URL: `visitor_api/data/checkout`,
+
+  CHECKOUT1_URL: `visitor_api/data/checkout1`,
+
+  CHECKOUTWITHDATETIME_URL: `visitor_api/data/checkoutwithdatetime`,
+
+  // Login API
+  LOGINAUTHEN_URL: `authen_api/auth/loginauthen`,
+  LOGIN_URL: `authen_api/auth/login`,
+  CHECKTOKEN_URL: `authen_api/auth/checktoken`,
+  REFRESH_TOKEN_URL: `authen_api/refresh/token`,
+
+  //OPERATIONDATA
+  GETOPERATIONDATA_URL: `visitor_api/data/getoperationdata`,
+
+  //SCHEDULE
+  GETJSONSCHEDULE_URL: `visitor_api/data/jsonschedule`,
+
+  GETOPERATIONFILTERDATA_URL: `visitor_api/data/getoperationfilterdata`,
+
+  //GETIMAGE
+  GETIMAGE_URL: `visitor_api/data/getimage`,
+
+  // ADDFOLLOWER
+  ADDFOLLOWER_URL: `visitor_api/data/addfollower`,
+  GETFOLLOWER_URL: `visitor_api/data/getfollower`,
+
+  // Visitor Header API
+  ADDVISITORHEADER_URL: `visitor_api/data/addvisitorheader`,
+  INSERTVISITORHEADER_URL: `visitor_api/data/insertheadervisitor`,
+
+  // Showvisitor
+  SHOWVISITOR_URL: `visitor_api/data/showvisitor`,
+
+  // Employee
+  GETEMPLOYEE_URL: `visitor_api/data/getemployee`,
+
+  // SWR API
+  DEPTANDCOST_URL: `visitor_api/data/deptandcost`,
+  COMPANY_URL: `authen_api/data/company`,
+  SWRFILE_URL: `visitor_api/data/swrfile`,
+  GETSWRFILE_URL: `visitor_api/data/getswrfile`,
+  GETSWRFILEWITHID_URL: `visitor_api/data/getswrfilewithid`,
+
+  UPDATESWRFILE_URL: `visitor_api/data/updateswrfile`,
+  DELETESWRFILE_URL: `visitor_api/data/deleteswrfile`,
+  GETSWRFILENUMBER_URL: `visitor_api/data/swrnumber`,
+
+  // SWR HEADER
+
+  GETID_URL: `visitor_api/data/getID`,
+  GETNEWID_URL: `visitor_api/data/getnewID`,
+
+  // LOCATION
+
+  LOCATION_URL: `visitor_api/data/location`,
+
+  // SWR HEAD
+
+  GETDEPTHEAD: `visitor_api/data/getDeptHead`,
+  GETDEV: `visitor_api/data/getDev`,
+
+  ADDSWRHEADER_URL: `visitor_api/data/addheaeder`,
+
+  LOADDATA_URL: `visitor_api/data/loaddata`,
+
+  //MONITORINGRECEIPT API
+  MONITORINGRECEIPT_URL: `visitor_api/data/monitoringreceipt`,
+  ADDMONITORINGRECEIPT: `visitor_api/data/addreceipt`,
+
+  // MAR API
+  // COMPANY_URL: `mar_api/data/company`,
+  PERIOD_URL: `mar_api/data/period`,
+  COMPANYWITHCONODIVI_URL: `mar_api/data/companywithconodivi`,
+
+  MARHEAD_URL: `mar_api/data/marhead`,
+  MARHEADMONITORING_URL: `mar_api/data/marheadmonitoring`,
+  MARDETAIL_URL: `mar_api/data/mardetail`,
+  MARNUMBER_URL: `mar_api/data/marnumber`,
+  MARNUMBERMONITORING_URL: `mar_api/data/marnumbermonitoring`,
+  MARFILE_URL: `mar_api/data/marfile`,
+
+  ORDERNUMBER_URL: `mar_api/data/ordernumber`,
+  CANCELORDER_URL: `mar_api/data/cancelorder`,
+
+  SUBMITMAR_URL: `mar_api/data/submitmar`,
+  CANCELMAR_URL: `mar_api/data/cancelmar`,
+  APPROVEMAR_URL: `mar_api/data/approvemar`,
+  REJECTMAR_URL: `mar_api/data/rejectmar`,
+
+  APPROVEMARWOTOKEN_URL: `mar_api/data/approvemarwotoken`,
+  REJECTMARWOTOKEN_URL: `mar_api/data/rejectmarwotoken`,
+
+  ALLOCATEMAR_URL: `mar_api/data/allocatemar`,
+  CONFIRMMAR_URL: `mar_api/data/confirmmar`,
+
+  BU_URL: `mar_api/data/bu`,
+  WAREHOUSE_URL: `mar_api/data/warehouse`,
+  COSTCENTER_URL: `mar_api/data/costcenter`,
+  APPROVE_URL: `mar_api/data/approve`,
+  BUYER_URL: `mar_api/data/buyer`,
+  ITEM_URL: `mar_api/data/item`,
+  ITEMDETAIL_URL: `mar_api/data/itemdetail`,
+  ITEMUNIT_URL: `mar_api/data/itemunit`,
+  PHGROUP_URL: `mar_api/data/phgroup`,
+  PHBUYER_URL: `mar_api/data/phbuyer`,
+  SUPPLIER_URL: `mar_api/data/supplier`,
+  EPRMONTH_URL: `v2/mar_api/data/eprmonth`,
+  EPRSTATUS_URL: `v2/mar_api/data/eprstatus`,
+  COSTCENTERWITHOUTDEPARTMENT_URL: `mar_api/data/costcenterwithoutdepartment`,
+  COSTCENTERBU_URL: `mar_api/data/costcenterbu`,
+  CAPEXCOST_URL: `mar_api/data/capexcostcenter`,
+  CAPEXDEPT_URL: `mar_api/data/capexdepartment`,
+
+  EPRHEAD_URL: `v2/mar_api/data/eprhead`,
+  EPRNUMBER_URL: `v2/mar_api/data/eprnumber`,
+  EPRNUMBERBUYER_URL: `v2/mar_api/data/eprnumberbuyer`,
+  EPRNUMBERGROUPING_URL: `v2/mar_api/data/eprnumbergrouping`,
+  EPRNUMBERGENPO_URL: `v2/mar_api/data/eprnumbergenpo`,
+  EPRNUMBERRESERV_URL: `v2/mar_api/data/eprnumberreserv`,
+  EPRNUMBERWITHOUTUSER_URL: `v2/mar_api/data/eprnumberwithoutuser`,
+  EPRNUMBERUSER_URL: `v2/mar_api/data/eprnumberuser`,
+  EPRHEADMONITORING_URL: `v2/mar_api/data/eprheadmonitoring`,
+
+  EPRDETAIL_URL: `v2/mar_api/data/eprdetail`,
+  EPRDETAILBUYER_URL: `v2/mar_api/data/eprdetailbuyer`,
+  EPRDETAILGROUPING_URL: `v2/mar_api/data/eprdetailgrouping`,
+  EPRDETAILGENPO_URL: `v2/mar_api/data/eprdetailgenpo`,
+  EPRDETAILMONITORING_URL: `v2/mar_api/data/eprdetailmonitoring`,
+
+  EPRCONFIRMDETAILREJECT_URL: `v2/mar_api/data/eprconfirmdetailreject`,
+  EPRCONFIRMDETAILITEM_URL: `v2/mar_api/data/eprconfirmdetailitem`,
+  EPRCONFIRMDETAILALL_URL: `v2/mar_api/data/eprconfirmdetailall`,
+  EPRCONFIRMBUYER_URL: `v2/mar_api/data/eprconfirmbuyer`,
+
+  EPRRESERVE_URL: `v2/mar_api/data/eprreserve`,
+
+  MPRHEADAPPROVE_URL: `mar_api/data/mprheadapprove`,
+  EPRHEADAPPROVE_URL: `mar_api/data/eprheadapprove`,
+  MPRDETAILAPPROVE_URL: `mar_api/data/mprdetailapprove`,
+  EPRDETAILAPPROVE_URL: `mar_api/data/eprdetailapprove`,
+  CHECKPRAPPROVE_URL: `mar_api/data/checkprapprove`,
+  MPRAPPROVEFINAL_URL: `mar_api/data/mprapprovefinal`,
+  EPRAPPROVEFINAL_URL: `mar_api/data/eprapprovefinal`,
+  PRREJECT_URL: `mar_api/data/prrejectapprove`,
+  // DEPTANDCOST_URL: `mar_api/data/deptandcost`,
+  PONUMBER_URL: `mar_api/data/ponumber`,
+  POHEAD_URL: `mar_api/data/pohead`,
+  PODETAIL_URL: `mar_api/data/podetail`,
+  DELIVERY_URL: `mar_api/data/deliveryterms`,
+  PAYMENT_URL: `mar_api/data/paymentterms`,
+  PAYMENTSUPPLIER_URL: `mar_api/data/paymenttermssupplier`,
+  TEXTM3_URL: `mar_api/data/textm3`,
+  CHARGE_URL: `mar_api/data/charge`,
+  EXPENITURE_URL: `mar_api/data/expeniture`,
+
+  PRGENPO_URL: `mar_api/data/callmformpps200`,
+  CANCELPO_URL: `mar_api/data/callmformpps350`,
+  CHANGEPO_URL: `mar_api/data/callmformpps200changepo`,
+  CHANGECONFIRMDATEPO_URL: `mar_api/data/callmformpps250`,
+  UPDATETEXTM3_URL: `mar_api/data/callmformpps200updatetextm3`,
+  UPDATECHARGE_URL: `mar_api/data/callmformpps200updatecharge`,
+
+  // IMAGE_URL: `datav2/upload/image`,
+  IMAGE_URL: `mar_api/data/image`,
+  FILE_URL: `mar_api/data/file`,
+
+  ADRNUMBER_URL: `mar_api/data/adrnumber`,
+  ADRNUMBERACCOUNTANT_URL: `mar_api/data/adrnumberaccountant`,
+  ADRHEAD_URL: `mar_api/data/adrhead`,
+  ADRDETAIL_URL: `mar_api/data/adrdetail`,
+  ACCOUNTANT_URL: `mar_api/data/accountant`,
+  STATUSADRHEAD_URL: `mar_api/data/statusadrhead`,
+  REJECTADRHEAD_URL: `mar_api/data/rejectadrhead`,
+  ADRIMAGE_URL: `mar_api/data/adrimage`,
+
+  ADRHEADMONITORING_URL: `mar_api/data/adrheadmonitoring`,
+
+  RESENDEMAIL_URL: `mar_api/data/resendemail`,
+
+  SENDEMAIL_URL: `mar_api/data/sendemail`,
+  SENDEMAILWOTOKEN_URL: `mar_api/data/sendemailwotoken`,
+
+  AUTHEN_TOKEN_KEY: `authen_token`,
+  TOKEN_KEY: `token`,
+  MAR_TOKEN_KEY: `mar_token`,
+  APPROVE_TOKEN_KEY: `approve_token`,
+  REFRESH_TOKEN_KEY: `refresh_token`,
+};
