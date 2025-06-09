@@ -3563,6 +3563,87 @@ public class SelectData {
 	}
 	
 	
+	
+	
+	///////////////////////
+
+
+	public static String getmailtemplete(String cono, String status , String id )
+			throws Exception {
+		logger.info("getListEmail");
+
+		Connection conn = null;
+		Statement stmt = null;
+		String jsonResult = "[]"; // default เป็น array ว่าง
+		try {
+
+			conn = ConnectDB2.doConnect();
+			stmt = conn.createStatement();
+			
+			
+			
+			
+			
+			int statusInt = Integer.parseInt(status);
+
+			// ถ้าเป็น "00" ให้บวก 20
+			if (status.equals("00")) {
+			    statusInt += 20;
+			} else {
+			    // เช็คเงื่อนไขและปรับค่า
+			    if (statusInt + 10 > 80) {
+			        statusInt = 10;
+			    } else {
+			        statusInt += 10;
+			    }
+			}
+
+			String query = "SELECT * FROM  BRLDTA0100.M3_WORKFLOWPROGRAMEMAIL mw \r\n"
+					+ "WHERE EDOCUMENT  = 'ITRQ'\r\n"
+					+ "AND ESTATUSNO = '"+status+"'";
+
+
+			// String query = "SELECT COALESCE(MAX(SHORNO)+1,SUBSTRING(REPLACE(CHAR(current
+			// date, ISO),'-',''),3,2) || '000001' ) AS ORDERNO FROM "+DBNAME+".M3_SWRHEAD
+			// WHERE SUBSTRING(SHORNO,1,1) != '3' AND SHCONO = '"+cono.trim()+"' AND SHDIVI
+			// = '"+divi.trim()+"'";
+			System.out.println("getDeptHead\n" + query);
+			logger.debug(query);
+			ResultSet mRes = stmt.executeQuery(query);
+			
+		
+			jsonResult = ConvertResultSet.convertResultSetToJson(mRes);
+
+
+
+
+		} catch (SQLException e) {
+			logger.error(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		} finally {
+			try {
+				if (stmt != null) {
+					stmt.close();
+				}
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+			try {
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+
+		}
+
+		return jsonResult;
+
+	}
+	
+	
 
 	public static String getlistuser2(String cono, String status , String id )
 			throws Exception {

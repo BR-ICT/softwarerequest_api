@@ -7609,6 +7609,39 @@ public class api_data {
 	}
 	
 	
+	
+
+	@GET
+	@Path("/getmailtemplete/{program}/{status}/{requester}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getmailtemplete(@Context HttpHeaders headers,@PathParam("program") String program,@PathParam("status") String status ,@PathParam("requester") String requester, @Context HttpServletRequest httpServletRequest)
+			throws JSONException {
+		logger.info("/getDeptHead");
+
+		JSONObject mJsonObj = new JSONObject();
+	
+
+				try {
+
+					return Response
+							.ok(SelectData.getmailtemplete(program,status,requester), MediaType.APPLICATION_JSON + ";charset=utf8")
+							.build();
+
+				} catch (Exception e) {
+					mJsonObj.put("result", "nok");
+					mJsonObj.put("message", e.getMessage());
+					logger.error(e.getMessage());
+				}
+
+			
+		return Response.status(Response.Status.NOT_FOUND).entity(mJsonObj).build();
+
+	}
+	
+	
+	
+	
+	
 	@GET
 	@Path("/getlistuser2/{cono}/{status}/{id}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
