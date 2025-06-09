@@ -3588,11 +3588,11 @@ public class SelectData {
 
 			// ถ้าเป็น "00" ให้บวก 20
 			if (status.equals("00")) {
-			    statusInt += 20;
+			    statusInt += 10;
 			} else {
 			    // เช็คเงื่อนไขและปรับค่า
 			    if (statusInt + 10 > 80) {
-			        statusInt = 10;
+			        statusInt = 99;
 			    } else {
 			        statusInt += 10;
 			    }
@@ -3600,7 +3600,7 @@ public class SelectData {
 
 			String query = "SELECT * FROM  BRLDTA0100.M3_WORKFLOWPROGRAMEMAIL mw \r\n"
 					+ "WHERE EDOCUMENT  = 'ITRQ'\r\n"
-					+ "AND ESTATUSNO = '"+status+"'";
+					+ "AND ESTATUSNO = '"+statusInt+"'";
 
 
 			// String query = "SELECT COALESCE(MAX(SHORNO)+1,SUBSTRING(REPLACE(CHAR(current
