@@ -3421,7 +3421,7 @@ public class SelectData {
 					+ "CASE \r\n"
 					+ "WHEN (\r\n"
 					+ "SELECT COUNT(*) \r\n"
-					+ "FROM BRLDTABK01.APPROVE_DETAIL02 \r\n"
+					+ "FROM "+DBNAME+"."+SR_APPROVE+" \r\n"
 					+ "WHERE STATUS = '"+status+"' \r\n"
 					+ "AND DOC_CODE = 'ITRQ' \r\n"
 					+ "AND DOC_NO = '"+id+"' \r\n"
@@ -3507,7 +3507,7 @@ public class SelectData {
 					+ "DOC_NO,\r\n"
 					+ "SUBSTR(APPROVE, 1, LOCATE(',', APPROVE || ',') - 1),\r\n"
 					+ "SUBSTR(APPROVE || ',', LOCATE(',', APPROVE || ',') + 1)\r\n"
-					+ "FROM BRLDTABK01.APPROVE_DETAIL02\r\n"
+					+ "FROM "+DBNAME+"."+SR_APPROVE+"\r\n"
 					+ "WHERE STATUS = '"+statusInt+"'\r\n"
 					+ "AND DOC_CODE = 'ITRQ'\r\n"
 					+ "AND DOC_NO = '"+id+"'\r\n"
@@ -3592,7 +3592,7 @@ public class SelectData {
 			} else {
 			    // เช็คเงื่อนไขและปรับค่า
 			    if (statusInt + 10 > 80) {
-			        statusInt = 99;
+			        statusInt = 0;
 			    } else {
 			        statusInt += 10;
 			    }
@@ -3600,7 +3600,7 @@ public class SelectData {
 
 			String query = "SELECT * FROM  BRLDTA0100.M3_WORKFLOWPROGRAMEMAIL mw \r\n"
 					+ "WHERE EDOCUMENT  = 'ITRQ'\r\n"
-					+ "AND ESTATUSNO = '"+statusInt+"'";
+					+ "AND ESTATUSNO = '"+status+"'";
 
 
 			// String query = "SELECT COALESCE(MAX(SHORNO)+1,SUBSTRING(REPLACE(CHAR(current
@@ -3680,7 +3680,7 @@ public class SelectData {
 					+ "    DOC_NO,\r\n"
 					+ "    SUBSTR(APPROVE, 1, LOCATE(',', APPROVE || ',') - 1),\r\n"
 					+ "    SUBSTR(APPROVE || ',', LOCATE(',', APPROVE || ',') + 1)\r\n"
-					+ "  FROM BRLDTABK01.APPROVE_DETAIL02\r\n"
+					+ "  FROM "+DBNAME+"."+SR_APPROVE+"\r\n"
 					+ "  WHERE STATUS = '"+statusInt+"'  -- แทนด้วยค่าจริง\r\n"
 					+ "    AND DOC_CODE = 'ITRQ'\r\n"
 					+ "    AND DOC_NO = '"+id+"'         -- แทนด้วยค่าจริง\r\n"
@@ -3780,7 +3780,7 @@ public class SelectData {
 					+ "    DOC_NO,\r\n"
 					+ "    SUBSTR(APPROVE, 1, LOCATE(',', APPROVE || ',') - 1),\r\n"
 					+ "    SUBSTR(APPROVE || ',', LOCATE(',', APPROVE || ',') + 1)\r\n"
-					+ "  FROM BRLDTABK01.APPROVE_DETAIL02\r\n"
+					+ "  FROM "+DBNAME+"."+SR_APPROVE+"\r\n"
 					+ "  WHERE STATUS = '"+statusInt+"'\r\n"
 					+ "    AND DOC_CODE = 'ITRQ'\r\n"
 					+ "    AND DOC_NO = '"+id+"'\r\n"

@@ -35,11 +35,20 @@ public class Constant {
 	
 	
 	
-	  public static String SR_HEAD = "HEAD_JSON_TEST"; // TST
-	  public static String SR_DETAIL = "JSON_TEST"; // TST
-	  public static String SR_APPROVE = "APPROVE_DETAIL02"; // TST
-	  public static String SR_FLOW = "flow_master"; // TST
+	  public static String SR_HEAD = "SR_FLOWHEAD02"; // TST
+	  public static String SR_DETAIL = "SR_FLOWDETAIL02"; // TST
+	  public static String SR_APPROVE = "SR_FLOWAPPROVE02"; // TST
+	  public static String SR_FLOW = "SR_FLOWPROCESS02"; // TST
 	  public static String SR_GROUP = "group_master"; // TST
+	
+	  
+/*
+ * public static String SR_HEAD = "HEAD_JSON_TEST"; // TST
+ * public static String SR_DETAIL = "JSON_TEST"; // TST
+ * public static String SR_APPROVE = "APPROVE_DETAIL02"; // TST
+ * public static String SR_FLOW = "flow_master"; // TST
+ * public static String SR_GROUP = "group_master"; // TST
+ */
 	
 	
 	
