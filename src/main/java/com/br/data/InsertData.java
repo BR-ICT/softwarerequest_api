@@ -942,8 +942,8 @@ public class InsertData {
 			if (currentID != null) {
 				// insert ด้วย currentID
 				String insertQuery = "INSERT INTO "+DBNAME+"."+SR_DETAIL+"  \n"
-						+ "(id, json_data,SERVICE_ID,PROMGRAM_CODE,STATUS) \n"
-						+ "VALUES ('2','" + vData + "','" + currentID + "','ITMRQ', '10')";
+						+ "( json_data,SERVICE_ID,PROMGRAM_CODE,STATUS) \n"
+						+ "VALUES ('" + vData + "','" + currentID + "','ITMRQ', '10')";
 				logger.debug("Insert Query: " + insertQuery);
 				
 				
@@ -953,8 +953,8 @@ public class InsertData {
 			       
 			        
 			        String insertQueryHead = "INSERT INTO "+DBNAME+"."+SR_HEAD+"  \n"
-							+ "(ID, DOC_CODE,DOC_NO,REQUETER,CREATE_DATE,STATUS,DEPTHEAD) \n"
-							+ "VALUES ('2','ITRQ','" + currentID + "','"+username+"','"+dateYYYYMMDD+"', '10','"+depthead+"')";
+							+ "( DOC_CODE,DOC_NO,REQUETER,CREATE_DATE,STATUS,DEPTHEAD) \n"
+							+ "VALUES ('ITRQ','" + currentID + "','"+username+"','"+dateYYYYMMDD+"', '10','"+depthead+"')";
 					logger.debug("Insert Query: " + insertQuery);
 			        
 			        
@@ -991,6 +991,82 @@ public class InsertData {
 
 				// stmt.executeUpdate(insertQueryTemp);
 
+				
+				String recursiveQuery = "WITH RECURSIVE filtered_master AS (\r\n"
+						+ "SELECT *\r\n"
+						+ "FROM "+DBNAME+"."+SR_FLOW+"\r\n"
+						+ "WHERE DOC_CODE = 'ITRQ'\r\n"
+						+ "),\r\n"
+						+ "filtered_group AS (\r\n"
+						+ "SELECT *\r\n"
+						+ "FROM "+DBNAME+"."+SR_GROUP+"\r\n"
+						+ "WHERE WHS = 'A91'\r\n"
+						+ "),\r\n"
+						+ "joined_data AS (\r\n"
+						+ "SELECT\r\n"
+						+ "m.DOC_CODE,\r\n"
+						+ "m.GROUP,\r\n"
+						+ "m.SUBGROUP,\r\n"
+						+ "m.STATUS,\r\n"
+						+ "m.REMARK,\r\n"
+						+ "g.NAME,\r\n"
+						+ "ROW_NUMBER() OVER (\r\n"
+						+ "PARTITION BY m.DOC_CODE, m.GROUP, m.SUBGROUP\r\n"
+						+ "ORDER BY g.NAME\r\n"
+						+ ") AS RN\r\n"
+						+ "FROM filtered_master m\r\n"
+						+ "JOIN filtered_group g\r\n"
+						+ "ON m.GROUP = g.PROGROUP AND m.SUBGROUP = g.SUBGROUP\r\n"
+						+ "),\r\n"
+						+ "concat_cte (\r\n"
+						+ "DOC_CODE, GROUP_ID, SUBGROUP, STATUS, REMARK, RN, NAME_SERIAL\r\n"
+						+ ") AS (\r\n"
+						+ "SELECT\r\n"
+						+ "DOC_CODE,\r\n"
+						+ "GROUP,\r\n"
+						+ "SUBGROUP,\r\n"
+						+ "STATUS,\r\n"
+						+ "REMARK,\r\n"
+						+ "RN,\r\n"
+						+ "NAME\r\n"
+						+ "FROM joined_data\r\n"
+						+ "WHERE RN = 1\r\n"
+						+ "\r\n"
+						+ "UNION ALL\r\n"
+						+ "\r\n"
+						+ "SELECT\r\n"
+						+ "j.DOC_CODE,\r\n"
+						+ "j.GROUP,\r\n"
+						+ "j.SUBGROUP,\r\n"
+						+ "j.STATUS,\r\n"
+						+ "j.REMARK,\r\n"
+						+ "j.RN,\r\n"
+						+ "c.NAME_SERIAL || ':' || j.NAME\r\n"
+						+ "FROM concat_cte c\r\n"
+						+ "JOIN joined_data j\r\n"
+						+ "ON c.DOC_CODE = j.DOC_CODE\r\n"
+						+ "AND c.GROUP_ID = j.GROUP\r\n"
+						+ "AND c.SUBGROUP = j.SUBGROUP\r\n"
+						+ "AND j.RN = c.RN + 1\r\n"
+						+ ")\r\n"
+						+ "\r\n"
+						+ "SELECT\r\n"
+						+ "DOC_CODE,\r\n"
+						+ "STATUS,\r\n"
+						+ "REMARK,\r\n"
+						+ "NAME_SERIAL\r\n"
+						+ "FROM concat_cte c\r\n"
+						+ "WHERE NOT EXISTS (\r\n"
+						+ "SELECT 1\r\n"
+						+ "FROM concat_cte c2\r\n"
+						+ "WHERE\r\n"
+						+ "c2.DOC_CODE = c.DOC_CODE\r\n"
+						+ "AND c2.GROUP_ID = c.GROUP_ID\r\n"
+						+ "AND c2.SUBGROUP = c.SUBGROUP\r\n"
+						+ "AND c2.RN = c.RN + 1\r\n"
+						+ ")\r\n"
+						+ "ORDER BY STATUS";
+				/*
 				String recursiveQuery = "WITH RECURSIVE " +
 						"filtered_master AS ( " +
 						"  SELECT * FROM "+DBNAME+"."+SR_FLOW+" WHERE DOC_CODE = 'ITRQ' " +
@@ -1019,17 +1095,20 @@ public class InsertData {
 						"  WHERE c2.DOC_CODE = c.DOC_CODE AND c2.GROUP_ID = c.GROUP_ID AND c2.SUBGROUP = c.SUBGROUP AND c2.RN = c.RN + 1 "
 						+
 						") ORDER BY STATUS";
+						
+						*/
 
-				logger.debug(recursiveQuery);
+				logger.debug("PPPPPP : "+recursiveQuery);
 				rs = stmt.executeQuery(recursiveQuery);
 
 				while (rs.next()) {
 					String docCode = rs.getString("DOC_CODE");
 					String status = rs.getString("STATUS");
 					String approve = rs.getString("NAME_SERIAL");
+					String remark = rs.getString("REMARK");
 
 					String insertDetail = "INSERT INTO "+DBNAME+"."+SR_APPROVE+" " +
-							"( DOC_CODE, DOC_NO, APPROVE, APPROVE_DATE, STATUS, STS_DESC, TIME_ST, APPROVED_USER) " +
+							"( DOC_CODE, DOC_NO, APPROVE, APPROVE_DATE, STATUS, STS_DESC, TIME_ST, APPROVED_USER ,REMARK) " +
 							"VALUES (" +
 							"'" + docCode + "', " +
 							"'" + currentID + "', " +
@@ -1038,10 +1117,11 @@ public class InsertData {
 							"'" + status + "', " +
 							"'Wait for approve', " +
 							"'-', " +
-							"'-' " +
+							"'-',  " +
+							"'" + remark + "'" +
 							")";
 					stmt2.executeUpdate(insertDetail);
-					logger.debug(insertDetail);
+					logger.debug("xxxxxxin"+insertDetail);
 				}
 				
 				

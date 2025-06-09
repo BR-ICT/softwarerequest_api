@@ -146,8 +146,10 @@ public class SelectData {
 					+ "COALESCE(APPROVED_USER, '-') AS APPROVED_USER,\r\n"
 					+ "COALESCE(CHAR(APPROVE_DATE), '-') AS APPROVE_DATE,\r\n"
 					+ "COALESCE(CHAR(STATUS), '-') AS STATUS,\r\n"
+					+ "COALESCE(REMARK, '-') AS REMARKNAME,\r\n"
 					+ "COALESCE(STS_DESC, '-') AS STS_DESC,\r\n"
-					+ "COALESCE(TIME_ST, '-') AS TIME_ST\r\n"
+					+ "COALESCE(TIME_ST, '-') AS TIME_ST,\r\n"
+					+ "COALESCE(SR_COMMENT, '-') AS REMARK\r\n"
 					+ "FROM "+DBNAME+"."+SR_APPROVE+" WHERE DOC_NO = '" + ID + "'\r\n"
 					+ "";
 
@@ -3588,19 +3590,20 @@ public class SelectData {
 
 			// ถ้าเป็น "00" ให้บวก 20
 			if (status.equals("00")) {
-			    statusInt += 10;
+				statusInt  = 10; 
 			} else {
-			    // เช็คเงื่อนไขและปรับค่า
-			    if (statusInt + 10 > 80) {
-			        statusInt = 0;
-			    } else {
-			        statusInt += 10;
+				  if (statusInt + 10 > 70) {
+				        statusInt = 22;
+				    }
+				
+				  else {
+					 statusInt = Integer.parseInt(status);
 			    }
 			}
 
 			String query = "SELECT * FROM  BRLDTA0100.M3_WORKFLOWPROGRAMEMAIL mw \r\n"
 					+ "WHERE EDOCUMENT  = 'ITRQ'\r\n"
-					+ "AND ESTATUSNO = '"+status+"'";
+					+ "AND ESTATUSNO = '"+statusInt +"'";
 
 
 			// String query = "SELECT COALESCE(MAX(SHORNO)+1,SUBSTRING(REPLACE(CHAR(current
