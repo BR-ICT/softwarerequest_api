@@ -5355,7 +5355,7 @@ public class api_data {
 	@Path("/updateITEMREQUEST")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	
-	public Response updateITEMREQUEST(@Context HttpHeaders headers, @Context HttpServletRequest httpServletRequest,@FormDataParam("vID") String vID,@FormDataParam("vSTATUS") String vSTATUS, @FormDataParam("vData") String vData , @FormDataParam("vApproval") String vApproval,@FormDataParam("vApprover") String vApprover ,@FormDataParam("vDepthrad") String vDepthrad )
+	public Response updateITEMREQUEST(@Context HttpHeaders headers, @Context HttpServletRequest httpServletRequest,@FormDataParam("vID") String vID,@FormDataParam("vSTATUS") String vSTATUS, @FormDataParam("vData") String vData , @FormDataParam("vApproval") String vApproval,@FormDataParam("vApprover") String vApprover ,@FormDataParam("vDepthrad") String vDepthrad,@FormDataParam("vRemark") String vRemark )
 			throws JSONException {
 		logger.info("/insertRQ");
 
@@ -5376,7 +5376,7 @@ public class api_data {
 				try {
 
 					return Response.ok(UpdateData.updateITEMREQUEST(vID,vSTATUS,vData,
-							vApproval,vApprover,vDepthrad), MediaType.APPLICATION_JSON + ";charset=utf8")
+							vApproval,vApprover,vDepthrad,vRemark), MediaType.APPLICATION_JSON + ";charset=utf8")
 							.build();
 
 				} catch (Exception e) {
@@ -5403,7 +5403,7 @@ public class api_data {
 	@Path("/insertTEST")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	
-	public Response insertTEST(@Context HttpHeaders headers, @Context HttpServletRequest httpServletRequest, @FormDataParam("vData") String vData,@FormDataParam("username") String username,@FormDataParam("depthead") String depthead)
+	public Response insertTEST(@Context HttpHeaders headers, @Context HttpServletRequest httpServletRequest, @FormDataParam("vData") String vData,@FormDataParam("username") String username,@FormDataParam("depthead") String depthead,@FormDataParam("remark") String remark)
 			throws JSONException {
 		logger.info("/insertRQ");
 

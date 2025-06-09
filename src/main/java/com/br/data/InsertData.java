@@ -1041,7 +1041,7 @@ public class InsertData {
 						+ "j.STATUS,\r\n"
 						+ "j.REMARK,\r\n"
 						+ "j.RN,\r\n"
-						+ "c.NAME_SERIAL || ':' || j.NAME\r\n"
+						+ "c.NAME_SERIAL || ',' || j.NAME\r\n"
 						+ "FROM concat_cte c\r\n"
 						+ "JOIN joined_data j\r\n"
 						+ "ON c.DOC_CODE = j.DOC_CODE\r\n"

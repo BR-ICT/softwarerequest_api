@@ -115,7 +115,7 @@ public class UpdateData {
 
 	}
 
-	public static String updateITEMREQUEST(String vID, String vSTATUS, String vData, String vApproval,String vApprover,String vDepthrad)
+	public static String updateITEMREQUEST(String vID, String vSTATUS, String vData, String vApproval,String vApprover,String vDepthrad, String vRemark)
 			throws Exception {
 		logger.info("UpdateITEMREQUEST");
 
@@ -214,7 +214,7 @@ public class UpdateData {
 
 
 			String query2 = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
-					+ "SET  STS_DESC = 'Approved', TIME_ST = ' \n" + currentTimestamp + "',APPROVED_USER = '"+vApprover+"'  , APPROVE_DATE = '" + dateYYYYMMDD +
+					+ "SET  STS_DESC = 'Approved', TIME_ST = ' \n" + currentTimestamp + "',APPROVED_USER = '"+vApprover+"' , SR_COMMENT = '"+vRemark+"' , APPROVE_DATE = '" + dateYYYYMMDD +
 					"' WHERE DOC_CODE = 'ITRQ' AND DOC_NO = '" + vID + "' AND STATUS = '" + newStatus + "' ";
 
 			String query3 = "UPDATE "+DBNAME+"."+SR_HEAD+" "
