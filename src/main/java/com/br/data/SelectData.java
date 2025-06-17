@@ -124,7 +124,7 @@ public class SelectData {
 
 	static String DBNAMEe = "" + Constant.DBNAME + "";
 
-	public static String getHistory(String ID) {
+	public static String getHistory(String id) {
 		logger.info("getHistory");
 
 		Connection conn = null;
@@ -139,18 +139,18 @@ public class SelectData {
 			stmt = conn.createStatement();
 
 			String query = "SELECT  \r\n"
-					+ "COALESCE(ID, '-') AS ID,\r\n"
-					+ "COALESCE(DOC_CODE, '-') AS DOC_CODE,\r\n"
-					+ "COALESCE(DOC_NO, '-') AS DOC_NO,\r\n"
-					+ "COALESCE(APPROVE, '-') AS APPROVE,\r\n"
-					+ "COALESCE(APPROVED_USER, '-') AS APPROVED_USER,\r\n"
-					+ "COALESCE(CHAR(APPROVE_DATE), '-') AS APPROVE_DATE,\r\n"
-					+ "COALESCE(CHAR(STATUS), '-') AS STATUS,\r\n"
-					+ "COALESCE(REMARK, '-') AS REMARKNAME,\r\n"
-					+ "COALESCE(STS_DESC, '-') AS STS_DESC,\r\n"
-					+ "COALESCE(TIME_ST, '-') AS TIME_ST,\r\n"
-					+ "COALESCE(SR_COMMENT, '-') AS REMARK\r\n"
-					+ "FROM "+DBNAME+"."+SR_APPROVE+" WHERE DOC_NO = '" + ID + "'\r\n"
+					+ "COALESCE(ID, '') AS ID,\r\n"
+					+ "COALESCE(DOC_CODE, '') AS DOC_CODE,\r\n"
+					+ "COALESCE(DOC_NO, '') AS DOC_NO,\r\n"
+					+ "COALESCE(APPROVE, '') AS APPROVE,\r\n"
+					+ "COALESCE(APPROVED_USER, '') AS APPROVED_USER,\r\n"
+					+ "COALESCE(CHAR(APPROVE_DATE), '') AS APPROVE_DATE,\r\n"
+					+ "COALESCE(CHAR(STATUS), '') AS STATUS,\r\n"
+					+ "COALESCE(REMARK, '') AS REMARKNAME,\r\n"
+					+ "COALESCE(STS_DESC, '') AS STS_DESC,\r\n"
+					+ "COALESCE(TIME_ST, '') AS TIME_ST,\r\n"
+					+ "COALESCE(SR_COMMENT, '') AS REMARK\r\n"
+					+ "FROM "+DBNAME+"."+SR_APPROVE+" WHERE DOC_NO = '" + id + "'\r\n"
 					+ "";
 
 			logger.debug(query);
@@ -4108,7 +4108,7 @@ public class SelectData {
 
 	}
 
-	public static String getDepartment(String vCONO) throws Exception {
+	public static String getDepartment(String cono) throws Exception {
 		logger.info("getCompany");
 
 		Connection conn = null;
@@ -4122,7 +4122,7 @@ public class SelectData {
 					+ "                  WHERE CTL_REM = 'AP'\r\n"
 					+ "               	 AND b.ST_N6L3 = a.CTL_UID\r\n"
 					+ "                AND b.ST_STS = '20' AND CTL_UID != '-' \r\n"
-					+ "                AND ST_CONO  = '" + vCONO + "'";
+					+ "                AND ST_CONO  = '" + cono + "'";
 			System.out.println("SelectCompany\n" + query);
 			logger.debug(query);
 			ResultSet mRes = stmt.executeQuery(query);

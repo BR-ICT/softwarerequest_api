@@ -17,7 +17,8 @@ public class Constant {
 	  public static String PROFILENAME = "PRD"; // PRD 
 	  public static String MNELOGONURL = "https://bkrmvxm3.bangkokranch.com:21008/mne/servlet/MvxMCSvt";// PRD 
 	  public static int APPPORT = 16105; // PRD public 
-	  static String APPSERVER = "192.200.9.190"; public static String DBNAME = "BRLDTA0100"; //
+	  static String APPSERVER = "192.200.9.190"; 
+	  public static String DBNAME = "BRLDTA0100"; //
 	  public static String DBM3NAME = "M3FDBPRD"; // PRD
 	  
 	
@@ -40,6 +41,8 @@ public class Constant {
 	  public static String SR_APPROVE = "SR_FLOWAPPROVE02"; // TST
 	  public static String SR_FLOW = "SR_FLOWPROCESS02"; // TST
 	  public static String SR_GROUP = "group_master"; // TST
+	  //public static String SR_GROUP = "SR_GROUP02"; // TST
+	  
 	
 	  
 /*

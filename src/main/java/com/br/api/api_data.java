@@ -94,16 +94,16 @@ public class api_data {
 	
 	
 	@GET
-	@Path("/getDepartment/{vCONO}")
+	@Path("/getDepartment/{cono}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getDepartment(@Context HttpHeaders headers, @PathParam("vCONO") String vCONO, String req) throws JSONException {
+	public Response getDepartment(@Context HttpHeaders headers, @PathParam("cono") String cono, String req) throws JSONException {
 		logger.info("/company");
 
 		JSONObject mJsonObj = new JSONObject();
 		//String getToken = headers.getRequestHeaders().getFirst("x-access-token");
 
 		try {
-			return Response.ok(SelectData.getDepartment(vCONO), MediaType.APPLICATION_JSON + ";charset=utf8").build();
+			return Response.ok(SelectData.getDepartment(cono), MediaType.APPLICATION_JSON + ";charset=utf8").build();
 
 		} catch (Exception e) {
 			mJsonObj.put("result", "nok");
@@ -118,16 +118,16 @@ public class api_data {
 	
 	
 	@GET
-	@Path("/history/{ID}")
+	@Path("/history/{id}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getistory(@Context HttpHeaders headers, @PathParam("ID") String ID, String req) throws JSONException {
-		logger.info("/company");
+	public Response getistory(@Context HttpHeaders headers, @PathParam("id") String id, String req) throws JSONException {
+		logger.info("/history");
 
 		JSONObject mJsonObj = new JSONObject();
 		//String getToken = headers.getRequestHeaders().getFirst("x-access-token");
 
 		try {
-			return Response.ok(SelectData.getHistory(ID), MediaType.APPLICATION_JSON + ";charset=utf8").build();
+			return Response.ok(SelectData.getHistory(id), MediaType.APPLICATION_JSON + ";charset=utf8").build();
 
 		} catch (Exception e) {
 			mJsonObj.put("result", "nok");

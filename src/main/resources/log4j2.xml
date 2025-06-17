@@ -8,8 +8,8 @@
 			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%X{requestUuid}] %-5level %logger{36} (%F:%L) - %msg%n" />
 		</Console>
 		<RollingFile name="file"
-			fileName="${logDir}/mar_api.log"
-			filePattern="${logDir}/mar_api-%d{yyyy-MM-dd}-%i.log">
+			fileName="${logDir}/itemreq_api.log"
+			filePattern="${logDir}/itemreq_api-%d{yyyy-MM-dd}-%i.log">
 			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%X{requestUuid}] %-5level %logger{36} (%F:%L) - %msg%n" />
 			<Policies>
 				<TimeBasedTriggeringPolicy />
