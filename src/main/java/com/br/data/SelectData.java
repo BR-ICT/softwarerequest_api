@@ -1,7 +1,9 @@
 package com.br.data;
 
 import java.sql.Connection;
-import java.time.LocalDate;
+import java.util.Date;
+import java.util.Calendar;
+
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -131,7 +133,11 @@ public class SelectData {
 		Statement stmt = null;
 		String jsonResult = "[]"; // default เป็น array ว่าง
 
-		int year = LocalDate.now().getYear();
+		  Calendar cal = Calendar.getInstance();
+	        Date date = new Date();
+	        cal.setTime(date);
+	        int year = cal.get(Calendar.YEAR);
+	        
 		String lastTwoDigits = String.valueOf(year).substring(2);
 
 		try {
@@ -185,7 +191,10 @@ public class SelectData {
 		Connection conn = null;
 		Statement stmt = null;
 
-		int year = LocalDate.now().getYear();
+		  Calendar cal = Calendar.getInstance();
+	        Date date = new Date();
+	        cal.setTime(date);
+	        int year = cal.get(Calendar.YEAR);
 		String lastTwoDigits = String.valueOf(year).substring(2);
 		try {
 			conn = ConnectDB2.doConnect();
