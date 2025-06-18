@@ -39,7 +39,7 @@ public class SelectData {
 	protected static String DBNAMEPP = "" + DBNAME + "";
 
 	public static String getstaffcode(String username, String lastname) throws Exception {
-		logger.info("getCompany");
+		logger.info("getstaffcode");
 
 		Connection conn = null;
 		Statement stmt = null;

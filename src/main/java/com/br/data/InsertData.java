@@ -943,7 +943,7 @@ public class InsertData {
 				// insert ด้วย currentID
 				String insertQuery = "INSERT INTO "+DBNAME+"."+SR_DETAIL+"  \n"
 						+ "( json_data,SERVICE_ID,PROMGRAM_CODE,STATUS) \n"
-						+ "VALUES ('" + vData + "','" + currentID + "','ITMRQ', '10')";
+						+ "VALUES ('" + vData + "','" + currentID + "','ITMRQ', '20')";
 				logger.debug("Insert Query: " + insertQuery);
 				
 				
@@ -954,7 +954,7 @@ public class InsertData {
 			        
 			        String insertQueryHead = "INSERT INTO "+DBNAME+"."+SR_HEAD+"  \n"
 							+ "( DOC_CODE,DOC_NO,REQUETER,CREATE_DATE,STATUS,DEPTHEAD) \n"
-							+ "VALUES ('ITRQ','" + currentID + "','"+username+"','"+dateYYYYMMDD+"', '10','"+depthead+"')";
+							+ "VALUES ('ITRQ','" + currentID + "','"+username+"','"+dateYYYYMMDD+"', '20','"+depthead+"')";
 					logger.debug("Insert Query: " + insertQuery);
 			        
 			        
