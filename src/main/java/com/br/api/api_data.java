@@ -118,6 +118,29 @@ public class api_data {
 	
 	
 	@GET
+	@Path("/historyindex/{username}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response historyindex(@Context HttpHeaders headers, @PathParam("username") String username, String req) throws JSONException {
+		logger.info("/historyindex");
+
+		JSONObject mJsonObj = new JSONObject();
+		//String getToken = headers.getRequestHeaders().getFirst("x-access-token");
+
+		try {
+			return Response.ok(SelectData.getHistoryIndex(username), MediaType.APPLICATION_JSON + ";charset=utf8").build();
+
+		} catch (Exception e) {
+			mJsonObj.put("result", "nok");
+			mJsonObj.put("message", e);
+			logger.error(e.getMessage());
+		}
+
+		return Response.status(Response.Status.NOT_FOUND).entity(mJsonObj).build();
+
+	}
+	
+	
+	@GET
 	@Path("/history/{id}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response getistory(@Context HttpHeaders headers, @PathParam("id") String id, String req) throws JSONException {

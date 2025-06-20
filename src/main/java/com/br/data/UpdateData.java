@@ -182,6 +182,11 @@ public class UpdateData {
 						break;
 					case "80":
 						newStatus = "22";
+						String completeSQL = "UPDATE "+DBNAME+"."+SR_HEAD+" "
+								+ "SET H_STATUS = 2 WHERE DOC_CODE = 'ITRQ' AND DOC_NO = '" + vID + "'  ";
+						stmt.executeUpdate(completeSQL);
+
+					
 						break;
 					default:
 						break;
@@ -202,7 +207,7 @@ public class UpdateData {
 
 			// เตรียม SQL
 			String query1 = "UPDATE "+DBNAME+"."+SR_DETAIL+" \n"
-					+ "SET JSON_DATA = '" + vData + "', STATUS = '" + newStatus + "' \n"
+					+ "SET JSON_DATA = '" + vData + "', DATE = CURRENT DATE, TIME = CURRENT TIME ,STATUS = '" + newStatus + "' \n"
 					+ "WHERE SERVICE_ID = '" + vID + "'";
 			
 			
@@ -219,8 +224,10 @@ public class UpdateData {
 
 			String query3 = "UPDATE "+DBNAME+"."+SR_HEAD+" "
 					+ "SET STATUS = '" + newStatus +
-					"' WHERE DOC_CODE = 'ITRQ' AND DOC_NO = '" + vID + "'  ";
+					"' , CREATE_DATE = CURRENT DATE ,CREATE_TIME = CURRENT TIME WHERE DOC_CODE = 'ITRQ' AND DOC_NO = '" + vID + "'  ";
 
+			
+			
 			tt = query1 + " ; " + query2; // Debug
 			logger.debug(query1);
 			logger.debug(query222);

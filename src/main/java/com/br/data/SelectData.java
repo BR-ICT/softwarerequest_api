@@ -125,6 +125,64 @@ public class SelectData {
 	// String DBNAMEe =""+Constant.DBNAME+"" ;
 
 	static String DBNAMEe = "" + Constant.DBNAME + "";
+	
+	
+	
+	
+
+	
+	public static String getHistoryIndex(String  username) {
+		logger.info("getHistoryIndex");
+
+		Connection conn = null;
+		Statement stmt = null;
+		String jsonResult = "[]"; // default เป็น array ว่าง
+
+		  Calendar cal = Calendar.getInstance();
+	        Date date = new Date();
+	        cal.setTime(date);
+	        int year = cal.get(Calendar.YEAR);
+	        
+		String lastTwoDigits = String.valueOf(year).substring(2);
+
+		try {
+			conn = ConnectDB2.doConnect();
+			stmt = conn.createStatement();
+
+			String query = "SELECT * \r\n"
+					+ "FROM BRLDTABK01.SR_FLOWHEAD02 AS a\r\n"
+					+ "LEFT JOIN BRLDTABK01.SR_FLOWAPPROVE02 AS b\r\n"
+					+ "ON b.DOC_NO = a.DOC_NO AND a.STATUS = b.STATUS\r\n"
+					+ "WHERE \r\n"
+					+ "(b.DOC_CODE = 'ITRQ' AND b.APPROVE LIKE '%"+username+"%')\r\n"
+					+ "OR \r\n"
+					+ "(a.DOC_CODE = 'ITRQ' AND a.REQUETER LIKE '%"+username+"%')";
+
+			logger.debug(query);
+			ResultSet mRes = stmt.executeQuery(query);
+			jsonResult = ConvertResultSet.convertResultSetToJson(mRes);
+
+		} catch (SQLException e) {
+			logger.error("SQL Error: " + e.getMessage());
+		} catch (Exception e) {
+			logger.error("Error: " + e.getMessage());
+		} finally {
+			try {
+				if (stmt != null)
+					stmt.close();
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+			try {
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+		}
+
+		return jsonResult;
+	}
 
 	public static String getHistory(String id) {
 		logger.info("getHistory");

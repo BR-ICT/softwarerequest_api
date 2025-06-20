@@ -942,8 +942,8 @@ public class InsertData {
 			if (currentID != null) {
 				// insert ด้วย currentID
 				String insertQuery = "INSERT INTO "+DBNAME+"."+SR_DETAIL+"  \n"
-						+ "( json_data,SERVICE_ID,PROMGRAM_CODE,STATUS) \n"
-						+ "VALUES ('" + vData + "','" + currentID + "','ITMRQ', '20')";
+						+ "( json_data,SERVICE_ID,PROMGRAM_CODE,STATUS,DATE,TIME) \n"
+						+ "VALUES ('" + vData + "','" + currentID + "','ITMRQ', '20' ,CURRENT DATE ,CURRENT TIME)";
 				logger.debug("Insert Query: " + insertQuery);
 				
 				
@@ -953,8 +953,8 @@ public class InsertData {
 			       
 			        
 			        String insertQueryHead = "INSERT INTO "+DBNAME+"."+SR_HEAD+"  \n"
-							+ "( DOC_CODE,DOC_NO,REQUETER,CREATE_DATE,STATUS,DEPTHEAD) \n"
-							+ "VALUES ('ITRQ','" + currentID + "','"+username+"','"+dateYYYYMMDD+"', '20','"+depthead+"')";
+							+ "( DOC_CODE,DOC_NO,REQUETER,CREATE_DATE,CREATE_TIME,STATUS,DEPTHEAD ,H_STATUS) \n"
+							+ "VALUES ('ITRQ','" + currentID + "','"+username+"',CURRENT DATE ,CURRENT TIME, '20','"+depthead+"',1)";
 					logger.debug("Insert Query: " + insertQuery);
 			        
 			        
