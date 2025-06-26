@@ -5464,6 +5464,49 @@ public class api_data {
 	
 	
 
+	@POST
+	@Path("/inserteditTEST")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	
+	public Response inserteditTEST(@Context HttpHeaders headers, @Context HttpServletRequest httpServletRequest, @FormDataParam("vData") String vData,@FormDataParam("username") String username,@FormDataParam("depthead") String depthead,@FormDataParam("remark") String remark)
+			throws JSONException {
+		logger.info("/insertRQ");
+
+		JSONObject mJsonObj = new JSONObject();
+
+		System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxx");
+
+		
+
+		
+	
+
+				try {
+
+					return Response.ok(InsertData.inserteditTEST(vData,username,depthead), MediaType.APPLICATION_JSON + ";charset=utf8")
+							.build();
+
+				} catch (Exception e) {
+					mJsonObj.put("result", "nok");
+					mJsonObj.put("message", e.getMessage());
+					logger.error(e.getMessage());
+				}
+
+			
+
+		
+
+		return Response.status(Response.Status.NOT_FOUND).entity(mJsonObj).build();
+		
+		
+		
+
+	}
+	
+	
+	
+	
+
 	@GET
 	@Path("/getSTATUSID/{vID}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")

@@ -912,6 +912,276 @@ public class InsertData {
 	}
 
 	/////////// BILL PAYMENT//////////////
+	
+	
+	
+	
+	
+	public static String inserteditTEST(String vData,String username,String depthead) throws Exception {
+		logger.info("insertRQ");
+
+		JSONObject mJsonObj = new JSONObject();
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = ConnectDB2.doConnect();
+			stmt = conn.createStatement();
+			Statement stmt2 = conn.createStatement();
+
+			// สร้าง currentID จาก query
+			String idQuery = "SELECT '25' || RIGHT('000000' || (INT(SUBSTR(COALESCE(MAX(SERVICE_ID), '25000000'), 3)) + 1), 6) AS CURRENT_ID \r\n"
+					+ "FROM "+DBNAME+"."+SR_DETAIL+" \n"
+					+ "WHERE SUBSTR(SERVICE_ID, 1, 2) = '25'";
+			logger.debug("ID Query: " + idQuery);
+
+			rs = stmt.executeQuery(idQuery);
+			String currentID = null;
+
+			if (rs.next()) {
+				currentID = rs.getString("CURRENT_ID");
+			}
+
+			if (currentID != null) {
+				// insert ด้วย currentID
+				String insertQuery = "INSERT INTO "+DBNAME+"."+SR_DETAIL+"  \n"
+						+ "( json_data,SERVICE_ID,PROMGRAM_CODE,STATUS,DATE,TIME) \n"
+						+ "VALUES ('" + vData + "','" + currentID + "','ITMRQ', '20' ,CURRENT DATE ,CURRENT TIME)";
+				logger.debug("Insert Query: " + insertQuery);
+				
+				
+				 java.sql.Timestamp currentTimestamp = new java.sql.Timestamp(System.currentTimeMillis());
+			        String dateYYYYMMDD = new java.text.SimpleDateFormat("yyyyMMdd").format(currentTimestamp);
+				
+			       
+			        
+			        String insertQueryHead = "INSERT INTO "+DBNAME+"."+SR_HEAD+"  \n"
+							+ "( DOC_CODE,DOC_NO,REQUETER,CREATE_DATE,CREATE_TIME,STATUS,DEPTHEAD ,H_STATUS) \n"
+							+ "VALUES ('ITRQ','" + currentID + "','"+username+"',CURRENT DATE ,CURRENT TIME, '20','"+depthead+"',2)";
+					logger.debug("Insert Query: " + insertQuery);
+			        
+			        
+
+				/* String insertQueryTemp = "\r\n"
+						+ "INSERT INTO BRLDTABK01.Approve_Detail02 (\r\n"
+						+ "    ID,\r\n"
+						+ "    DOC_CODE,\r\n"
+						+ "    DOC_NO,\r\n"
+						+ "APPROVE,\r\n"
+						+ "APPROVE_DATE,\r\n"
+						+ "STATUS,\r\n"
+						+ "STS_DESC,\r\n"
+						+ "TIME_ST \r\n"
+						+ ")\r\n"
+						+ "SELECT\r\n"
+						+ "    STATUS,\r\n"
+						+ "    DOC_CODE,\r\n"
+						+ "    '" + currentID + "',\r\n"
+						+ "    'PP',\r\n"
+						+ "	'-',\r\n"
+						+ "	STATUS,\r\n"
+						+ "    'Wait for approve',\r\n"
+						+ "    '-'\r\n"
+						+ "FROM BRLDTABK01.flow_master\r\n"
+						
+						+ "WHERE DOC_CODE = 'ITRQ'\r\n"
+						+ "";
+*/ 
+				stmt.executeUpdate(insertQuery);
+				
+				stmt.executeUpdate(insertQueryHead);
+				
+
+				// stmt.executeUpdate(insertQueryTemp);
+
+				
+				String recursiveQuery = "WITH RECURSIVE filtered_master AS (\r\n"
+						+ "SELECT *\r\n"
+						+ "FROM "+DBNAME+"."+SR_FLOW+"\r\n"
+						+ "WHERE DOC_CODE = 'ITRQ'\r\n"
+						+ "),\r\n"
+						+ "filtered_group AS (\r\n"
+						+ "SELECT *\r\n"
+						+ "FROM "+DBNAME+"."+SR_GROUP+"\r\n"
+						+ "WHERE WHS = 'A91'\r\n"
+						+ "),\r\n"
+						+ "joined_data AS (\r\n"
+						+ "SELECT\r\n"
+						+ "m.DOC_CODE,\r\n"
+						+ "m.GROUP,\r\n"
+						+ "m.SUBGROUP,\r\n"
+						+ "m.STATUS,\r\n"
+						+ "m.REMARK,\r\n"
+						+ "g.NAME,\r\n"
+						+ "ROW_NUMBER() OVER (\r\n"
+						+ "PARTITION BY m.DOC_CODE, m.GROUP, m.SUBGROUP\r\n"
+						+ "ORDER BY g.NAME\r\n"
+						+ ") AS RN\r\n"
+						+ "FROM filtered_master m\r\n"
+						+ "JOIN filtered_group g\r\n"
+						+ "ON m.GROUP = g.PROGROUP AND m.SUBGROUP = g.SUBGROUP\r\n"
+						+ "),\r\n"
+						+ "concat_cte (\r\n"
+						+ "DOC_CODE, GROUP_ID, SUBGROUP, STATUS, REMARK, RN, NAME_SERIAL\r\n"
+						+ ") AS (\r\n"
+						+ "SELECT\r\n"
+						+ "DOC_CODE,\r\n"
+						+ "GROUP,\r\n"
+						+ "SUBGROUP,\r\n"
+						+ "STATUS,\r\n"
+						+ "REMARK,\r\n"
+						+ "RN,\r\n"
+						+ "NAME\r\n"
+						+ "FROM joined_data\r\n"
+						+ "WHERE RN = 1\r\n"
+						+ "\r\n"
+						+ "UNION ALL\r\n"
+						+ "\r\n"
+						+ "SELECT\r\n"
+						+ "j.DOC_CODE,\r\n"
+						+ "j.GROUP,\r\n"
+						+ "j.SUBGROUP,\r\n"
+						+ "j.STATUS,\r\n"
+						+ "j.REMARK,\r\n"
+						+ "j.RN,\r\n"
+						+ "c.NAME_SERIAL || ',' || j.NAME\r\n"
+						+ "FROM concat_cte c\r\n"
+						+ "JOIN joined_data j\r\n"
+						+ "ON c.DOC_CODE = j.DOC_CODE\r\n"
+						+ "AND c.GROUP_ID = j.GROUP\r\n"
+						+ "AND c.SUBGROUP = j.SUBGROUP\r\n"
+						+ "AND j.RN = c.RN + 1\r\n"
+						+ ")\r\n"
+						+ "\r\n"
+						+ "SELECT\r\n"
+						+ "DOC_CODE,\r\n"
+						+ "STATUS,\r\n"
+						+ "REMARK,\r\n"
+						+ "NAME_SERIAL\r\n"
+						+ "FROM concat_cte c\r\n"
+						+ "WHERE NOT EXISTS (\r\n"
+						+ "SELECT 1\r\n"
+						+ "FROM concat_cte c2\r\n"
+						+ "WHERE\r\n"
+						+ "c2.DOC_CODE = c.DOC_CODE\r\n"
+						+ "AND c2.GROUP_ID = c.GROUP_ID\r\n"
+						+ "AND c2.SUBGROUP = c.SUBGROUP\r\n"
+						+ "AND c2.RN = c.RN + 1\r\n"
+						+ ")\r\n"
+						+ "ORDER BY STATUS";
+				/*
+				String recursiveQuery = "WITH RECURSIVE " +
+						"filtered_master AS ( " +
+						"  SELECT * FROM "+DBNAME+"."+SR_FLOW+" WHERE DOC_CODE = 'ITRQ' " +
+						"), " +
+						"filtered_group AS ( " +
+						"  SELECT * FROM "+DBNAME+"."+SR_GROUP+" WHERE WHS = 'A91' " +
+						"), " +
+						"joined_data AS ( " +
+						"  SELECT m.DOC_CODE, m.GROUP, m.SUBGROUP, m.STATUS, g.NAME, " +
+						"         ROW_NUMBER() OVER (PARTITION BY m.DOC_CODE, m.GROUP, m.SUBGROUP ORDER BY g.NAME) AS RN "
+						+
+						"  FROM filtered_master m " +
+						"  JOIN filtered_group g ON m.GROUP = g.PROGROUP AND m.SUBGROUP = g.SUBGROUP " +
+						"), " +
+						"concat_cte (DOC_CODE, GROUP_ID, SUBGROUP, STATUS, RN, NAME_SERIAL) AS ( " +
+						"  SELECT DOC_CODE, GROUP, SUBGROUP, STATUS, RN, NAME FROM joined_data WHERE RN = 1 " +
+						"  UNION ALL " +
+						"  SELECT j.DOC_CODE, j.GROUP, j.SUBGROUP, j.STATUS, j.RN, c.NAME_SERIAL || ':' || j.NAME " +
+						"  FROM concat_cte c JOIN joined_data j " +
+						"  ON c.DOC_CODE = j.DOC_CODE AND c.GROUP_ID = j.GROUP AND c.SUBGROUP = j.SUBGROUP AND j.RN = c.RN + 1 "
+						+
+						") " +
+						"SELECT DOC_CODE, STATUS, NAME_SERIAL FROM concat_cte c " +
+						"WHERE NOT EXISTS ( " +
+						"  SELECT 1 FROM concat_cte c2 " +
+						"  WHERE c2.DOC_CODE = c.DOC_CODE AND c2.GROUP_ID = c.GROUP_ID AND c2.SUBGROUP = c.SUBGROUP AND c2.RN = c.RN + 1 "
+						+
+						") ORDER BY STATUS";
+						
+						*/
+
+				logger.debug("PPPPPP : "+recursiveQuery);
+				rs = stmt.executeQuery(recursiveQuery);
+
+				while (rs.next()) {
+					String docCode = rs.getString("DOC_CODE");
+					String status = rs.getString("STATUS");
+					String approve = rs.getString("NAME_SERIAL");
+					String remark = rs.getString("REMARK");
+
+					String insertDetail = "INSERT INTO "+DBNAME+"."+SR_APPROVE+" " +
+							"( DOC_CODE, DOC_NO, APPROVE, APPROVE_DATE, STATUS, STS_DESC, TIME_ST, APPROVED_USER ,REMARK) " +
+							"VALUES (" +
+							"'" + docCode + "', " +
+							"'" + currentID + "', " +
+							"'" + approve + "', " +
+							"'-', " +
+							"'" + status + "', " +
+							"'Wait for approve', " +
+							"'-', " +
+							"'-',  " +
+							"'" + remark + "'" +
+							")";
+					stmt2.executeUpdate(insertDetail);
+					logger.debug("xxxxxxin"+insertDetail);
+				}
+				
+				
+				
+				
+				
+				  String query2 = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
+				  		+ "SET  STS_DESC = 'Approved',APPROVE = '"+username+"' , TIME_ST = '" + currentTimestamp + "',APPROVED_USER = 'PP', APPROVE_DATE = '" + dateYYYYMMDD +
+	                      "' WHERE DOC_CODE = 'ITRQ' AND DOC_NO = '" + currentID + "' AND STATUS = '10' ";
+
+					stmt2.executeUpdate(query2);
+					
+					String query222 = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n"
+			                + "SET APPROVE = '" + depthead + "' \n"
+			                + "WHERE DOC_CODE = 'ITRQ' AND DOC_NO = '" + currentID + "' AND STATUS = '20'";
+
+					
+					stmt2.executeUpdate(query222);
+
+
+				mJsonObj.put("result", "ok");
+				mJsonObj.put("CURRENT_ID", currentID);
+			} else {
+				mJsonObj.put("result", "nok");
+				mJsonObj.put("message", "Cannot generate CURRENT_ID");
+			}
+
+			return currentID.toString();
+
+		} catch (SQLException e) {
+			logger.error("SQL Error: " + e.getMessage());
+			mJsonObj.put("result", "nok");
+			mJsonObj.put("message", e.getMessage());
+			return mJsonObj.toString();
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					logger.error(e.getMessage());
+				}
+			if (stmt != null)
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					logger.error(e.getMessage());
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					logger.error(e.getMessage());
+				}
+		}
+	}
+
 
 	public static String insertTEST(String vData,String username,String depthead) throws Exception {
 		logger.info("insertRQ");

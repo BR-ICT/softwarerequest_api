@@ -149,14 +149,36 @@ public class SelectData {
 			conn = ConnectDB2.doConnect();
 			stmt = conn.createStatement();
 
-			String query = "SELECT * \r\n"
+			String query = "SELECT \r\n"
+					+ "COALESCE(a.ID, '-') AS HEAD_ID,\r\n"
+					+ "COALESCE(a.DOC_CODE, '-') AS HEAD_DOC_CODE,\r\n"
+					+ "COALESCE(a.DOC_NO, '-') AS HEAD_DOC_NO,\r\n"
+					+ "COALESCE(a.REQUETER, '-') AS REQUETER,\r\n"
+					+ "COALESCE(a.CREATE_DATE, '-') AS CREATE_DATE,\r\n"
+					+ "COALESCE(a.STATUS, '-') AS HEAD_STATUS,\r\n"
+					+ "COALESCE(a.DEPTHEAD, '-') AS DEPTHEAD,\r\n"
+					+ "COALESCE(a.CREATE_TIME, '-') AS CREATE_TIME,\r\n"
+					+ "COALESCE(a.H_STATUS, '-') AS H_STATUS,\r\n"
+					+ "COALESCE(b.ID, '-') AS APPROVE_ID,\r\n"
+					+ "COALESCE(b.DOC_CODE, '-') AS APPROVE_DOC_CODE,\r\n"
+					+ "COALESCE(b.DOC_NO, '-') AS APPROVE_DOC_NO,\r\n"
+					+ "COALESCE(b.APPROVE, '-') AS APPROVE,\r\n"
+					+ "COALESCE(b.APPROVE_DATE, '-') AS APPROVE_DATE,\r\n"
+					+ "COALESCE(b.STATUS, '-') AS APPROVE_STATUS,\r\n"
+					+ "COALESCE(b.STS_DESC, '-') AS STS_DESC,\r\n"
+					+ "COALESCE(b.TIME_ST, '-') AS TIME_ST,\r\n"
+					+ "COALESCE(b.APPROVED_USER, '-') AS APPROVED_USER,\r\n"
+					+ "COALESCE(b.SR_COMMENT, '-') AS SR_COMMENT,\r\n"
+					+ "COALESCE(b.REMARK, '-') AS REMARK\r\n"
 					+ "FROM BRLDTABK01.SR_FLOWHEAD02 AS a\r\n"
 					+ "LEFT JOIN BRLDTABK01.SR_FLOWAPPROVE02 AS b\r\n"
 					+ "ON b.DOC_NO = a.DOC_NO AND a.STATUS = b.STATUS\r\n"
 					+ "WHERE \r\n"
+					+ "(\r\n"
 					+ "(b.DOC_CODE = 'ITRQ' AND b.APPROVE LIKE '%"+username+"%')\r\n"
 					+ "OR \r\n"
-					+ "(a.DOC_CODE = 'ITRQ' AND a.REQUETER LIKE '%"+username+"%')";
+					+ "(a.DOC_CODE = 'ITRQ' AND a.REQUETER LIKE '%"+username+"%')\r\n"
+					+ ")";
 
 			logger.debug(query);
 			ResultSet mRes = stmt.executeQuery(query);

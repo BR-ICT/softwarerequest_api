@@ -214,7 +214,7 @@ public class UpdateData {
 			
 			String query222 = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n"
 	                + "SET APPROVE = '" + vDepthrad + "' \n"
-	                + "WHERE DOC_CODE = 'ITRQ' AND DOC_NO = '" + vID + "' AND STATUS = '20'";
+	                + "WHERE DOC_CODE = 'ITRQ' AND DOC_NO = '" + vID + "' AND STATUS = '10'";
 
 
 
