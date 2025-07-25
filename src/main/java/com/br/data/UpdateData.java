@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
@@ -21,6 +22,7 @@ import com.br.connection.ConnectDB2;
 import com.br.utility.Constant;
 import com.br.utility.ConvertString;
 import com.br.utility.FileUtillity;
+import com.br.utility.HttpConnection;
 import com.br.utility.SendEmail;
 
 public class UpdateData {
@@ -115,7 +117,7 @@ public class UpdateData {
 
 	}
 
-	public static String updateITEMREQUEST(String vID, String vSTATUS, String vData, String vApproval,String vApprover,String vDepthrad, String vRemark)
+	public static String updateITEMREQUEST(String vID, String vSTATUS, String vData, String vApproval,String vApprover,String vDepthead, String vRemark)
 			throws Exception {
 		logger.info("UpdateITEMREQUEST");
 
@@ -130,6 +132,8 @@ public class UpdateData {
 
 			// ตรวจสอบและกำหนดสถานะใหม่
 			String newStatus = vSTATUS;
+			String Status = vSTATUS;
+			String cStatus = "10";
 			
 			
 
@@ -140,11 +144,11 @@ public class UpdateData {
 
 
 				String query2e = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
-						+ "SET  STS_DESC = 'Wait for approve', TIME_ST = '-',APPROVED_USER = '-'  , APPROVE_DATE = '-' \n"
-						+ "WHERE DOC_CODE = 'ITRQ' AND DOC_NO = '" + vID + "'  AND STATUS  IN ('10','20','30','40','50','60','70','80') ";
+						+ "SET  FADES1 = 'Wait for approve', FAAPTI = null,FAAPBY = '-'  ,FAENDA  = CURRENT DATE , FAENTI  = CURRENT TIME \n"
+						+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('00','10','20','30','40','50','60','70','80') ";
 
 				String query3e = "UPDATE "+DBNAME+"."+SR_HEAD+" "
-						+ "SET DEPTHEAD = '-' WHERE DOC_CODE = 'ITRQ' AND DOC_NO = '" + vID + "'  ";
+						+ "SET FHDEPH = '-' WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  ";
 
 				logger.debug(query2e);
 				logger.debug(query3e);
@@ -178,13 +182,16 @@ public class UpdateData {
 						newStatus = "70";
 						break;
 					case "70":
-						newStatus = "80";
+						newStatus = "70";
+						String completeSQL = "UPDATE "+DBNAME+"."+SR_HEAD+" "
+								+ "SET FHHSTA = 2 WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  ";
+						stmt.executeUpdate(completeSQL);
 						break;
 					case "80":
 						newStatus = "22";
-						String completeSQL = "UPDATE "+DBNAME+"."+SR_HEAD+" "
-								+ "SET H_STATUS = 2 WHERE DOC_CODE = 'ITRQ' AND DOC_NO = '" + vID + "'  ";
-						stmt.executeUpdate(completeSQL);
+						String completeSQL2 = "UPDATE "+DBNAME+"."+SR_HEAD+" "
+								+ "SET FHHSTA = 2 WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  ";
+						stmt.executeUpdate(completeSQL2);
 
 					
 						break;
@@ -207,25 +214,36 @@ public class UpdateData {
 
 			// เตรียม SQL
 			String query1 = "UPDATE "+DBNAME+"."+SR_DETAIL+" \n"
-					+ "SET JSON_DATA = '" + vData + "', DATE = CURRENT DATE, TIME = CURRENT TIME ,STATUS = '" + newStatus + "' \n"
-					+ "WHERE SERVICE_ID = '" + vID + "'";
+					+ "SET FDDATA = '" + vData + "', FDENDA = CURRENT DATE, FDENTI  = CURRENT TIME ,FDDSTA = '" + newStatus + "' \n"
+					+ "WHERE FDSRNO = '" + vID + "'";
 			
+			if ("false".equalsIgnoreCase(vApproval)) {
+			    cStatus = "00";
+			} else {
+			    if ("00".equals(vSTATUS)) {
+			        cStatus = "00";
+			    } else if ("70".equals(vSTATUS)) {
+			        cStatus = "70";
+			    }
+			}
+
 			
 			
 			String query222 = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n"
-	                + "SET APPROVE = '" + vDepthrad + "' \n"
-	                + "WHERE DOC_CODE = 'ITRQ' AND DOC_NO = '" + vID + "' AND STATUS = '10'";
+	                + "SET FAENUS = '"+vApprover+"' ,FAAPBY = '" + vDepthead + "', FADES1 = 'Approved' \n"
+	                + "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "' AND FASTAT  = '"+cStatus+"'";
 
 
 
 			String query2 = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
-					+ "SET  STS_DESC = 'Approved', TIME_ST = ' \n" + currentTimestamp + "',APPROVED_USER = '"+vApprover+"' , SR_COMMENT = '"+vRemark+"' , APPROVE_DATE = '" + dateYYYYMMDD +
-					"' WHERE DOC_CODE = 'ITRQ' AND DOC_NO = '" + vID + "' AND STATUS = '" + newStatus + "' ";
+					+ "SET   FAAPTI = CURRENT TIME ,  FAENUS = '"+vApprover+"' ,FADES1 = 'Approved', FAENTI =  CURRENT TIME,FAAPBY = '"+vApprover+"' , FASTDE = '"+vRemark+"' , FAENDA = CURRENT DATE" +
+					" WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "' AND FASTAT = '" + Status + "' ";
 
 			String query3 = "UPDATE "+DBNAME+"."+SR_HEAD+" "
-					+ "SET STATUS = '" + newStatus +
-					"' , CREATE_DATE = CURRENT DATE ,CREATE_TIME = CURRENT TIME WHERE DOC_CODE = 'ITRQ' AND DOC_NO = '" + vID + "'  ";
+					+ "SET   FHDSTA = '" + newStatus +
+					"' , FHENDA = CURRENT DATE ,FHENTI = CURRENT TIME WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  ";
 
+			
 			
 			
 			tt = query1 + " ; " + query2; // Debug
@@ -235,9 +253,36 @@ public class UpdateData {
 			logger.debug(query3);
 
 			stmt.executeUpdate(query1);
+			
+			
+			
 			stmt.executeUpdate(query222);
+			
+			
 			stmt.executeUpdate(query2);
 			stmt.executeUpdate(query3);
+			
+			
+
+			String data = SelectData.getSTATUSIDITEMRQ(vID.toString());
+			String url = "https://workflow.br-bangkokranch.com/webhook/saveitemrequest2"; 
+
+			String response = HttpConnection.sendRequest(
+					"POST",
+					url,
+					Map.of("x-access-token",
+							"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMCA6IDEwMSA6IOC4muC4o-C4tOC4qeC4seC4lyDguJrguLLguIfguIHguK3guIHguYHguKPguYnguJnguIrguYwg4LiI4Liz4LiB4Lix4LiUICjguKHguKvguLLguIrguJkpIiwiaXNzIjoiYXV0aGVuLXNlcnZpY2UiLCJhdWQiOiIwMTAyOTA2Iiwicm9sZSI6Ik1QTV8xQTEgOiBBUFBST1ZFIDogU0FMRU1BTiA6IDAiLCJleHAiOjE3NTAxNzY1NzF9.cAMs1gdcg3cxfYNTJi_WTHpBCKDxaw-MjwrDpmFPPSo"), // headers
+					data,
+					null // form-data
+			);
+			
+			logger.debug("response: " + response);
+
+			
+			
+			
+			
+			
 
 			mJsonObj.put("result", "ok");
 			mJsonObj.put("message", "Update complete.");

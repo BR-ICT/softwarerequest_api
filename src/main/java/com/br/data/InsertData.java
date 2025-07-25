@@ -1,6 +1,8 @@
 package com.br.data;
 
 import java.io.InputStream;
+import java.util.Base64;
+import java.util.Map;
 import java.sql.ResultSet; // <--- สำคัญตรงนี้
 
 import java.math.BigDecimal;
@@ -35,7 +37,13 @@ import com.br.utility.ConvertString;
 import com.br.utility.FileUtillity;
 import com.br.utility.HttpConnection;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import groovy.ui.Console;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class InsertData {
 
@@ -63,6 +71,72 @@ public class InsertData {
 
 	////////////////////////// BANKMAPPING ////////////////////////////////
 
+	
+	
+	 public static JSONObject uploadTempFiles(String base64FileData, String username, String depthead) throws Exception {
+	        JSONObject result = new JSONObject();
+
+	        Connection conn = null;
+	        PreparedStatement pstmt = null;
+
+	        try {
+	            conn = ConnectDB2.doConnect();
+
+	            // Decode base64 ไฟล์
+	            String base64Data = base64FileData.contains(",") ? base64FileData.split(",")[1] : base64FileData;
+	            byte[] fileBytes = Base64.getDecoder().decode(base64Data);
+
+	            // ตั้งชื่อไฟล์และ path (ปรับตามที่เก็บไฟล์จริง)
+	            String storedName = "upload_" + System.currentTimeMillis() + ".pdf";
+	            String uploadDir = "/your/upload/path/";
+	            String filePath = uploadDir + storedName;
+
+	            // เขียนไฟล์ลงดิสก์
+	            try (FileOutputStream fos = new FileOutputStream(filePath)) {
+	                fos.write(fileBytes);
+	            }
+
+	            int size = fileBytes.length;
+	            String mimeType = "application/pdf";  // ปรับถ้ารู้ชนิดไฟล์
+	            String originalName = "unknown.pdf";  // ถ้าได้ชื่อไฟล์จริงจากฝั่ง client ก็รับมาแทน
+
+	            // เตรียม SQL
+	            String sql = "INSERT INTO BRLDTABK01.SR_FILEUPLOAD (original_name, stored_name, path, mime_type, size, uploaded_by) VALUES (?, ?, ?, ?, ?, ?)";
+
+	            pstmt = conn.prepareStatement(sql);
+	            pstmt.setString(1, originalName);
+	            pstmt.setString(2, storedName);
+	            pstmt.setString(3, filePath);
+	            pstmt.setString(4, mimeType);
+	            pstmt.setInt(5, size);
+	            pstmt.setString(6, username);
+
+	            pstmt.executeUpdate();
+
+	            result.put("result", "ok");
+	            result.put("stored_name", storedName);
+	            result.put("path", filePath);
+
+	        } catch (Exception e) {
+	            result.put("result", "nok");
+	            result.put("message", e.getMessage());
+	            throw e;
+	        } finally {
+	            if (pstmt != null) try { pstmt.close(); } catch (Exception e) {}
+	            if (conn != null) try { conn.close(); } catch (Exception e) {}
+	        }
+
+	        return result;
+	    }
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public static String CHECKTYPE(String username, String statemenType, String tableData, String getCono,
 			String getDivi)
 			throws Exception {
@@ -1190,18 +1264,55 @@ public class InsertData {
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
+		
+		logger.debug("vData: " + vData);
 
+		JSONObject obj = new JSONObject(vData);
+
+		String company = obj.optString("company");
+		String warehouse2 = obj.optString("warehouse2");
+
+		logger.debug("company: " + company);
+		logger.debug("warehouse2: " + warehouse2);
+		
+		Map<String, String[]> companyMapping = new HashMap<>();
+		companyMapping.put("10", new String[] { "10", "101" });
+		companyMapping.put("600", new String[] { "600", "600" });
+		// เพิ่มได้เรื่อยๆ เช่น
+		// companyMapping.put("300", new String[] { "300", "301" });
+
+		// ดึงข้อมูลตาม company
+		String[] mapping = companyMapping.getOrDefault(company, new String[] { "", "" });
+		String comcono = mapping[0];
+		String comdivi = mapping[1];
+
+		logger.debug("cono: " + comcono);
+		logger.debug("divi: " + comdivi);
+		
+		
+		
+		
+		
 		try {
 			conn = ConnectDB2.doConnect();
 			stmt = conn.createStatement();
 			Statement stmt2 = conn.createStatement();
+			
+			
 
 			// สร้าง currentID จาก query
+			String idQuery = "SELECT '25' || RIGHT('000000' || (INT(SUBSTR(COALESCE(MAX(FDSRNO), '25000000'), 3)) + 1), 6) AS CURRENT_ID \r\n"
+					+ "FROM "+DBNAME+"."+SR_DETAIL+" \n"
+					+ "WHERE SUBSTR(FDSRNO, 1, 2) = '25'";
+			
+			/*
 			String idQuery = "SELECT '25' || RIGHT('000000' || (INT(SUBSTR(COALESCE(MAX(SERVICE_ID), '25000000'), 3)) + 1), 6) AS CURRENT_ID \r\n"
 					+ "FROM "+DBNAME+"."+SR_DETAIL+" \n"
 					+ "WHERE SUBSTR(SERVICE_ID, 1, 2) = '25'";
+		    */
 			logger.debug("ID Query: " + idQuery);
 
+			
 			rs = stmt.executeQuery(idQuery);
 			String currentID = null;
 
@@ -1211,9 +1322,16 @@ public class InsertData {
 
 			if (currentID != null) {
 				// insert ด้วย currentID
+				/*
 				String insertQuery = "INSERT INTO "+DBNAME+"."+SR_DETAIL+"  \n"
 						+ "( json_data,SERVICE_ID,PROMGRAM_CODE,STATUS,DATE,TIME) \n"
-						+ "VALUES ('" + vData + "','" + currentID + "','ITMRQ', '20' ,CURRENT DATE ,CURRENT TIME)";
+						+ "VALUES ('" + vData + "','" + currentID + "','ITMRQ', '10' ,CURRENT DATE ,CURRENT TIME)";
+				*/
+				
+				String insertQuery = "INSERT INTO "+DBNAME+"."+SR_DETAIL+"\r\n"
+						+ "(FDCONO,FDDIVI,FDTYPE,  FDDATA, FDSRNO,FDCODE, FDDSTA , FDENDA, FDENTI,FDENUS) \r\n"
+						+ "VALUES ('10','101','1','" + vData + "','" + currentID + "','ITMRQ', '10', CURRENT DATE, CURRENT TIME ,'"+username+"')";
+				
 				logger.debug("Insert Query: " + insertQuery);
 				
 				
@@ -1221,11 +1339,16 @@ public class InsertData {
 			        String dateYYYYMMDD = new java.text.SimpleDateFormat("yyyyMMdd").format(currentTimestamp);
 				
 			       
-			        
+			        /*
 			        String insertQueryHead = "INSERT INTO "+DBNAME+"."+SR_HEAD+"  \n"
 							+ "( DOC_CODE,DOC_NO,REQUETER,CREATE_DATE,CREATE_TIME,STATUS,DEPTHEAD ,H_STATUS) \n"
-							+ "VALUES ('ITRQ','" + currentID + "','"+username+"',CURRENT DATE ,CURRENT TIME, '20','"+depthead+"',1)";
-					logger.debug("Insert Query: " + insertQuery);
+							+ "VALUES ('ITRQ','" + currentID + "','"+username+"',CURRENT DATE ,CURRENT TIME, '10','"+depthead+"',1)";
+							*/
+			        
+			        String insertQueryHead = "INSERT INTO "+DBNAME+"."+SR_HEAD+"\r\n"
+			        		+ "(FHCONO,FHDIVI, FHCODE, FHSRNO,FHREQU ,FHENDA ,FHENTI,FHENUS ,FHREDA,FHHSTA ,FHDEPH , FHDSTA )\r\n"
+			        		+ "VALUES ('"+comcono+"','"+comdivi+"','ITRQ', '"+currentID+"', '"+username+"', CURRENT DATE , CURRENT TIME,'"+username+"' ,CURRENT DATE, 1, '"+depthead+"', 10)";
+					logger.debug("Insert Query: " + insertQueryHead);
 			        
 			        
 
@@ -1260,8 +1383,120 @@ public class InsertData {
 				
 
 				// stmt.executeUpdate(insertQueryTemp);
-
 				
+				
+				String recursiveQuery = "WITH RECURSIVE FILTERED_MASTER AS (\r\n"
+						+ "  --  Step 1: Select all rows for PMCONO, PMDIVI, PMCODE='ITRQ' from SR_PROCESSMASTER\r\n"
+						+ "  SELECT *\r\n"
+						+ "  FROM "+DBNAME+"."+SR_FLOW+"\r\n"
+						+ "  WHERE PMCONO = '"+comcono+"'\r\n"
+						+ "    AND PMDIVI = '"+comdivi+"'\r\n"
+						+ "    AND PMCODE = 'ITRQ'\r\n"
+						+ "),\r\n"
+						+ "FILTERED_GROUP AS (\r\n"
+						+ "  --  Step 2: Select all rows from SR_GROUPMASTER (no filter applied)\r\n"
+						+ "  SELECT *\r\n"
+						+ "  FROM "+DBNAME+"."+SR_GROUP+"\r\n"
+						+ "),\r\n"
+						+ "JOINED_DATA AS (\r\n"
+						+ "  --  Step 3: Join PROCESSMASTER and GROUPMASTER on CONO, DIVI, GROUP, SUBGROUP\r\n"
+						+ "  -- Assign row numbers to handle duplicates per PMSTAT\r\n"
+						+ "  SELECT\r\n"
+						+ "    M.PMCONO,\r\n"
+						+ "    M.PMDIVI,\r\n"
+						+ "    M.PMCODE,\r\n"
+						+ "    M.PMGROU,\r\n"
+						+ "    M.PMSGRO,\r\n"
+						+ "    M.PMSTAT,\r\n"
+						+ "    M.PMDES1,\r\n"
+						+ "    M.PMDES2,\r\n"
+						+ "    G.GMUSER,\r\n"
+						+ "    ROW_NUMBER() OVER (\r\n"
+						+ "      PARTITION BY M.PMCONO, M.PMDIVI, M.PMCODE, M.PMSTAT\r\n"
+						+ "      ORDER BY\r\n"
+						+ "        --  Priority 1: PMSGRO matches :TARGET_SUBGROUP\r\n"
+						+ "        CASE\r\n"
+						+ "          WHEN M.PMSGRO = '"+warehouse2+"' THEN 0\r\n"
+						+ "          ELSE 1\r\n"
+						+ "        END,\r\n"
+						+ "        --  Priority 2: PMDES2 DESC (higher value preferred)\r\n"
+						+ "        M.PMDES2 DESC,\r\n"
+						+ "        --  Tie-breaker: PMSGRO alphabetically\r\n"
+						+ "        M.PMSGRO ASC\r\n"
+						+ "    ) AS RN\r\n"
+						+ "  FROM FILTERED_MASTER M\r\n"
+						+ "  JOIN FILTERED_GROUP G\r\n"
+						+ "    ON M.PMCONO = G.GMCONO         -- ✅ Match company\r\n"
+						+ "   AND M.PMDIVI = G.GMDIVI         -- ✅ Match division\r\n"
+						+ "   AND M.PMGROU = G.GMGROU         -- ✅ Match group\r\n"
+						+ "   AND M.PMSGRO = G.GMSGRO         -- ✅ Match subgroup\r\n"
+						+ "),\r\n"
+						+ "CONCAT_CTE (\r\n"
+						+ "  PMCONO, PMDIVI, PMCODE, PMGROU, PMSGRO, PMSTAT, PMDES1, PMDES2, RN, NAME_SERIAL\r\n"
+						+ ") AS (\r\n"
+						+ "  --  Step 4: Start recursive concatenation\r\n"
+						+ "  -- Pick only the highest priority row per PMSTAT (RN=1)\r\n"
+						+ "  SELECT\r\n"
+						+ "    PMCONO,\r\n"
+						+ "    PMDIVI,\r\n"
+						+ "    PMCODE,\r\n"
+						+ "    PMGROU,\r\n"
+						+ "    PMSGRO,\r\n"
+						+ "    PMSTAT,\r\n"
+						+ "    PMDES1,\r\n"
+						+ "    PMDES2,\r\n"
+						+ "    RN,\r\n"
+						+ "    GMUSER\r\n"
+						+ "  FROM JOINED_DATA\r\n"
+						+ "  WHERE RN = 1\r\n"
+						+ "  UNION ALL\r\n"
+						+ "  --  Step 5: Concatenate GMUSER values for rows with RN > 1\r\n"
+						+ "  SELECT\r\n"
+						+ "    J.PMCONO,\r\n"
+						+ "    J.PMDIVI,\r\n"
+						+ "    J.PMCODE,\r\n"
+						+ "    J.PMGROU,\r\n"
+						+ "    J.PMSGRO,\r\n"
+						+ "    J.PMSTAT,\r\n"
+						+ "    J.PMDES1,\r\n"
+						+ "    J.PMDES2,\r\n"
+						+ "    J.RN,\r\n"
+						+ "    C.NAME_SERIAL || ',' || J.GMUSER\r\n"
+						+ "  FROM CONCAT_CTE C\r\n"
+						+ "  JOIN JOINED_DATA J\r\n"
+						+ "    ON C.PMCONO = J.PMCONO\r\n"
+						+ "   AND C.PMDIVI = J.PMDIVI\r\n"
+						+ "   AND C.PMCODE = J.PMCODE\r\n"
+						+ "   AND C.PMGROU = J.PMGROU\r\n"
+						+ "   AND C.PMSGRO = J.PMSGRO\r\n"
+						+ "   AND J.RN = C.RN + 1\r\n"
+						+ ")\r\n"
+						+ "--  Step 6: Select only rows with no next RN (final row per group)\r\n"
+						+ "SELECT\r\n"
+						+ "  PMCONO,\r\n"
+						+ "  PMDIVI,\r\n"
+						+ "  PMCODE,\r\n"
+						+ "  PMGROU,\r\n"
+						+ "  PMSGRO,\r\n"
+						+ "  PMSTAT,\r\n"
+						+ "  PMDES1,\r\n"
+						+ "  NAME_SERIAL\r\n"
+						+ "FROM CONCAT_CTE C\r\n"
+						+ "WHERE NOT EXISTS (\r\n"
+						+ "  SELECT 1\r\n"
+						+ "  FROM CONCAT_CTE C2\r\n"
+						+ "  WHERE\r\n"
+						+ "    C2.PMCONO = C.PMCONO\r\n"
+						+ "    AND C2.PMDIVI = C.PMDIVI\r\n"
+						+ "    AND C2.PMCODE = C.PMCODE\r\n"
+						+ "    AND C2.PMGROU = C.PMGROU\r\n"
+						+ "    AND C2.PMSGRO = C.PMSGRO\r\n"
+						+ "    AND C2.RN = C.RN + 1\r\n"
+						+ ")\r\n"
+						+ "--  Step 7: Final sorting of result\r\n"
+						+ "ORDER BY PMSTAT, PMGROU, PMSGRO";
+
+				/* 
 				String recursiveQuery = "WITH RECURSIVE filtered_master AS (\r\n"
 						+ "SELECT *\r\n"
 						+ "FROM "+DBNAME+"."+SR_FLOW+"\r\n"
@@ -1336,6 +1571,9 @@ public class InsertData {
 						+ "AND c2.RN = c.RN + 1\r\n"
 						+ ")\r\n"
 						+ "ORDER BY STATUS";
+				
+				*/
+						
 				/*
 				String recursiveQuery = "WITH RECURSIVE " +
 						"filtered_master AS ( " +
@@ -1372,11 +1610,13 @@ public class InsertData {
 				rs = stmt.executeQuery(recursiveQuery);
 
 				while (rs.next()) {
-					String docCode = rs.getString("DOC_CODE");
-					String status = rs.getString("STATUS");
+					String cono = rs.getString("PMCONO");
+					String divi = rs.getString("PMDIVI");
+					String docCode = rs.getString("PMCODE");
+					String status = rs.getString("PMSTAT");
 					String approve = rs.getString("NAME_SERIAL");
-					String remark = rs.getString("REMARK");
-
+					String remark = rs.getString("PMDES1");
+/*
 					String insertDetail = "INSERT INTO "+DBNAME+"."+SR_APPROVE+" " +
 							"( DOC_CODE, DOC_NO, APPROVE, APPROVE_DATE, STATUS, STS_DESC, TIME_ST, APPROVED_USER ,REMARK) " +
 							"VALUES (" +
@@ -1390,26 +1630,79 @@ public class InsertData {
 							"'-',  " +
 							"'" + remark + "'" +
 							")";
+							
+*/
+					
+					String insertDetail = "INSERT INTO "+DBNAME+"."+SR_APPROVE+" " +
+							"(FATYPE,FACONO,FADIVI, FACODE,FASRNO ,FAAPLI ,FAAPDA ,FASTAT , FADES1, FAENTI,FAENDA,FAAPBY,FADES2) " +
+							"VALUES (" +
+							" '1' , '"+comcono+"','"+comdivi+"','" + docCode + "', " +
+							"'" + currentID + "', " +
+							"'" + approve + "', " +
+							"CURRENT DATE, " +
+							"'" + status + "', " +
+							"'Wait for approve', " +
+							"CURRENT TIME, " +
+							"CURRENT DATE, " +
+							"'',  " +
+							"'" + remark + "'" +
+							")";
+					
+					logger.debug("xxxxxxin "+insertDetail);
 					stmt2.executeUpdate(insertDetail);
-					logger.debug("xxxxxxin"+insertDetail);
+					
 				}
 				
 				
 				
-				
+			/*
 				
 				  String query2 = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
 				  		+ "SET  STS_DESC = 'Approved',APPROVE = '"+username+"' , TIME_ST = '" + currentTimestamp + "',APPROVED_USER = 'PP', APPROVE_DATE = '" + dateYYYYMMDD +
 	                      "' WHERE DOC_CODE = 'ITRQ' AND DOC_NO = '" + currentID + "' AND STATUS = '10' ";
+				*/  
+					
+				  String query2 = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
+				  		+ "SET FAENUS = '"+username+"', FADES1 = 'Approved',FAAPLI = '"+username+"' , FAENTI = CURRENT TIME, FAAPTI = CURRENT TIME ,FAAPBY = '"+username+"', FAENDA = CURRENT DATE WHERE FACODE = 'ITRQ' AND FASRNO = '" + currentID + "' AND FASTAT = '00'  ";
+
+					logger.debug("xxxxxxin "+query2);
 
 					stmt2.executeUpdate(query2);
+					
+					
+					/*
 					
 					String query222 = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n"
 			                + "SET APPROVE = '" + depthead + "' \n"
 			                + "WHERE DOC_CODE = 'ITRQ' AND DOC_NO = '" + currentID + "' AND STATUS = '20'";
 
+					*/  
 					
+					String query222 = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n"
+			                + "SET  FAAPLI = '" + depthead + "' \n"
+			                + "WHERE  FACODE = 'ITRQ' AND FASRNO  = '" + currentID + "' AND FASTAT = '10'";
+					
+					
+					logger.debug("xxxxxxin "+query222);
 					stmt2.executeUpdate(query222);
+					
+					
+					String data = SelectData.getSTATUSIDITEMRQ(currentID.toString());
+					String url = "https://workflow.br-bangkokranch.com/webhook/sendtodb2";
+
+					String response = HttpConnection.sendRequest(
+							"POST",
+							url,
+							Map.of("x-access-token",
+									"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMCA6IDEwMSA6IOC4muC4o-C4tOC4qeC4seC4lyDguJrguLLguIfguIHguK3guIHguYHguKPguYnguJnguIrguYwg4LiI4Liz4LiB4Lix4LiUICjguKHguKvguLLguIrguJkpIiwiaXNzIjoiYXV0aGVuLXNlcnZpY2UiLCJhdWQiOiIwMTAyOTA2Iiwicm9sZSI6Ik1QTV8xQTEgOiBBUFBST1ZFIDogU0FMRU1BTiA6IDAiLCJleHAiOjE3NTAxNzY1NzF9.cAMs1gdcg3cxfYNTJi_WTHpBCKDxaw-MjwrDpmFPPSo"), // headers
+							data,
+							null // form-data
+					);
+					
+					logger.debug("response: " + response);
+
+					
+					
 
 
 				mJsonObj.put("result", "ok");

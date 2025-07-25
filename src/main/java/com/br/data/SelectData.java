@@ -1,6 +1,8 @@
 package com.br.data;
 
 import java.sql.Connection;
+
+
 import java.util.Date;
 import java.util.Calendar;
 
@@ -10,16 +12,19 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.codehaus.jettison.json.JSONObject;
 
 import com.br.connection.ConnectDB2;
 import com.br.utility.Constant;
 import com.br.utility.ConvertResultSet;
+import com.br.utility.HttpConnection;
 
 public class SelectData {
 
@@ -81,6 +86,19 @@ public class SelectData {
 		return null;
 
 	}
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
 
 	public static String getimage(@Context HttpServletRequest httpServletRequest, String vID)
 			throws Exception {
@@ -205,9 +223,12 @@ public class SelectData {
 
 		return jsonResult;
 	}
-
-	public static String getHistory(String id) {
-		logger.info("getHistory");
+	
+	
+	
+	
+	public static String getdescriptionmitmas(String itemno) {
+		logger.info("getdescriptionmitmas");
 
 		Connection conn = null;
 		Statement stmt = null;
@@ -224,20 +245,22 @@ public class SelectData {
 			conn = ConnectDB2.doConnect();
 			stmt = conn.createStatement();
 
-			String query = "SELECT  \r\n"
-					+ "COALESCE(ID, '') AS ID,\r\n"
-					+ "COALESCE(DOC_CODE, '') AS DOC_CODE,\r\n"
-					+ "COALESCE(DOC_NO, '') AS DOC_NO,\r\n"
-					+ "COALESCE(APPROVE, '') AS APPROVE,\r\n"
-					+ "COALESCE(APPROVED_USER, '') AS APPROVED_USER,\r\n"
-					+ "COALESCE(CHAR(APPROVE_DATE), '') AS APPROVE_DATE,\r\n"
-					+ "COALESCE(CHAR(STATUS), '') AS STATUS,\r\n"
-					+ "COALESCE(REMARK, '') AS REMARKNAME,\r\n"
-					+ "COALESCE(STS_DESC, '') AS STS_DESC,\r\n"
-					+ "COALESCE(TIME_ST, '') AS TIME_ST,\r\n"
-					+ "COALESCE(SR_COMMENT, '') AS REMARK\r\n"
-					+ "FROM "+DBNAME+"."+SR_APPROVE+" WHERE DOC_NO = '" + id + "'\r\n"
-					+ "";
+			String  query = "SELECT MMCONO AS company ,\r\n"
+					+ "   MMSTAT AS status ,\r\n"
+					+ "   MMITNO AS itemCode,\r\n"
+					+ "   MMITDS AS itemName,\r\n"
+					+ "   MMFUDS AS itemDescription,\r\n"
+					+ "   MMITTY AS itemType,\r\n"
+					+ "   MMITGR AS itemGroup,\r\n"
+					+ "   MMITCL AS productGroup,\r\n"
+					+ "   MMMABU AS makebuyCode,\r\n"
+					+ "   MMBUAR AS businessarea,\r\n"
+					+ "   MMUNMS AS basicunit \r\n"
+					+ "FROM M3FDBPRD.MITMAS \r\n"
+					+ "WHERE MMCONO = '10'\r\n"
+					+ "AND MMITNO = '"+itemno+"'\r\n"
+					+ "ORDER BY MMCONO, MMITNO"; 
+		
 
 			logger.debug(query);
 			ResultSet mRes = stmt.executeQuery(query);
@@ -264,6 +287,145 @@ public class SelectData {
 
 		return jsonResult;
 	}
+
+	public static String getHistory(String id) {
+		logger.info("getHistory");
+
+		Connection conn = null;
+		Statement stmt = null;
+		String jsonResult = "[]"; // default เป็น array ว่าง
+
+		  Calendar cal = Calendar.getInstance();
+	        Date date = new Date();
+	        cal.setTime(date);
+	        int year = cal.get(Calendar.YEAR);
+	        
+		String lastTwoDigits = String.valueOf(year).substring(2);
+
+		try {
+			conn = ConnectDB2.doConnect();
+			stmt = conn.createStatement();
+
+			String  query = "SELECT  \r\n"
+					+ "  COALESCE(CHAR(ID), '') AS ID,\r\n"
+					+ "  COALESCE(FACODE, '') AS DOC_CODE,\r\n"
+					+ "  COALESCE(FASRNO, '') AS DOC_NO,\r\n"
+					+ "  COALESCE(FAAPLI, '') AS APPROVE,\r\n"
+					+ "  COALESCE(FAAPBY, '') AS APPROVED_USER,\r\n"
+					+ "  COALESCE(CHAR(FAAPDA), '') AS APPROVE_DATE,\r\n"
+					+ "  COALESCE(CHAR(FASTAT), '') AS STATUS,\r\n"
+					+ "  CASE COALESCE(CHAR(FASTAT), '')\r\n"
+					+ "    WHEN '00' THEN 'REQUESTER'\r\n"
+					+ "    WHEN '10' THEN 'DEPTHEAD'\r\n"
+					+ "    WHEN '20' THEN 'WAREHOUSE'\r\n"
+					+ "    WHEN '30' THEN 'COSTING'\r\n"
+					+ "    WHEN '40' THEN 'COSTINGDEPTHEAD'\r\n"
+					+ "    WHEN '50' THEN 'ACCOUNTING'\r\n"
+					+ "    WHEN '60' THEN 'ICT'\r\n"
+					+ "    WHEN '70' THEN 'ICT DEPT HEAD'\r\n"
+					+ "    ELSE COALESCE(FADES1, '')\r\n"
+					+ "  END AS REMARKNAME,\r\n"
+					+ "  COALESCE(CHAR(FADES1), '') AS STS_DESC,\r\n"
+					+ "  COALESCE(CHAR(FAAPTI), '') AS TIME_ST,\r\n"
+					+ "  COALESCE(FASTDE, '') AS REMARK\r\n"
+					+ "FROM "+DBNAME+"."+SR_APPROVE+"\r\n"
+					+ "WHERE FASRNO = '"+id+"'"; 
+			/*
+			String query = "SELECT  \r\n"
+					+ "COALESCE(ID, '') AS ID,\r\n"
+					+ "COALESCE(DOC_CODE, '') AS DOC_CODE,\r\n"
+					+ "COALESCE(DOC_NO, '') AS DOC_NO,\r\n"
+					+ "COALESCE(APPROVE, '') AS APPROVE,\r\n"
+					+ "COALESCE(APPROVED_USER, '') AS APPROVED_USER,\r\n"
+					+ "COALESCE(CHAR(APPROVE_DATE), '') AS APPROVE_DATE,\r\n"
+					+ "COALESCE(CHAR(STATUS), '') AS STATUS,\r\n"
+					+ "COALESCE(REMARK, '') AS REMARKNAME,\r\n"
+					+ "COALESCE(STS_DESC, '') AS STS_DESC,\r\n"
+					+ "COALESCE(TIME_ST, '') AS TIME_ST,\r\n"
+					+ "COALESCE(SR_COMMENT, '') AS REMARK\r\n"
+					+ "FROM "+DBNAME+"."+SR_APPROVE+" WHERE DOC_NO = '" + id + "'\r\n"
+					+ "";
+					
+					*/   
+
+			logger.debug(query);
+			ResultSet mRes = stmt.executeQuery(query);
+			jsonResult = ConvertResultSet.convertResultSetToJson(mRes);
+
+		} catch (SQLException e) {
+			logger.error("SQL Error: " + e.getMessage());
+		} catch (Exception e) {
+			logger.error("Error: " + e.getMessage());
+		} finally {
+			try {
+				if (stmt != null)
+					stmt.close();
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+			try {
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+		}
+
+		return jsonResult;
+	}
+	
+	
+	
+	
+	/////////////////////////// n8n 
+	
+	
+	public static String testWebhookJsonBody() throws Exception {
+		logger.info("testWebhookJsonBody");
+
+		JSONObject mJsonObj = new JSONObject();
+		try {
+			String url = "https://workflow.br-bangkokranch.com/webhook/sendtodb2";
+
+			JSONObject jsonBody = new JSONObject();
+			
+			
+			String data = SelectData.getCompany();
+			jsonBody.put("data", data);
+
+			String response = HttpConnection.sendRequest(
+					"POST",
+					url,
+					Map.of("x-access-token",
+							"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMCA6IDEwMSA6IOC4muC4o-C4tOC4qeC4seC4lyDguJrguLLguIfguIHguK3guIHguYHguKPguYnguJnguIrguYwg4LiI4Liz4LiB4Lix4LiUICjguKHguKvguLLguIrguJkpIiwiaXNzIjoiYXV0aGVuLXNlcnZpY2UiLCJhdWQiOiIwMTAyOTA2Iiwicm9sZSI6Ik1QTV8xQTEgOiBBUFBST1ZFIDogU0FMRU1BTiA6IDAiLCJleHAiOjE3NTAxNzY1NzF9.cAMs1gdcg3cxfYNTJi_WTHpBCKDxaw-MjwrDpmFPPSo"), // headers
+					data,
+					null // form-data
+			);
+
+			logger.debug("GET Response: {}", response);
+			mJsonObj.put("result", response);
+			
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
+
+		return mJsonObj.toString();
+
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	public static String getivoiceid(String cono, String divi) throws Exception {
 		logger.info("getWarehouse");
@@ -468,10 +630,101 @@ public class SelectData {
 			conn = ConnectDB2.doConnect();
 			stmt = conn.createStatement();
 
-			String query = "SELECT JSON_DATA,STATUS, SERVICE_ID \n"
+			/* 
+			 
 					+ "FROM  "+DBNAME+"."+SR_DETAIL+"\r\n"
 					+ "WHERE  SERVICE_ID = '" + vID + "' \n"
 					+ "AND PROMGRAM_CODE = 'ITMRQ'";
+					*/ 
+			
+			/*
+		   String query = "\r\n"
+		    		+ "SELECT \r\n"
+		    		+ "  dt.JSON_DATA,\r\n"
+		    		+ "  dt.STATUS,\r\n"
+		    		+ "  dt.SERVICE_ID,\r\n"
+		    		+ "  fh.DEPTHEAD,\r\n"
+		    		+ "  s.ST_EMAIL AS DEPTHEAD_EMAIL\r\n"
+		    		+ "FROM (\r\n"
+		    		+ "  SELECT JSON_DATA, STATUS, SERVICE_ID\r\n"
+		    		+ "  FROM "+DBNAME+"."+SR_DETAIL+"\r\n"
+		    		+ "  WHERE SERVICE_ID = '" + vID + "'\r\n"
+		    		+ "    AND PROMGRAM_CODE = 'ITMRQ'\r\n"
+		    		+ ") AS dt\r\n"
+		    		+ "LEFT JOIN "+DBNAME+"."+SR_HEAD+" fh\r\n"
+		    		+ "  ON fh.DOC_NO = dt.SERVICE_ID\r\n"
+		    		+ "LEFT JOIN BRLDTA0100.STAFFLIST s\r\n"
+		    		+ " ON s.ST_N6L3 = fh.DEPTHEAD\r\n"
+		    		+ "";
+		    */
+		    
+			/*
+		    String query = "SELECT \r\n"
+		    		+ "   dt.JSON_DATA,\r\n"
+		    		+ "  dt.STATUS,\r\n"
+		    		+ "  dt.SERVICE_ID,\r\n"
+		    		+ "  fh.DEPTHEAD,fh.REQUETER,\r\n"
+		    		+ "  s.ST_EMAIL AS DEPTHEAD_EMAIL,\r\n"
+		    		+ "  rq.ST_EMAIL AS REQUESTER_EMAIL\r\n"
+		    		+ "FROM (\r\n"
+		    		+ "  SELECT JSON_DATA, STATUS, SERVICE_ID\r\n"
+		    		+ "   FROM "+DBNAME+"."+SR_DETAIL+"\r\n"
+		    		+ "  WHERE SERVICE_ID = '" + vID + "'\r\n"
+		    		+ "    AND PROMGRAM_CODE = 'ITMRQ'\r\n"
+		    		+ ") AS dt\r\n"
+		    		+ "LEFT JOIN "+DBNAME+"."+SR_HEAD+"  fh\r\n"
+		    		+ "  ON fh.DOC_NO = dt.SERVICE_ID\r\n"
+		    		+ "LEFT JOIN BRLDTA0100.STAFFLIST s\r\n"
+		    		+ "  ON s.ST_N6L3 = fh.DEPTHEAD\r\n"
+		    		+ "  LEFT JOIN BRLDTA0100.STAFFLIST rq\r\n"
+		    		+ "  ON fh.REQUETER = rq.ST_N6L3";
+
+
+*/  
+			/*
+			
+			   String query = "SELECT \r\n"
+			    		+ "   dt.JSON_DATA,\r\n"
+			    		+ "  dt.STATUS,\r\n"
+			    		+ "  dt.SERVICE_ID,\r\n"
+			    		+ "  fh.DEPTHEAD,fh.REQUETER,\r\n"
+			    		+ "  s.ST_EMAIL AS DEPTHEAD_EMAIL,\r\n"
+			    		+ "  rq.ST_EMAIL AS REQUESTER_EMAIL\r\n"
+			    		+ "FROM (\r\n"
+			    		+ "  SELECT JSON_DATA, STATUS, SERVICE_ID\r\n"
+			    		+ "   FROM "+DBNAME+"."+SR_DETAIL+"\r\n"
+			    		+ "  WHERE SERVICE_ID = '" + vID + "'\r\n"
+			    		+ "    AND PROMGRAM_CODE = 'ITMRQ'\r\n"
+			    		+ ") AS dt\r\n"
+			    		+ "LEFT JOIN "+DBNAME+"."+SR_HEAD+"  fh\r\n"
+			    		+ "  ON fh.DOC_NO = dt.SERVICE_ID\r\n"
+			    		+ "LEFT JOIN BRLDTA0100.STAFFLIST s\r\n"
+			    		+ "  ON s.ST_N6L3 = fh.DEPTHEAD\r\n"
+			    		+ "  LEFT JOIN BRLDTA0100.STAFFLIST rq\r\n"
+			    		+ "  ON fh.REQUETER = rq.ST_N6L3";
+			    		*/
+			    		
+			
+			String  query = "SELECT \r\n"
+					+ "   dt.FDDATA,\r\n"
+					+ "   dt.FDDSTA,\r\n"
+					+ "   dt.FDSRNO,\r\n"
+					+ "   fh.FHDEPH,\r\n"
+					+ "   fh.FHREQU,  fh.FHHSTA,\r\n"
+					+ "   s.ST_EMAIL AS DEPTHEAD_EMAIL,\r\n"
+					+ "   rq.ST_EMAIL AS REQUESTER_EMAIL\r\n"
+					+ "FROM (\r\n"
+					+ "   SELECT FDDATA,FDDSTA,FDSRNO\r\n"
+					+ "   FROM  "+DBNAME+"."+SR_DETAIL+" sf \r\n"
+					+ "   WHERE FDSRNO = '" + vID + "'\r\n"
+					+ "     AND FDCODE = 'ITMRQ'\r\n"
+					+ ") AS dt\r\n"
+					+ "LEFT JOIN "+DBNAME+"."+SR_HEAD+"  fh\r\n"
+					+ "  ON fh.FHSRNO = dt.FDSRNO\r\n"
+					+ "LEFT JOIN BRLDTA0100.STAFFLIST s\r\n"
+					+ "  ON s.ST_N6L3 = fh.FHDEPH\r\n"
+					+ "LEFT JOIN BRLDTA0100.STAFFLIST rq\r\n"
+					+ "  ON fh.FHREQU = rq.ST_N6L3";
 
 			logger.debug(query);
 			logger.debug(getListData);
@@ -3659,7 +3912,7 @@ public class SelectData {
 	///////////////////////
 
 
-	public static String getmailtemplete(String cono, String status , String id )
+	public static String getmailtemplete(String cono, String status , String id,String programtype )
 			throws Exception {
 		logger.info("getListEmail");
 
@@ -3679,12 +3932,12 @@ public class SelectData {
 
 			// ถ้าเป็น "00" ให้บวก 20
 			if (status.equals("00")) {
-				statusInt  = 10; 
+				statusInt  = 0; 
 			} else {
-				  if (statusInt + 10 > 70) {
+				  if (statusInt + 10 > 80) {
 				        statusInt = 22;
 				    }
-				
+			
 				  else {
 					 statusInt = Integer.parseInt(status);
 			    }
@@ -3692,7 +3945,7 @@ public class SelectData {
 
 			String query = "SELECT * FROM  BRLDTA0100.M3_WORKFLOWPROGRAMEMAIL mw \r\n"
 					+ "WHERE EDOCUMENT  = 'ITRQ'\r\n"
-					+ "AND ESTATUSNO = '"+statusInt +"'";
+					+ "AND ESTATUSNO = '"+statusInt +"' AND EDETAIL4 = '"+programtype+"'";
 
 
 			// String query = "SELECT COALESCE(MAX(SHORNO)+1,SUBSTRING(REPLACE(CHAR(current
@@ -3763,22 +4016,22 @@ public class SelectData {
 			    if (statusInt + 10 > 80) {
 			        statusInt = 10;
 			    } else {
-			        statusInt += 10;
+			        statusInt += 0;
 			    }
 			}
 
-			String query = "WITH RECURSIVE SplitNames (DOC_NO, APPROVER, REMAINING) AS (\r\n"
+			String query = "WITH RECURSIVE SplitNames (FASRNO, APPROVER, REMAINING) AS (\r\n"
 					+ "  SELECT \r\n"
-					+ "    DOC_NO,\r\n"
-					+ "    SUBSTR(APPROVE, 1, LOCATE(',', APPROVE || ',') - 1),\r\n"
-					+ "    SUBSTR(APPROVE || ',', LOCATE(',', APPROVE || ',') + 1)\r\n"
+					+ "    FASRNO,\r\n"
+					+ "    SUBSTR(FAAPLI, 1, LOCATE(',', FAAPLI|| ',') - 1),\r\n"
+					+ "    SUBSTR(FAAPLI|| ',', LOCATE(',', FAAPLI|| ',') + 1)\r\n"
 					+ "  FROM "+DBNAME+"."+SR_APPROVE+"\r\n"
-					+ "  WHERE STATUS = '"+statusInt+"'  -- แทนด้วยค่าจริง\r\n"
-					+ "    AND DOC_CODE = 'ITRQ'\r\n"
-					+ "    AND DOC_NO = '"+id+"'         -- แทนด้วยค่าจริง\r\n"
+					+ "  WHERE FASTAT = '"+statusInt+"'  -- แทนด้วยค่าจริง\r\n"
+					+ "    AND FACODE = 'ITRQ'\r\n"
+					+ "    AND FASRNO = '"+id+"'         -- แทนด้วยค่าจริง\r\n"
 					+ "  UNION ALL\r\n"
 					+ "  SELECT \r\n"
-					+ "    DOC_NO,\r\n"
+					+ "    FASRNO,\r\n"
 					+ "    SUBSTR(REMAINING, 1, LOCATE(',', REMAINING) - 1),\r\n"
 					+ "    SUBSTR(REMAINING, LOCATE(',', REMAINING) + 1)\r\n"
 					+ "  FROM SplitNames\r\n"

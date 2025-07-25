@@ -35,6 +35,18 @@ public class Constant {
 	
 	
 	
+	 public static String SR_HEAD = "SR_FLOWHEAD"; // TST
+	  public static String SR_DETAIL = "SR_FLOWDETAIL"; // TST
+	  public static String SR_APPROVE = "SR_FLOWAPPROVE"; // TST
+	  public static String SR_FLOW = "SR_PROCESSMASTER"; // TST
+	  public static String SR_GROUP = "SR_GROUPMASTER"; // TST
+	  //public static String SR_GROUP = "SR_GROUP02"; // TST
+	
+	
+	
+	
+	/*
+	
 	
 	  public static String SR_HEAD = "SR_FLOWHEAD02"; // TST
 	  public static String SR_DETAIL = "SR_FLOWDETAIL02"; // TST
@@ -42,7 +54,7 @@ public class Constant {
 	  public static String SR_FLOW = "SR_FLOWPROCESS02"; // TST
 	  public static String SR_GROUP = "group_master"; // TST
 	  //public static String SR_GROUP = "SR_GROUP02"; // TST
-	  
+	  */
 	
 	  
 /*
