@@ -79,7 +79,37 @@ public class api_data {
 	
 	
 	
+	
 
+	@GET
+	@Path("/getDeptHead/{cono}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getDeptHead(@Context HttpHeaders headers,@PathParam("cono") String cono, @Context HttpServletRequest httpServletRequest)
+			throws JSONException {
+		logger.info("/getDeptHead");
+
+		JSONObject mJsonObj = new JSONObject();
+	
+
+				try {
+
+					return Response
+							.ok(SelectData.getDeptHead(cono), MediaType.APPLICATION_JSON + ";charset=utf8")
+							.build();
+
+				} catch (Exception e) {
+					mJsonObj.put("result", "nok");
+					mJsonObj.put("message", e.getMessage());
+					logger.error(e.getMessage());
+				}
+
+			
+		return Response.status(Response.Status.NOT_FOUND).entity(mJsonObj).build();
+
+	}
+	
+	
+	
 	
 	@GET
 	@Path("/getlistuser2/{cono}/{status}/{id}")
