@@ -144,17 +144,20 @@ public class UpdateData {
 
 
 				String query2e = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
-						+ "SET  FADES1 = 'Wait for approve', FAAPTI = null,FAAPBY = '-'  ,FAENDA  = CURRENT DATE , FAENTI  = CURRENT TIME \n"
+						+ "SET  FADES1 = 'Wait for approve', FAAPTI = null,FAAPBY = ' ', FAAPDA = NULL  ,FAENDA  = CURRENT DATE , FAENTI  = CURRENT TIME \n"
 						+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('00','10','20','30','40','50','60','70','80') ";
 
 				String query3e = "UPDATE "+DBNAME+"."+SR_HEAD+" "
 						+ "SET FHDEPH = '-' WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  ";
+			
+
 
 				logger.debug(query2e);
 				logger.debug(query3e);
 
 				stmt.executeUpdate(query2e);
 				stmt.executeUpdate(query3e);
+
 				
 				
 				
@@ -230,7 +233,7 @@ public class UpdateData {
 			
 			
 			String query222 = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n"
-	                + "SET FAENUS = '"+vApprover+"' ,FAAPBY = '" + vDepthead + "', FADES1 = 'Approved' \n"
+	                + "SET FAENUS = '"+vApprover+"' ,FAAPBY = '" + vDepthead + "', FAAPDA = CURRENT DATE , FADES1 = 'Approved' \n"
 	                + "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "' AND FASTAT  = '"+cStatus+"'";
 
 
@@ -261,6 +264,38 @@ public class UpdateData {
 			
 			stmt.executeUpdate(query2);
 			stmt.executeUpdate(query3);
+			
+			if ("false".equalsIgnoreCase(vApproval)) {
+				newStatus = "00";
+				
+				
+
+
+				String query2e = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
+						+ "SET  FADES1 = 'Wait for approve', FAAPTI = null,FAAPBY = ' ', FAAPDA = NULL  ,FAENDA  = CURRENT DATE , FAENTI  = CURRENT TIME \n"
+						+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('10','20','30','40','50','60','70','80') ";
+
+				String query3e = "UPDATE "+DBNAME+"."+SR_HEAD+" "
+						+ "SET FHDEPH = '-' WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  ";
+				
+				
+				String query4re = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
+						+ "SET  FASTDE = '"+vRemark+"' \n"
+						+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT = '"+Status+"' ";
+
+				logger.debug(query2e);
+				logger.debug(query3e);
+				logger.debug(query4re);
+
+				
+				stmt.executeUpdate(query2e);
+				stmt.executeUpdate(query3e);
+				stmt.executeUpdate(query4re);
+
+				
+				
+				
+			}
 			
 			
 
