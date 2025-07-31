@@ -1639,7 +1639,7 @@ public class InsertData {
 							" '1' , '"+comcono+"','"+comdivi+"','" + docCode + "', " +
 							"'" + currentID + "', " +
 							"'" + approve + "', " +
-							"CURRENT DATE, " +
+							"NULL, " +
 							"'" + status + "', " +
 							"'Wait for approve', " +
 							"CURRENT TIME, " +
@@ -1650,6 +1650,8 @@ public class InsertData {
 					
 					logger.debug("xxxxxxin "+insertDetail);
 					stmt2.executeUpdate(insertDetail);
+					
+				
 					
 				}
 				
@@ -1663,7 +1665,7 @@ public class InsertData {
 				*/  
 					
 				  String query2 = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
-				  		+ "SET FAENUS = '"+username+"', FADES1 = 'Approved',FAAPLI = '"+username+"' , FAENTI = CURRENT TIME, FAAPTI = CURRENT TIME ,FAAPBY = '"+username+"', FAENDA = CURRENT DATE WHERE FACODE = 'ITRQ' AND FASRNO = '" + currentID + "' AND FASTAT = '00'  ";
+				  		+ "SET FAENUS = '"+username+"', FADES1 = 'Approved',FAAPLI = '"+username+"' ,FAAPDA = CURRENT DATE, FAENTI = CURRENT TIME, FAAPTI = CURRENT TIME ,FAAPBY = '"+username+"', FAENDA = CURRENT DATE WHERE FACODE = 'ITRQ' AND FASRNO = '" + currentID + "' AND FASTAT = '00'  ";
 
 					logger.debug("xxxxxxin "+query2);
 
@@ -1706,13 +1708,13 @@ public class InsertData {
 
 
 				mJsonObj.put("result", "ok");
-				mJsonObj.put("CURRENT_ID", currentID);
+				mJsonObj.put("message", "Service No. "+currentID);
 			} else {
 				mJsonObj.put("result", "nok");
-				mJsonObj.put("message", "Cannot generate CURRENT_ID");
+				mJsonObj.put("message", "Cannot generate Service No.");
 			}
 
-			return currentID.toString();
+			return mJsonObj.toString();
 
 		} catch (SQLException e) {
 			logger.error("SQL Error: " + e.getMessage());

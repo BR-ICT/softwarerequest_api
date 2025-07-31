@@ -239,7 +239,7 @@ public class UpdateData {
 
 
 			String query2 = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
-					+ "SET   FAAPTI = CURRENT TIME ,  FAENUS = '"+vApprover+"' ,FADES1 = 'Approved', FAENTI =  CURRENT TIME,FAAPBY = '"+vApprover+"' , FASTDE = '"+vRemark+"' , FAENDA = CURRENT DATE" +
+					+ "SET   FAAPTI = CURRENT TIME ,  FAENUS = '"+vApprover+"' ,FADES1 = 'Approved',  FAAPDA = CURRENT DATE,FAENTI =  CURRENT TIME,FAAPBY = '"+vApprover+"' , FASTDE = '"+vRemark+"' , FAENDA = CURRENT DATE" +
 					" WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "' AND FASTAT = '" + Status + "' ";
 
 			String query3 = "UPDATE "+DBNAME+"."+SR_HEAD+" "
