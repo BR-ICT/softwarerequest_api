@@ -138,7 +138,7 @@ public class UpdateData {
 			
 
 			String data = SelectData.getSTATUSIDITEMRQ(serviceno);
-			String url = "https://workflow.br-bangkokranch.com/webhook-test/saveitemrequest2"; 
+			String url = "https://workflow.br-bangkokranch.com/webhook/saveitemrequest2"; 
 			
 			/* if (data != null && data.trim().startsWith("{")) {
 			    JSONObject json = new JSONObject(data);
