@@ -1271,6 +1271,10 @@ public class InsertData {
 
 		String company = obj.optString("company");
 		String warehouse2 = obj.optString("warehouse2");
+		
+		String title = obj.optString("serviceTitle");
+
+		
 
 		logger.debug("company: " + company);
 		logger.debug("warehouse2: " + warehouse2);
@@ -1330,7 +1334,7 @@ public class InsertData {
 				
 				String insertQuery = "INSERT INTO "+DBNAME+"."+SR_DETAIL+"\r\n"
 						+ "(FDCONO,FDDIVI,FDTYPE,  FDDATA, FDSRNO,FDCODE, FDDSTA , FDENDA, FDENTI,FDENUS) \r\n"
-						+ "VALUES ('10','101','1','" + vData + "','" + currentID + "','ITMRQ', '10', CURRENT DATE, CURRENT TIME ,'"+username+"')";
+						+ "VALUES ('10','101','1','" + vData + "','" + currentID + "','ITMRQ', '10', CURRENT DATE, CURRENT TIME ,'"+username.toString()+"')";
 				
 				logger.debug("Insert Query: " + insertQuery);
 				
@@ -1346,8 +1350,8 @@ public class InsertData {
 							*/
 			        
 			        String insertQueryHead = "INSERT INTO "+DBNAME+"."+SR_HEAD+"\r\n"
-			        		+ "(FHCONO,FHDIVI, FHCODE, FHSRNO,FHREQU ,FHENDA ,FHENTI,FHENUS ,FHREDA,FHHSTA ,FHDEPH , FHDSTA )\r\n"
-			        		+ "VALUES ('"+comcono+"','"+comdivi+"','ITRQ', '"+currentID+"', '"+username+"', CURRENT DATE , CURRENT TIME,'"+username+"' ,CURRENT DATE, 1, '"+depthead+"', 10)";
+			        		+ "(FHCONO,FHDIVI, FHCODE, FHSRNO,FHREQU ,FHENDA ,FHENTI,FHENUS ,FHREDA,FHHSTA ,FHDEPH , FHDSTA , FHDES1)\r\n"
+			        		+ "VALUES ('"+comcono+"','"+comdivi+"','ITRQ', '"+currentID+"', '"+username+"', CURRENT DATE , CURRENT TIME,'"+username+"' ,CURRENT DATE, 1, '"+depthead+"', 10 , 'ITRQ-"+currentID+"-"+""+title+"')";
 					logger.debug("Insert Query: " + insertQueryHead);
 			        
 			        

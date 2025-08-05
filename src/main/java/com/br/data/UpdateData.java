@@ -116,6 +116,83 @@ public class UpdateData {
 		return null;
 
 	}
+	
+//itemreq_api/resendemail/{cono}/{divi}/{serviceno}
+	
+	public static String resendemail(String cono, String divi, String serviceno)
+			throws Exception {
+		logger.info("UpdateITEMREQUEST");
+
+		JSONObject mJsonObj = new JSONObject();
+		Connection conn = null;
+		Statement stmt = null;
+
+		String tt = "OK";
+		try {
+			conn = ConnectDB2.doConnect();
+			stmt = conn.createStatement();
+
+		
+			//vApproval
+
+			
+
+			String data = SelectData.getSTATUSIDITEMRQ(serviceno);
+			String url = "https://workflow.br-bangkokranch.com/webhook-test/saveitemrequest2"; 
+			
+			/* if (data != null && data.trim().startsWith("{")) {
+			    JSONObject json = new JSONObject(data);
+			    json.put("vApproval", true);
+			    data = json.toString();
+			}
+			*/
+			
+			logger.debug("data: " + data);
+
+
+			String response = HttpConnection.sendRequest(
+					"POST",
+					url,
+					Map.of("x-access-token",
+							"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMCA6IDEwMSA6IOC4muC4o-C4tOC4qeC4seC4lyDguJrguLLguIfguIHguK3guIHguYHguKPguYnguJnguIrguYwg4LiI4Liz4LiB4Lix4LiUICjguKHguKvguLLguIrguJkpIiwiaXNzIjoiYXV0aGVuLXNlcnZpY2UiLCJhdWQiOiIwMTAyOTA2Iiwicm9sZSI6Ik1QTV8xQTEgOiBBUFBST1ZFIDogU0FMRU1BTiA6IDAiLCJleHAiOjE3NTAxNzY1NzF9.cAMs1gdcg3cxfYNTJi_WTHpBCKDxaw-MjwrDpmFPPSo"), // headers
+					data,
+					null // form-data
+			);
+			
+			logger.debug("response: " + response);
+
+
+
+			mJsonObj.put("result", "ok");
+			mJsonObj.put("message", "Update complete.");
+			return mJsonObj.toString();
+
+		} catch (SQLException e) {
+			logger.error("SQL Error: " + e.getMessage());
+			mJsonObj.put("result", "error");
+			mJsonObj.put("message", e.getMessage());
+		} catch (Exception e) {
+			logger.error("Error: " + e.getMessage());
+			mJsonObj.put("result", "error");
+			mJsonObj.put("message", e.getMessage());
+		} finally {
+			try {
+				if (stmt != null)
+					stmt.close();
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+			try {
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+		}
+
+		return mJsonObj.toString();
+	}
+	
 
 	public static String updateITEMREQUEST(String vID, String vSTATUS, String vData, String vApproval,String vApprover,String vDepthead, String vRemark)
 			throws Exception {

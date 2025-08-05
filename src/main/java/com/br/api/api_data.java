@@ -3224,6 +3224,51 @@ public class api_data {
 
 	/////////////////////////////////////////////////////////// REAL WF
 
+	//25000140
+	
+	/*
+	@GET
+	@Path("/resendemail/{cono}/{divi}/")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getSTATUSIDITEMRQ(@Context HttpHeaders headers, String req, @PathParam("vID") String vID)
+			throws JSONException {
+		logger.info("/getSTATUSID");
+		*/
+	@POST
+	@Path("/resendemail")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+
+	public Response resendemail(@Context HttpHeaders headers, @Context HttpServletRequest httpServletRequest,
+			@FormDataParam("cono") String cono, @FormDataParam("divi") String divi,
+			@FormDataParam("serviceno") String serviceno)
+			throws JSONException {
+		logger.info("/insertRQ");
+
+		JSONObject mJsonObj = new JSONObject();
+
+		System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxx");
+		System.out.println(cono);
+		System.out.println(divi);
+		System.out.println(serviceno);
+		System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxx");
+
+		try {
+
+			return Response.ok(UpdateData.resendemail(cono, divi, serviceno), MediaType.APPLICATION_JSON + ";charset=utf8")
+					.build();
+
+		} catch (Exception e) {
+			mJsonObj.put("result", "nok");
+			mJsonObj.put("message", e.getMessage());
+			logger.error(e.getMessage());
+		}
+
+		return Response.status(Response.Status.NOT_FOUND).entity(mJsonObj).build();
+
+	}
+	
+	
+	
 	@POST
 	@Path("/updateITEMREQUEST")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
