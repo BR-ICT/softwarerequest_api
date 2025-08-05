@@ -121,7 +121,7 @@ public class UpdateData {
 	
 	public static String resendemail(String cono, String divi, String serviceno)
 			throws Exception {
-		logger.info("UpdateITEMREQUEST");
+		logger.info("resendemail");
 
 		JSONObject mJsonObj = new JSONObject();
 		Connection conn = null;
@@ -264,13 +264,13 @@ public class UpdateData {
 					case "70":
 						newStatus = "70";
 						String completeSQL = "UPDATE "+DBNAME+"."+SR_HEAD+" "
-								+ "SET FHHSTA = 2 WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  ";
+								+ "SET FHHSTA = 3 WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  ";
 						stmt.executeUpdate(completeSQL);
 						break;
 					case "80":
 						newStatus = "22";
 						String completeSQL2 = "UPDATE "+DBNAME+"."+SR_HEAD+" "
-								+ "SET FHHSTA = 2 WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  ";
+								+ "SET FHHSTA = 3 WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  ";
 						stmt.executeUpdate(completeSQL2);
 
 					

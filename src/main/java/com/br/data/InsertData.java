@@ -1351,7 +1351,7 @@ public class InsertData {
 			        
 			        String insertQueryHead = "INSERT INTO "+DBNAME+"."+SR_HEAD+"\r\n"
 			        		+ "(FHCONO,FHDIVI, FHCODE, FHSRNO,FHREQU ,FHENDA ,FHENTI,FHENUS ,FHREDA,FHHSTA ,FHDEPH , FHDSTA , FHDES1)\r\n"
-			        		+ "VALUES ('"+comcono+"','"+comdivi+"','ITRQ', '"+currentID+"', '"+username+"', CURRENT DATE , CURRENT TIME,'"+username+"' ,CURRENT DATE, 1, '"+depthead+"', 10 , 'ITRQ-"+currentID+"-"+""+title+"')";
+			        		+ "VALUES ('"+comcono+"','"+comdivi+"','ITRQ', '"+currentID+"', '"+username+"', CURRENT DATE , CURRENT TIME,'"+username+"' ,CURRENT DATE, 2, '"+depthead+"', 10 , 'ITRQ-"+currentID+"-"+""+title+"')";
 					logger.debug("Insert Query: " + insertQueryHead);
 			        
 			        
