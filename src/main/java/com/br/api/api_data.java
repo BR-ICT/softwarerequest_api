@@ -3630,9 +3630,9 @@ public class api_data {
 	}
 
 	@GET
-	@Path("/getSTATUSID/{vID}")
+	@Path("/getSTATUSID/{vID}/{cono}/{divi}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getSTATUSIDITEMRQ(@Context HttpHeaders headers, String req, @PathParam("vID") String vID)
+	public Response getSTATUSIDITEMRQ(@Context HttpHeaders headers, String req, @PathParam("vID") String vID, @PathParam("cono") String cono, @PathParam("divi") String divi)
 			throws JSONException {
 		logger.info("/getSTATUSID");
 
@@ -3640,7 +3640,7 @@ public class api_data {
 
 		try {
 			return Response
-					.ok(SelectData.getSTATUSIDITEMRQ(vID), MediaType.APPLICATION_JSON + ";charset=utf8")
+					.ok(SelectData.getSTATUSIDITEMRQ(vID,cono,divi), MediaType.APPLICATION_JSON + ";charset=utf8")
 					.build();
 
 		} catch (Exception e) {

@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -137,7 +138,7 @@ public class UpdateData {
 
 			
 
-			String data = SelectData.getSTATUSIDITEMRQ(serviceno);
+			String data = SelectData.getSTATUSIDITEMRQ(serviceno,cono,divi);
 			String url = "https://workflow.br-bangkokranch.com/webhook/saveitemrequest2"; 
 			
 			/* if (data != null && data.trim().startsWith("{")) {
@@ -213,6 +214,33 @@ public class UpdateData {
 			String cStatus = "10";
 			
 			
+			JSONObject obj = new JSONObject(vData);
+
+			String company = obj.optString("company");
+			String warehouse2 = obj.optString("warehouse2");
+			
+			String title = obj.optString("serviceTitle");
+
+			
+
+			logger.debug("company: " + company);
+			logger.debug("warehouse2: " + warehouse2);
+			
+			Map<String, String[]> companyMapping = new HashMap<>();
+			companyMapping.put("10", new String[] { "10", "101" });
+			companyMapping.put("600", new String[] { "600", "600" });
+			// เพิ่มได้เรื่อยๆ เช่น
+			// companyMapping.put("300", new String[] { "300", "301" });
+
+			// ดึงข้อมูลตาม company
+			String[] mapping = companyMapping.getOrDefault(company, new String[] { "", "" });
+			String comcono = mapping[0];
+			String comdivi = mapping[1];
+
+			logger.debug("cono: " + comcono);
+			logger.debug("divi: " + comdivi);
+			
+			
 
 			if ("false".equalsIgnoreCase(vApproval)) {
 				newStatus = "00";
@@ -225,7 +253,7 @@ public class UpdateData {
 						+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('00','10','20','30','40','50','60','70','80') ";
 
 				String query3e = "UPDATE "+DBNAME+"."+SR_HEAD+" "
-						+ "SET FHDEPH = '-' WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  ";
+						+ "SET FHDEPH = '-' WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '"+comcono+"' AND FHDIVI = '"+comdivi+"' ";
 			
 
 
@@ -264,13 +292,13 @@ public class UpdateData {
 					case "70":
 						newStatus = "70";
 						String completeSQL = "UPDATE "+DBNAME+"."+SR_HEAD+" "
-								+ "SET FHHSTA = 3 WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  ";
+								+ "SET FHHSTA = 3 WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'   AND FHCONO = '"+comcono+"' AND FHDIVI = '"+comdivi+"' ";
 						stmt.executeUpdate(completeSQL);
 						break;
 					case "80":
 						newStatus = "22";
 						String completeSQL2 = "UPDATE "+DBNAME+"."+SR_HEAD+" "
-								+ "SET FHHSTA = 3 WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  ";
+								+ "SET FHHSTA = 3 WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '"+comcono+"' AND FHDIVI = '"+comdivi+"'  ";
 						stmt.executeUpdate(completeSQL2);
 
 					
@@ -295,7 +323,7 @@ public class UpdateData {
 			// เตรียม SQL
 			String query1 = "UPDATE "+DBNAME+"."+SR_DETAIL+" \n"
 					+ "SET FDDATA = '" + vData + "', FDENDA = CURRENT DATE, FDENTI  = CURRENT TIME ,FDDSTA = '" + newStatus + "' \n"
-					+ "WHERE FDSRNO = '" + vID + "'";
+					+ "WHERE FDSRNO = '" + vID + "'   AND FDCONO = '"+comcono+"' AND FDDIVI = '"+comdivi+"' ";
 			
 			if ("false".equalsIgnoreCase(vApproval)) {
 			    cStatus = "00";
@@ -321,7 +349,7 @@ public class UpdateData {
 
 			String query3 = "UPDATE "+DBNAME+"."+SR_HEAD+" "
 					+ "SET   FHDSTA = '" + newStatus +
-					"' , FHENDA = CURRENT DATE ,FHENTI = CURRENT TIME WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  ";
+					"' , FHENDA = CURRENT DATE ,FHENTI = CURRENT TIME WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '"+comcono+"' AND FHDIVI = '"+comdivi+"'  ";
 
 			
 			
@@ -353,7 +381,7 @@ public class UpdateData {
 						+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('10','20','30','40','50','60','70','80') ";
 
 				String query3e = "UPDATE "+DBNAME+"."+SR_HEAD+" "
-						+ "SET FHDEPH = '-' WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  ";
+						+ "SET FHDEPH = '-' WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '"+comcono+"' AND FHDIVI = '"+comdivi+"'  ";
 				
 				
 				String query4re = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
@@ -376,7 +404,7 @@ public class UpdateData {
 			
 			
 
-			String data = SelectData.getSTATUSIDITEMRQ(vID.toString());
+			String data = SelectData.getSTATUSIDITEMRQ(vID.toString(),comcono,comdivi);
 			String url = "https://workflow.br-bangkokranch.com/webhook/saveitemrequest2"; 
 
 			String response = HttpConnection.sendRequest(

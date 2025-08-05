@@ -619,7 +619,7 @@ public class SelectData {
 
 	///////////////////////////////////////// REAL WF
 
-	public static String getSTATUSIDITEMRQ(String vID)
+	public static String getSTATUSIDITEMRQ(String vID,String cono, String divi)
 			throws Exception {
 
 		logger.info("getSTATUSIDITEMRQ");
@@ -719,7 +719,7 @@ public class SelectData {
 					+ "   SELECT FDDATA,FDDSTA,FDSRNO\r\n"
 					+ "   FROM  "+DBNAME+"."+SR_DETAIL+" sf \r\n"
 					+ "   WHERE FDSRNO = '" + vID + "'\r\n"
-					+ "     AND FDCODE = 'ITMRQ'\r\n"
+					+ "     AND FDCODE = 'ITMRQ' AND FDCONO = '"+cono+"' AND FDDIVI = '"+divi+"' \r\n"
 					+ ") AS dt\r\n"
 					+ "LEFT JOIN "+DBNAME+"."+SR_HEAD+"  fh\r\n"
 					+ "  ON fh.FHSRNO = dt.FDSRNO\r\n"

@@ -1307,7 +1307,7 @@ public class InsertData {
 			// สร้าง currentID จาก query
 			String idQuery = "SELECT '25' || RIGHT('000000' || (INT(SUBSTR(COALESCE(MAX(FDSRNO), '25000000'), 3)) + 1), 6) AS CURRENT_ID \r\n"
 					+ "FROM "+DBNAME+"."+SR_DETAIL+" \n"
-					+ "WHERE SUBSTR(FDSRNO, 1, 2) = '25'";
+					+ "WHERE SUBSTR(FDSRNO, 1, 2) = '25' AND FDCONO  = '"+comcono+"' AND　FDDIVI = '"+comdivi+"' ";
 			
 			/*
 			String idQuery = "SELECT '25' || RIGHT('000000' || (INT(SUBSTR(COALESCE(MAX(SERVICE_ID), '25000000'), 3)) + 1), 6) AS CURRENT_ID \r\n"
@@ -1334,7 +1334,7 @@ public class InsertData {
 				
 				String insertQuery = "INSERT INTO "+DBNAME+"."+SR_DETAIL+"\r\n"
 						+ "(FDCONO,FDDIVI,FDTYPE,  FDDATA, FDSRNO,FDCODE, FDDSTA , FDENDA, FDENTI,FDENUS) \r\n"
-						+ "VALUES ('10','101','1','" + vData + "','" + currentID + "','ITMRQ', '10', CURRENT DATE, CURRENT TIME ,'"+username.toString()+"')";
+						+ "VALUES ('"+comcono+"','"+comdivi+"','1','" + vData + "','" + currentID + "','ITMRQ', '10', CURRENT DATE, CURRENT TIME ,'"+username.toString()+"')";
 				
 				logger.debug("Insert Query: " + insertQuery);
 				
@@ -1693,7 +1693,7 @@ public class InsertData {
 					stmt2.executeUpdate(query222);
 					
 					
-					String data = SelectData.getSTATUSIDITEMRQ(currentID.toString());
+					String data = SelectData.getSTATUSIDITEMRQ(currentID.toString(),comcono,comdivi);
 					String url = "https://workflow.br-bangkokranch.com/webhook/sendtodb2";
 
 					String response = HttpConnection.sendRequest(
