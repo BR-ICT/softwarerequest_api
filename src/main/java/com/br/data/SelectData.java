@@ -719,7 +719,7 @@ public class SelectData {
 					+ "   SELECT FDDATA,FDDSTA,FDSRNO\r\n"
 					+ "   FROM  "+DBNAME+"."+SR_DETAIL+" sf \r\n"
 					+ "   WHERE FDSRNO = '" + vID + "'\r\n"
-					+ "     AND FDCODE = 'ITMRQ' AND FDCONO = '"+cono+"' AND FDDIVI = '"+divi+"' \r\n"
+					+ "     AND FDCODE = 'ITRQ' AND FDCONO = '"+cono.trim()+"' AND FDDIVI = '"+divi.trim()+"' \r\n"
 					+ ") AS dt\r\n"
 					+ "LEFT JOIN "+DBNAME+"."+SR_HEAD+"  fh\r\n"
 					+ "  ON fh.FHSRNO = dt.FDSRNO\r\n"
@@ -3947,7 +3947,7 @@ public class SelectData {
 
 			String query = "SELECT * FROM  BRLDTA0100.M3_WORKFLOWPROGRAMEMAIL mw \r\n"
 					+ "WHERE EDOCUMENT  = 'ITRQ'\r\n"
-					+ "AND ESTATUSNO = '"+statusInt +"' AND EDETAIL4 = '"+programtype+"'";
+					+ "AND ESTATUSNO = '"+statusInt +"' AND ESTATUS = '"+programtype+"'";
 
 
 			// String query = "SELECT COALESCE(MAX(SHORNO)+1,SUBSTRING(REPLACE(CHAR(current
