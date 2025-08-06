@@ -166,7 +166,7 @@ public class UpdateData {
 
 
 			mJsonObj.put("result", "ok");
-			mJsonObj.put("message", "Update complete.");
+			mJsonObj.put("message", "send email complete.");
 			return mJsonObj.toString();
 
 		} catch (SQLException e) {
