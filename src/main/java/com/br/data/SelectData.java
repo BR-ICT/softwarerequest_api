@@ -327,7 +327,7 @@ public class SelectData {
 					+ "  END AS REMARKNAME,\r\n"
 					+ "  COALESCE(CHAR(FADES1), '') AS STS_DESC,\r\n"
 					+ "  COALESCE(CHAR(FAAPTI), '') AS TIME_ST,\r\n"
-					+ "  COALESCE(FASTDE, '') AS REMARK\r\n"
+					+ "  COALESCE(FADES3, '') AS REMARK\r\n"
 					+ "FROM "+DBNAME+"."+SR_APPROVE+"\r\n"
 					+ "WHERE FASRNO = '"+id+"'"; 
 			/*

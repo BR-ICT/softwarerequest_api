@@ -1258,7 +1258,9 @@ public class InsertData {
 		String company = obj.optString("company");
 		String warehouse2 = obj.optString("warehouse2");
 
-		String title = obj.optString("serviceTitle");
+		String itemcode = obj.optString("vItemcode");
+		String itemname = obj.optString("itemName");
+		
 		String programtype = obj.optString("programtype");
 
 		logger.debug("ID programtype: " + programtype);
@@ -1315,7 +1317,7 @@ public class InsertData {
 		
 			rs9 = stmt.executeQuery(getFDTYPEQuery);
 			logger.debug("ID Query: " + getFDTYPEQuery);
-
+			
 
 			if (rs9.next()) {
 				fdtype = rs9.getString("RQTYPE");
@@ -1354,8 +1356,13 @@ public class InsertData {
 						+ "(FHCONO,FHDIVI, FHCODE, FHSRNO,FHREQU ,FHENDA ,FHENTI,FHENUS ,FHREDA,FHHSTA ,FHDEPH , FHDSTA , FHDES1)\r\n"
 						+ "VALUES ('" + comcono + "','" + comdivi + "','ITRQ', '" + currentID + "', '" + username
 						+ "', CURRENT DATE , CURRENT TIME,'" + username + "' ,CURRENT DATE, 2, '" + depthead
-						+ "', 10 , 'ITRQ-" + currentID + "-" + "" + title + "')";
+						+ "', 10 , 'ITRQ-" + currentID + "-" + "" + programtype + "-"+itemname+"')";
 				logger.debug("Insert Query: " + insertQueryHead);
+				
+				
+				
+				
+				
 
 				/*
 				 * String insertQueryTemp = "\r\n"
@@ -1699,7 +1706,7 @@ public class InsertData {
 				stmt2.executeUpdate(query222);
 
 				String data = SelectData.getSTATUSIDITEMRQ(currentID.toString(), comcono, comdivi);
-				String url = "https://workflow.br-bangkokranch.com/webhook/sendtodb2";
+				String url = "https://workflow.br-bangkokranch.com/webhook-test/sendtodb2";
 
 				String response = HttpConnection.sendRequest(
 						"POST",

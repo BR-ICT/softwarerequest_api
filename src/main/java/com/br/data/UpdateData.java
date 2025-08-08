@@ -140,7 +140,7 @@ public class UpdateData {
 
 			String data = SelectData.getSTATUSIDITEMRQ(serviceno,cono,divi);
 
-			String url = "https://workflow.br-bangkokranch.com/webhook/saveitemrequest2"; 
+			String url = "https://workflow.br-bangkokranch.com/webhook-test/saveitemrequest2"; 
 			
 			/* if (data != null && data.trim().startsWith("{")) {
 			    JSONObject json = new JSONObject(data);
@@ -241,26 +241,34 @@ public class UpdateData {
 			logger.debug("cono: " + comcono);
 			logger.debug("divi: " + comdivi);
 			
+			String FADES = "FADES3"; 
+			
 			
 
 			if ("false".equalsIgnoreCase(vApproval)) {
 				newStatus = "00";
 				
+				FADES = "FADES4"; 
 				
+				
+				String query1e = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
+						+ "SET  FAAPLI = '' \n"
+						+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('20') ";
 
 
 				String query2e = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
-						+ "SET  FADES1 = 'Wait for approve', FAAPTI = null,FAAPBY = ' ', FAAPDA = NULL  ,FAENDA  = CURRENT DATE , FAENTI  = CURRENT TIME \n"
+						+ "SET  FADES1 = 'Wait for approve', FAAPTI = null,FAAPBY = ' ', FAAPDA = NULL  ,FAENDA  = CURRENT DATE , FAENTI  = CURRENT TIME ,FARJDA  = CURRENT DATE , FARJTI  = CURRENT TIME , FARJBY = '"+vApprover+"' \n"
 						+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('00','10','20','30','40','50','60','70','80') ";
 
 				String query3e = "UPDATE "+DBNAME+"."+SR_HEAD+" "
 						+ "SET FHDEPH = '-' WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '"+comcono+"' AND FHDIVI = '"+comdivi+"' ";
 			
 
-
+				logger.debug(query1e);
 				logger.debug(query2e);
 				logger.debug(query3e);
 
+				stmt.executeUpdate(query1e);
 				stmt.executeUpdate(query2e);
 				stmt.executeUpdate(query3e);
 
@@ -271,6 +279,11 @@ public class UpdateData {
 				switch (vSTATUS) {
 					case "00":
 						newStatus = "10";
+						
+						String querysetapprove = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
+								+ "SET  FAAPLI = '"+vDepthead+"' \n"
+								+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('20') ";
+						stmt.executeUpdate(querysetapprove);
 						break;
 					case "10":
 						newStatus = "20";
@@ -345,7 +358,7 @@ public class UpdateData {
 
 
 			String query2 = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
-					+ "SET   FAAPTI = CURRENT TIME ,  FAENUS = '"+vApprover+"' ,FADES1 = 'Approved',  FAAPDA = CURRENT DATE,FAENTI =  CURRENT TIME,FAAPBY = '"+vApprover+"' , FASTDE = '"+vRemark+"' , FAENDA = CURRENT DATE" +
+					+ "SET   FAAPTI = CURRENT TIME ,  FAENUS = '"+vApprover+"' ,FADES1 = 'Approved',  FAAPDA = CURRENT DATE,FAENTI =  CURRENT TIME,FAAPBY = '"+vApprover+"' , "+FADES+" = '"+vRemark+"' , FAENDA = CURRENT DATE" +
 					" WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "' AND FASTAT = '" + Status + "' ";
 
 			String query3 = "UPDATE "+DBNAME+"."+SR_HEAD+" "
@@ -386,7 +399,7 @@ public class UpdateData {
 				
 				
 				String query4re = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
-						+ "SET  FASTDE = '"+vRemark+"' \n"
+						+ "SET  FADES3 = '"+vRemark+"' \n"
 						+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT = '"+Status+"' ";
 
 				logger.debug(query2e);
@@ -406,7 +419,7 @@ public class UpdateData {
 			
 
 			String data = SelectData.getSTATUSIDITEMRQ(vID.toString(),comcono,comdivi);
-			String url = "https://workflow.br-bangkokranch.com/webhook/saveitemrequest2"; 
+			String url = "https://workflow.br-bangkokranch.com/webhook-test/saveitemrequest2"; 
 
 			String response = HttpConnection.sendRequest(
 					"POST",
