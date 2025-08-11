@@ -1706,7 +1706,7 @@ public class InsertData {
 				stmt2.executeUpdate(query222);
 
 				String data = SelectData.getSTATUSIDITEMRQ(currentID.toString(), comcono, comdivi);
-				String url = "https://workflow.br-bangkokranch.com/webhook-test/sendtodb2";
+				String url = "https://workflow.br-bangkokranch.com/webhook/sendtodb2";
 
 				String response = HttpConnection.sendRequest(
 						"POST",

@@ -327,7 +327,10 @@ public class SelectData {
 					+ "  END AS REMARKNAME,\r\n"
 					+ "  COALESCE(CHAR(FADES1), '') AS STS_DESC,\r\n"
 					+ "  COALESCE(CHAR(FAAPTI), '') AS TIME_ST,\r\n"
-					+ "  COALESCE(FADES3, '') AS REMARK\r\n"
+					+ "  COALESCE(FADES3, '') AS REMARK,\r\n"
+					+ "  COALESCE(FARJBY, '') AS REJECT_BY,\r\n"
+					+ "  COALESCE(CHAR(FARJDA), '') ||' '||  COALESCE(CHAR(FARJTI), '') AS REJECT_DATE,\r\n"
+					+ "  COALESCE(FADES4, '') AS REJECT_REMARK\r\n"
 					+ "FROM "+DBNAME+"."+SR_APPROVE+"\r\n"
 					+ "WHERE FASRNO = '"+id+"'"; 
 			/*

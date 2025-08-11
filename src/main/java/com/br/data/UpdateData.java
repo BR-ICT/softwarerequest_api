@@ -140,7 +140,7 @@ public class UpdateData {
 
 			String data = SelectData.getSTATUSIDITEMRQ(serviceno,cono,divi);
 
-			String url = "https://workflow.br-bangkokranch.com/webhook-test/saveitemrequest2"; 
+			String url = "https://workflow.br-bangkokranch.com/webhook/saveitemrequest2"; 
 			
 			/* if (data != null && data.trim().startsWith("{")) {
 			    JSONObject json = new JSONObject(data);
@@ -262,7 +262,7 @@ public class UpdateData {
 
 				String query3e = "UPDATE "+DBNAME+"."+SR_HEAD+" "
 						+ "SET FHDEPH = '-' WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '"+comcono+"' AND FHDIVI = '"+comdivi+"' ";
-			
+			 
 
 				logger.debug(query1e);
 				logger.debug(query2e);
