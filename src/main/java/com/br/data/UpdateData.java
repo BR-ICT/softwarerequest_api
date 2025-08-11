@@ -419,7 +419,7 @@ public class UpdateData {
 			
 
 			String data = SelectData.getSTATUSIDITEMRQ(vID.toString(),comcono,comdivi);
-			String url = "https://workflow.br-bangkokranch.com/webhook-test/saveitemrequest2"; 
+			String url = "https://workflow.br-bangkokranch.com/webhook/saveitemrequest2"; 
 
 			String response = HttpConnection.sendRequest(
 					"POST",
