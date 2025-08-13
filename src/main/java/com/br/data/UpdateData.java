@@ -203,6 +203,10 @@ public class UpdateData {
 		JSONObject mJsonObj = new JSONObject();
 		Connection conn = null;
 		Statement stmt = null;
+		
+		
+		
+		
 
 		String tt = "OK";
 		try {
@@ -245,6 +249,30 @@ public class UpdateData {
 			
 			
 			
+			
+			// เพิ่มก่อนเริ่ม update ใดๆ
+			String checkSQL = "SELECT FAAPBY " +
+			                  "FROM "+DBNAME+"."+SR_APPROVE+" " +
+			                  "WHERE FACODE = 'ITRQ' " +
+			                  "AND FASRNO = '" + vID + "' " +
+			                  "AND FASTAT = '" + vSTATUS + "' " +
+			                  "FETCH FIRST 1 ROWS ONLY";
+
+			logger.debug("checkSQL: " + checkSQL);
+
+			try (ResultSet rs = stmt.executeQuery(checkSQL)) {
+			    if (rs.next()) {
+			        String faapby = rs.getString("FAAPBY");
+			        if (faapby != null && !faapby.trim().isEmpty()) {
+			            logger.info("FAAPBY already has value: " + faapby);
+			            mJsonObj.put("result", "skip");
+			            mJsonObj.put("message", "APPROVER already set. No update performed.");
+			            return mJsonObj.toString(); // ออกจาก method ทันที
+			        }
+			    }
+			}
+			
+			
 
 			if ("false".equalsIgnoreCase(vApproval)) {
 				newStatus = "00";
@@ -260,7 +288,7 @@ public class UpdateData {
 
 
 				String query2e = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
-						+ "SET  FADES1 = 'Wait for approve', FAAPTI = null,FAAPBY = ' ', FAAPDA = NULL  ,FAENDA  = CURRENT DATE , FAENTI  = CURRENT TIME \n"
+						+ "SET  FADES1 = 'Wait for approve', FAAPTI = null,FAAPBY = ' ', FAAPDA = NULL  ,FAENDA  = CURRENT DATE , FAENTI  = CURRENT TIME ,FADES3 = '' \n"
 						+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('00','10','20','30','40','50','60','70','80') ";
 
 				String query3e = "UPDATE "+DBNAME+"."+SR_HEAD+" "

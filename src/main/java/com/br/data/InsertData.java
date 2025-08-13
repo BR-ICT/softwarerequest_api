@@ -1257,6 +1257,9 @@ public class InsertData {
 
 		String company = obj.optString("company");
 		String warehouse2 = obj.optString("warehouse2");
+		
+		String vRemark2 = obj.optString("vRemark");
+		
 
 		String itemcode = obj.optString("vItemcode");
 		String itemname = obj.optString("itemName");
@@ -1267,6 +1270,7 @@ public class InsertData {
 
 		logger.debug("company: " + company);
 		logger.debug("warehouse2: " + warehouse2);
+		logger.debug("vRemark: " + vRemark2);
 
 		Map<String, String[]> companyMapping = new HashMap<>();
 		companyMapping.put("10", new String[] { "10", "101" });
@@ -1682,8 +1686,8 @@ public class InsertData {
 				String query2 = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n"
 						+ "SET FAENUS = '" + username + "', FADES1 = 'Approved',FAAPLI = '" + username
 						+ "' ,FAAPDA = CURRENT DATE, FAENTI = CURRENT TIME, FAAPTI = CURRENT TIME ,FAAPBY = '"
-						+ username + "', FAENDA = CURRENT DATE WHERE FACODE = 'ITRQ' AND FASRNO = '" + currentID
-						+ "' AND FASTAT = '00'  ";
+						+ username + "', FAENDA = CURRENT DATE ,  FADES3 = '"+vRemark2+"' WHERE FACODE = 'ITRQ' AND FASRNO = '" + currentID
+						+ "' AND FASTAT = '00'   ";
 
 				logger.debug("xxxxxxin " + query2);
 
