@@ -3948,7 +3948,7 @@ public class SelectData {
 			    }
 			}
 
-			String query = "SELECT * FROM  BRLDTA0100.M3_WORKFLOWPROGRAMEMAIL mw \r\n"
+			String query = "SELECT * FROM  "+Constant.DBNAME+".M3_WORKFLOWPROGRAMEMAIL mw \r\n"
 					+ "WHERE EDOCUMENT  = 'ITRQ'\r\n"
 					+ "AND ESTATUSNO = '"+statusInt +"' AND ESTATUS = '"+programtype+"'";
 
