@@ -289,15 +289,15 @@ public class UpdateData {
 
 				String query2e = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
 						+ "SET  FADES1 = 'Wait for approve', FAAPTI = null,FAAPBY = ' ', FAAPDA = NULL  ,FAENDA  = CURRENT DATE , FAENTI  = CURRENT TIME ,FADES3 = '' \n"
-						+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('00','10','20','30','40','50','60','70','80') ";
+						+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('00','10','20','30','40','50','60','70','80') AND  FACONO = '"+comcono+"' AND FADIVI = '"+comdivi+"' ";
 
 				String query3e = "UPDATE "+DBNAME+"."+SR_HEAD+" "
-						+ "SET FHDEPH = '-' WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '"+comcono+"' AND FHDIVI = '"+comdivi+"' ";
+						+ "SET FHDEPH = '-' WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '"+comcono+"'  ";
 			 
 				
 				String query4e ="UPDATE "+DBNAME+"."+SR_APPROVE+" \r\n"
 						+ "	SET  FARJDA  = CURRENT DATE , FARJTI  = CURRENT TIME , FARJBY = '"+vApprover+"' \r\n"
-						+ "	WHERE FACODE = 'ITRQ' AND FASRNO =  '"+vID+"'   AND  FASTAT = '"+Status+"' ";
+						+ "	WHERE FACODE = 'ITRQ' AND FASRNO =  '"+vID+"'   AND  FASTAT = '"+Status+"' AND FACONO = '"+comcono+"'  ";
 
 				//logger.debug(query1e);
 				logger.debug(query2e);
@@ -319,7 +319,7 @@ public class UpdateData {
 						
 						String querysetapprove = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
 								+ "SET  FAAPLI = '"+vDepthead+"' \n"
-								+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('10') ";
+								+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('10') AND FACONO = '"+comcono+"' ";
 						stmt.executeUpdate(querysetapprove);
 						break;
 					case "10":
@@ -393,13 +393,13 @@ public class UpdateData {
 			
 			String query222 = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n"
 	                + "SET FAENUS = '"+vApprover+"' ,FAAPBY = '" + vDepthead + "', FAAPDA = CURRENT DATE , FADES1 = 'Approved' \n"
-	                + "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "' AND FASTAT  = '"+cStatus+"'";
+	                + "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "' AND FASTAT  = '"+cStatus+"' AND FACONO = '"+comcono+"'";
 
 
 
 			String query2 = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
 					+ "SET   FAAPTI = CURRENT TIME ,  FAENUS = '"+vApprover+"' ,FADES1 = 'Approved',  FAAPDA = CURRENT DATE,FAENTI =  CURRENT TIME,FAAPBY = '"+vApprover+"' , "+FADES+" = '"+vRemark+"' , FAENDA = CURRENT DATE" +
-					" WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "' AND FASTAT = '" + Status + "' ";
+					" WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "' AND FASTAT = '" + Status + "' AND FACONO = '"+comcono+"' ";
 
 			String query3 = "UPDATE "+DBNAME+"."+SR_HEAD+" "
 					+ "SET   FHDSTA = '" + newStatus +
@@ -432,7 +432,7 @@ public class UpdateData {
 
 				String query2e = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
 						+ "SET  FADES1 = 'Wait for approve', FAAPTI = null,FAAPBY = ' ', FAAPDA = NULL  ,FAENDA  = CURRENT DATE , FAENTI  = CURRENT TIME \n"
-						+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('10','20','30','40','50','60','70','80') ";
+						+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('10','20','30','40','50','60','70','80') AND FACONO = '"+comcono+"'";
 
 				String query3e = "UPDATE "+DBNAME+"."+SR_HEAD+" "
 						+ "SET FHDEPH = '-' WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '"+comcono+"' AND FHDIVI = '"+comdivi+"'  ";
@@ -440,7 +440,7 @@ public class UpdateData {
 				
 				String query4re = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
 						+ "SET  "+FADES+" = '"+vRemark+"' \n"
-						+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT = '"+Status+"' ";
+						+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT = '"+Status+"' AND FACONO = '"+comcono+"' ";
 
 				logger.debug(query2e);
 				logger.debug(query3e);

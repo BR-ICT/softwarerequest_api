@@ -1687,7 +1687,7 @@ public class InsertData {
 						+ "SET FAENUS = '" + username + "', FADES1 = 'Approved',FAAPLI = '" + username
 						+ "' ,FAAPDA = CURRENT DATE, FAENTI = CURRENT TIME, FAAPTI = CURRENT TIME ,FAAPBY = '"
 						+ username + "', FAENDA = CURRENT DATE ,  FADES3 = '"+vRemark2+"' WHERE FACODE = 'ITRQ' AND FASRNO = '" + currentID
-						+ "' AND FASTAT = '00'   ";
+						+ "' AND FASTAT = '00'  AND FACONO = '"+comcono+"' AND  FADIVI = '"+comdivi+"' ";
 
 				logger.debug("xxxxxxin " + query2);
 
@@ -1704,7 +1704,7 @@ public class InsertData {
 
 				String query222 = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n"
 						+ "SET  FAAPLI = '" + depthead + "' \n"
-						+ "WHERE  FACODE = 'ITRQ' AND FASRNO  = '" + currentID + "' AND FASTAT = '10'";
+						+ "WHERE  FACODE = 'ITRQ' AND FASRNO  = '" + currentID + "' AND FASTAT = '10' AND FACONO = '"+comcono+"' AND FADIVI = '"+comdivi+"' ";
 
 				logger.debug("xxxxxxin " + query222);
 				stmt2.executeUpdate(query222);

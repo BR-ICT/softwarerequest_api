@@ -715,6 +715,7 @@ public class SelectData {
 					+ "   dt.FDDSTA,\r\n"
 					+ "   dt.FDSRNO,\r\n"
 					+ "   fh.FHDEPH,\r\n"
+					+ "   na.CCROW3 AS COMNAME,\r\n"
 					+ "   fh.FHREQU,  fh.FHHSTA,\r\n"
 					+ "   s.ST_EMAIL AS DEPTHEAD_EMAIL,\r\n"
 					+ "   rq.ST_EMAIL AS REQUESTER_EMAIL\r\n"
@@ -728,6 +729,9 @@ public class SelectData {
 					+ "  ON fh.FHSRNO = dt.FDSRNO\r\n"
 					+ "LEFT JOIN BRLDTA0100.STAFFLIST s\r\n"
 					+ "  ON s.ST_N6L3 = fh.FHDEPH\r\n"
+					+ "LEFT  JOIN M3FDBPRD.CMNDIV na \r\n"
+					+ "  ON na.CCCONO = fh.FHCONO\r\n"
+					+ "  AND na.CCDIVI = fh.FHDIVI\r\n"
 					+ "LEFT JOIN BRLDTA0100.STAFFLIST rq\r\n"
 					+ "  ON fh.FHREQU = rq.ST_N6L3";
 
