@@ -1258,7 +1258,7 @@ public class InsertData {
 		String company = obj.optString("company");
 		String warehouse2 = obj.optString("warehouse2");
 		
-		String vRemark2 = obj.optString("vRemark");
+		String vRemark2 = obj.optString("vUSRemark");
 		
 
 		String itemcode = obj.optString("vItemcode");
