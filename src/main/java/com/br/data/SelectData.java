@@ -3954,7 +3954,7 @@ public class SelectData {
 
 			String query = "SELECT * FROM  "+Constant.DBNAME+".M3_WORKFLOWPROGRAMEMAIL mw \r\n"
 					+ "WHERE EDOCUMENT  = 'ITRQ'\r\n"
-					+ "AND ESTATUSNO = '"+statusInt +"' AND ESTATUS = '"+programtype+"'";
+					+ "AND ESTATUSNO = '"+status +"' AND ESTATUS = '"+programtype+"'";
 
 
 			// String query = "SELECT COALESCE(MAX(SHORNO)+1,SUBSTRING(REPLACE(CHAR(current
