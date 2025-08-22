@@ -611,6 +611,76 @@ public class SelectData {
 	}
 
 	///////////////////////////////////////// REAL WF
+	
+	
+	
+	public static String getUsagWarehouse(String cono)
+			throws Exception {
+
+		logger.info("getSTATUSIDITEMRQ");
+
+		List<String> getListData = new ArrayList<String>();
+
+		Connection conn = null;
+		Statement stmt = null;
+		try {
+			conn = ConnectDB2.doConnect();
+			stmt = conn.createStatement();
+
+		
+			
+			String  query = "SELECT DISTINCT PMCONO,PMSGRO,WAREHOUSE FROM (\r\n"
+					+ "   SELECT  *\r\n"
+					+ "  FROM BRLDTABK01.SR_PROCESSMASTER\r\n"
+					+ "  WHERE PMCONO = '"+cono+"'\r\n"
+					+ "  AND  PMSTAT = '20'\r\n"
+					+ "  AND PMCODE = 'ITRQ'\r\n"
+					+ "  AND PMDES2 != 1\r\n"
+					+ "  ) AS tbmain \r\n"
+					+ "  LEFT JOIN \r\n"
+					+ "  (\r\n"
+					+ " SELECT TRIM(MWWHLO) || ' : ' || TRIM(MWWHNM) AS WAREHOUSE, MWCONO, TRIM(MWWHLO) AS MWWHLO, TRIM(MWWHNM) AS MWWHNM, MWFACI \r\n"
+					+ "FROM M3FDBPRD.MITWHL \r\n"
+					+ "WHERE MWCONO = '"+cono+"' \r\n"
+					+ "AND MWFACI LIKE '%'\r\n"
+					+ ") AS tbname \r\n"
+					+ "ON tbname.MWCONO = tbmain.PMCONO\r\n"
+					+ "AND tbname.MWWHLO = tbmain.PMSGRO";
+
+			logger.debug(query);
+			logger.debug(getListData);
+
+			ResultSet mRes = stmt.executeQuery(query);
+
+			return ConvertResultSet.convertResultSetToJson(mRes);
+
+
+		} catch (SQLException e) {
+			logger.error(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		} finally {
+			try {
+				if (stmt != null) {
+					stmt.close();
+				}
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+			try {
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+
+		}
+
+		return null;
+
+	}
+
 
 	public static String getSTATUSIDITEMRQ(String vID,String cono, String divi)
 			throws Exception {
@@ -4027,7 +4097,7 @@ public class SelectData {
 					+ "  FROM "+DBNAME+"."+SR_APPROVE+"\r\n"
 					+ "  WHERE FASTAT = '"+statusInt+"'  -- แทนด้วยค่าจริง\r\n"
 					+ "    AND FACODE = 'ITRQ'\r\n"
-					+ "    AND FASRNO = '"+id+"'         -- แทนด้วยค่าจริง\r\n"
+					+ "    AND FASRNO = '"+id+"'  AND FACONO = '"+cono+"'        -- แทนด้วยค่าจริง\r\n"
 					+ "  UNION ALL\r\n"
 					+ "  SELECT \r\n"
 					+ "    FASRNO,\r\n"

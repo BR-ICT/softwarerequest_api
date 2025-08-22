@@ -3652,6 +3652,31 @@ public class api_data {
 		return Response.status(Response.Status.NOT_FOUND).entity(mJsonObj).build();
 
 	}
+	
+	
+	@GET
+	@Path("/getUsageWarehouse/{cono}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getUsageWarehouse(@Context HttpHeaders headers, String req, @PathParam("cono") String cono)
+			throws JSONException {
+		logger.info("/getUsageWarehouse");
+
+		JSONObject mJsonObj = new JSONObject();
+
+		try {
+			return Response
+					.ok(SelectData.getUsagWarehouse(cono), MediaType.APPLICATION_JSON + ";charset=utf8")
+					.build();
+
+		} catch (Exception e) {
+			mJsonObj.put("result", "nok");
+			mJsonObj.put("message", e.getMessage());
+			logger.error(e.getMessage());
+		}
+
+		return Response.status(Response.Status.NOT_FOUND).entity(mJsonObj).build();
+
+	}
 
 	/////////////////////////////////////////////////////////// REAL WF
 
