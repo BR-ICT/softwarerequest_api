@@ -204,6 +204,10 @@ public class UpdateData {
 		Connection conn = null;
 		Statement stmt = null;
 		
+		ResultSet vcrs = null;
+		Statement stmtvcrs = null;
+		Boolean  isVacant = false; 
+		
 		
 		
 		
@@ -323,7 +327,38 @@ public class UpdateData {
 						stmt.executeUpdate(querysetapprove);
 						break;
 					case "10":
+						
 						newStatus = "20";
+						
+						String querysetisVacant = "SELECT \r\n"
+								+ "  CASE \r\n"
+								+ "    WHEN COUNT(*) > 0 THEN 'TRUE'\r\n"
+								+ "    ELSE 'FALSE'\r\n"
+								+ "  END AS result\r\n"
+								+ "  FROM BRLDTABK01.SR_FLOWAPPROVE sf\r\n"
+								+ "	 WHERE FASRNO = '"+vID+"'\r\n"
+								+ "  AND FASTAT = '"+newStatus+"'\r\n"
+								+ "  AND TRIM(FAAPLI) = 'VACANT'\r\n"
+								+ "  AND FACONO  = '"+comcono+"'";
+
+		
+						logger.debug("ID Query: " + querysetisVacant);
+
+						vcrs = stmt.executeQuery(querysetisVacant);
+						if (vcrs.next()) {
+							isVacant = vcrs.getBoolean("RESULT");
+						}
+						
+						
+						
+						if(isVacant) {
+							newStatus = "30";
+							
+						}
+						
+						
+						
+						
 						break;
 					case "20":
 						newStatus = "30";

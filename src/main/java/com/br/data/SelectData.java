@@ -4256,6 +4256,67 @@ public class SelectData {
 		return jsonResult;
 
 	}
+	
+	
+	
+	
+	
+	public static String getsupplier(String cono)
+			throws Exception {
+		logger.info("getID");
+
+		Connection conn = null;
+		Statement stmt = null;
+		try {
+
+			conn = ConnectDB2.doConnect();
+			stmt = conn.createStatement();
+
+			String query = "SELECT ROW_NUMBER() OVER(ORDER BY IDSUNO) AS ID, IDSUNO, TRIM(SASUNM) AS SASUNM, TRIM(IDSUNO) || ' : ' || TRIM(SASUNM) AS SUPPLIER \r\n"
+					+ "FROM M3FDBPRD.CIDMAS a, M3FDBPRD.CIDADR b \r\n"
+					+ "WHERE a.IDCONO = '"+cono+"' \r\n"
+					+ "--AND a.IDSTAT = '20'\r\n"
+					+ "AND SUBSTRING(a.IDSUNO,0,2) IN ('1','2') \r\n"
+					+ "AND b.SACONO = a.IDCONO \r\n"
+					+ "AND b.SASUNO = a.IDSUNO \r\n"
+					+ "AND b.SAADID = 'ADDR' \r\n"
+					+ "ORDER BY IDSUNO";
+
+			// String query = "SELECT COALESCE(MAX(SHORNO)+1,SUBSTRING(REPLACE(CHAR(current
+			// date, ISO),'-',''),3,2) || '000001' ) AS ORDERNO FROM "+DBNAME+".M3_SWRHEAD
+			// WHERE SUBSTRING(SHORNO,1,1) != '3' AND SHCONO = '"+cono.trim()+"' AND SHDIVI
+			// = '"+divi.trim()+"'";
+			System.out.println("getsupplier\n" + query);
+			logger.debug(query);
+			ResultSet mRes = stmt.executeQuery(query);
+
+			return ConvertResultSet.convertResultSetToJson(mRes);
+
+		} catch (SQLException e) {
+			logger.error(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		} finally {
+			try {
+				if (stmt != null) {
+					stmt.close();
+				}
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+			try {
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+
+		}
+
+		return null;
+
+	}
 
 	public static String getDeptHead(String cono)
 			throws Exception {
