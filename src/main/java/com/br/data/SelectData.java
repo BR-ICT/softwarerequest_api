@@ -4388,7 +4388,7 @@ public class SelectData {
 			String query = "SELECT ROW_NUMBER() OVER(ORDER BY IDSUNO) AS ID, IDSUNO, TRIM(SASUNM) AS SASUNM, TRIM(IDSUNO) || ' : ' || TRIM(SASUNM) AS SUPPLIER \r\n"
 					+ "FROM M3FDBPRD.CIDMAS a, M3FDBPRD.CIDADR b \r\n"
 					+ "WHERE a.IDCONO = '"+cono+"' \r\n"
-					+ "--AND a.IDSTAT = '20'\r\n"
+					+ "AND a.IDSTAT = '20'\r\n"
 					+ "AND SUBSTRING(a.IDSUNO,0,2) IN ('1','2') \r\n"
 					+ "AND b.SACONO = a.IDCONO \r\n"
 					+ "AND b.SASUNO = a.IDSUNO \r\n"
