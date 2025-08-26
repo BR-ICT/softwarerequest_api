@@ -1275,11 +1275,12 @@ public class InsertData {
 		Map<String, String[]> companyMapping = new HashMap<>();
 		companyMapping.put("10", new String[] { "10", "101" });
 		companyMapping.put("600", new String[] { "600", "600" });
+		companyMapping.put("500", new String[] { "500", "500" });
 		// เพิ่มได้เรื่อยๆ เช่น
 		// companyMapping.put("300", new String[] { "300", "301" });
 
 		// ดึงข้อมูลตาม company
-		String[] mapping = companyMapping.getOrDefault(company, new String[] { "", "" });
+		String[] mapping = companyMapping.getOrDefault(company, new String[] { company, company });
 		String comcono = mapping[0];
 		String comdivi = mapping[1];
 

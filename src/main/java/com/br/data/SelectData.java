@@ -4065,7 +4065,7 @@ public class SelectData {
 	//////////////////// convert email //////////////////
 	
 	
-	public static String getmailtempleteV2(String cono, String program,String status, String id, String programtype)
+	public static String getmailtempleteV2(String cono, String program,String status, String requester, String programtype)
 	        throws Exception {
 	    logger.info("getListEmail");
 
@@ -4076,6 +4076,7 @@ public class SelectData {
 	        conn = ConnectDB2.doConnect();
 	        stmt = conn.createStatement();
 
+	        /*
 	        int statusInt = Integer.parseInt(status);
 
 	        if (status.equals("00")) {
@@ -4087,7 +4088,7 @@ public class SelectData {
 	                statusInt = Integer.parseInt(status);
 	            }
 	        }
-
+*/
 	        String query = "SELECT * FROM " + Constant.DBNAME + ".M3_WORKFLOWPROGRAMEMAIL mw \n"
 	                + "WHERE EDOCUMENT  = 'ITRQ'\n"
 	                + "AND ESTATUSNO = '" + status + "' AND ESTATUS = '" + programtype + "'";

@@ -242,7 +242,7 @@ public class UpdateData {
 			// companyMapping.put("300", new String[] { "300", "301" });
 
 			// ดึงข้อมูลตาม company
-			String[] mapping = companyMapping.getOrDefault(company, new String[] { "", "" });
+			String[] mapping = companyMapping.getOrDefault(company, new String[] { company, company });
 			String comcono = mapping[0];
 			String comdivi = mapping[1];
 
