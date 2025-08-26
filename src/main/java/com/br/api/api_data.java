@@ -172,9 +172,9 @@ public class api_data {
 
 
 	@GET
-	@Path("/getmailtemplete/{program}/{status}/{requester}/{programtype}")
+	@Path("/getmailtemplete/{cono}/{program}/{status}/{requester}/{programtype}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getmailtemplete(@Context HttpHeaders headers,@PathParam("program") String program,@PathParam("status") String status ,@PathParam("requester") String requester,@PathParam("programtype") String programtype, @Context HttpServletRequest httpServletRequest)
+	public Response getmailtemplete(@Context HttpHeaders headers,@PathParam("cono") String cono,@PathParam("program") String program,@PathParam("status") String status ,@PathParam("requester") String requester,@PathParam("programtype") String programtype, @Context HttpServletRequest httpServletRequest)
 			throws JSONException {
 		logger.info("/getDeptHead");
 
@@ -183,9 +183,14 @@ public class api_data {
 
 				try {
 
+					//return Response
+					//		.ok(SelectData.getmailtemplete(program,status,requester,programtype), MediaType.APPLICATION_JSON + ";charset=utf8")
+					//		.build();
+					
 					return Response
-							.ok(SelectData.getmailtemplete(program,status,requester,programtype), MediaType.APPLICATION_JSON + ";charset=utf8")
+							.ok(SelectData.getmailtempleteV2(cono,program,status,requester,programtype), MediaType.APPLICATION_JSON + ";charset=utf8")
 							.build();
+
 
 				} catch (Exception e) {
 					mJsonObj.put("result", "nok");

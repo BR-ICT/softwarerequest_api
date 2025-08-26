@@ -19,6 +19,7 @@ import javax.ws.rs.core.Context;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
 
 import com.br.connection.ConnectDB2;
@@ -3982,7 +3983,7 @@ public class SelectData {
 	///////////////////////
 
 
-	public static String getmailtemplete(String cono, String status , String id,String programtype )
+	public static String getmailtemplete(String program, String status , String id,String programtype )
 			throws Exception {
 		logger.info("getListEmail");
 
@@ -4057,6 +4058,118 @@ public class SelectData {
 		return jsonResult;
 
 	}
+	
+	
+	
+	
+	//////////////////// convert email //////////////////
+	
+	
+	public static String getmailtempleteV2(String cono, String program,String status, String id, String programtype)
+	        throws Exception {
+	    logger.info("getListEmail");
+
+	    Connection conn = null;
+	    Statement stmt = null;
+	    String jsonResult = "[]"; 
+	    try {
+	        conn = ConnectDB2.doConnect();
+	        stmt = conn.createStatement();
+
+	        int statusInt = Integer.parseInt(status);
+
+	        if (status.equals("00")) {
+	            statusInt = 0;
+	        } else {
+	            if (statusInt + 10 > 80) {
+	                statusInt = 22;
+	            } else {
+	                statusInt = Integer.parseInt(status);
+	            }
+	        }
+
+	        String query = "SELECT * FROM " + Constant.DBNAME + ".M3_WORKFLOWPROGRAMEMAIL mw \n"
+	                + "WHERE EDOCUMENT  = 'ITRQ'\n"
+	                + "AND ESTATUSNO = '" + status + "' AND ESTATUS = '" + programtype + "'";
+
+	        System.out.println("getDeptHead\n" + query);
+	        logger.debug(query);
+	        ResultSet mRes = stmt.executeQuery(query);
+
+	        jsonResult = ConvertResultSet.convertResultSetToJson(mRes);
+
+	        // ✅ ปรับค่า MAILTEMPLATE ก่อน return
+	        JSONArray arr = new JSONArray(jsonResult);
+	        for (int i = 0; i < arr.length(); i++) {
+	            JSONObject obj = arr.getJSONObject(i);
+	            if (obj.has("EDETAIL3")) { // สมมุติ column ชื่อ MAILTEMPLATE
+	                String template = obj.getString("EDETAIL3");
+
+	                // หา link จาก template
+	                if (template.contains("http")) {
+	                    int start = template.indexOf("http");
+	                    String urlPart = template.substring(start).trim();
+
+	                    java.net.URI uri = new java.net.URI(urlPart);
+	                    String queryStr = uri.getQuery();
+
+	                    java.util.Map<String, String> queryPairs = new java.util.LinkedHashMap<>();
+	                    for (String pair : queryStr.split("&")) {
+	                        String[] kv = pair.split("=");
+	                        queryPairs.put(kv[0], kv.length > 1 ? kv[1] : "");
+	                    }
+
+	                    // ✅ logic divi ตาม cono
+	                    String divi = "";
+	                    if ("10".equals(cono)) {
+	                        divi = "101";
+	                    } else if ("600".equals(cono)) {
+	                        divi = "600";
+	                    } else {
+	                        divi = cono; // default
+	                    }
+
+	                    queryPairs.put("cono", cono);
+	                    queryPairs.put("divi", divi);
+
+	                    // ประกอบ query string กลับ
+	                    StringBuilder newQuery = new StringBuilder();
+	                    for (java.util.Map.Entry<String, String> entry : queryPairs.entrySet()) {
+	                        if (newQuery.length() > 0) newQuery.append("&");
+	                        newQuery.append(entry.getKey()).append("=").append(entry.getValue());
+	                    }
+
+	                    // ประกอบ URL ใหม่
+	                    String newUrl = uri.getScheme() + "://" + uri.getHost()
+	                            + (uri.getPort() != -1 ? ":" + uri.getPort() : "")
+	                            + uri.getPath() + "?" + newQuery.toString();
+
+	                    // แทนค่ากลับใน template
+	                    template = template.replace(urlPart, newUrl);
+	                    obj.put("EDETAIL3", template);
+	                }
+	            }
+	        }
+
+	        jsonResult = arr.toString();
+
+	    } catch (SQLException e) {
+	        logger.error(e.getMessage());
+	    } catch (Exception e) {
+	        logger.error(e.getMessage());
+	    } finally {
+	        try { if (stmt != null) stmt.close(); } catch (SQLException e) { logger.error(e.getMessage()); }
+	        try { if (conn != null) conn.close(); } catch (SQLException e) { logger.error(e.getMessage()); }
+	    }
+
+	    return jsonResult;
+	}
+
+	
+	
+	
+	
+	/////////////////////////////////////////////////////
 	
 	
 
