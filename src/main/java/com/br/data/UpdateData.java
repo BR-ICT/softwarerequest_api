@@ -335,7 +335,7 @@ public class UpdateData {
 								+ "    WHEN COUNT(*) > 0 THEN 'TRUE'\r\n"
 								+ "    ELSE 'FALSE'\r\n"
 								+ "  END AS result\r\n"
-								+ "  FROM BRLDTABK01.SR_FLOWAPPROVE sf\r\n"
+								+ "  FROM "+DBNAME+".SR_FLOWAPPROVE sf\r\n"
 								+ "	 WHERE FASRNO = '"+vID+"'\r\n"
 								+ "  AND FASTAT = '"+newStatus+"'\r\n"
 								+ "  AND TRIM(FAAPLI) = 'VACANT'\r\n"
