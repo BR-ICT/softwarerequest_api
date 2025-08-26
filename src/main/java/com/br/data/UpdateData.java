@@ -270,7 +270,7 @@ public class UpdateData {
 			        if (faapby != null && !faapby.trim().isEmpty()) {
 			            logger.info("FAAPBY already has value: " + faapby);
 			            mJsonObj.put("result", "skip");
-			            mJsonObj.put("message", "APPROVER already set. No update performed.");
+			            mJsonObj.put("message", "Approver already set. No update performed.");
 			            return mJsonObj.toString(); // ออกจาก method ทันที
 			        }
 			    }
