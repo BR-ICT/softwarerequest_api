@@ -279,9 +279,9 @@ public class api_data {
 	}
 
 	@GET
-	@Path("/history/{id}")
+	@Path("/history/{id}/{cono}/{divi}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getistory(@Context HttpHeaders headers, @PathParam("id") String id, String req)
+	public Response getistory(@Context HttpHeaders headers, @PathParam("id") String id,@PathParam("cono") String cono,@PathParam("divi") String divi, String req)
 			throws JSONException {
 		logger.info("/history");
 
@@ -289,7 +289,7 @@ public class api_data {
 		// String getToken = headers.getRequestHeaders().getFirst("x-access-token");
 
 		try {
-			return Response.ok(SelectData.getHistory(id), MediaType.APPLICATION_JSON + ";charset=utf8").build();
+			return Response.ok(SelectData.getHistory(id,cono,divi), MediaType.APPLICATION_JSON + ";charset=utf8").build();
 
 		} catch (Exception e) {
 			mJsonObj.put("result", "nok");

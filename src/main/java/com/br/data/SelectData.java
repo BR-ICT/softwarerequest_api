@@ -289,7 +289,7 @@ public class SelectData {
 		return jsonResult;
 	}
 
-	public static String getHistory(String id) {
+	public static String getHistory(String id,String cono, String divi) {
 		logger.info("getHistory");
 
 		Connection conn = null;
@@ -323,7 +323,7 @@ public class SelectData {
 					+ "  COALESCE(CHAR(FARJDA), '') ||' '||  COALESCE(CHAR(FARJTI), '') AS REJECT_DATE,\r\n"
 					+ "  COALESCE(FADES4, '') AS REJECT_REMARK\r\n"
 					+ "FROM "+DBNAME+"."+SR_APPROVE+"\r\n"
-					+ "WHERE FASRNO = '"+id+"'"; 
+					+ "WHERE FASRNO = '"+id+"' AND FACONO = '"+cono+"'"; 
 			/*
 			String query = "SELECT  \r\n"
 					+ "COALESCE(ID, '') AS ID,\r\n"
