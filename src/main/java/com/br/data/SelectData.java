@@ -4452,7 +4452,7 @@ public class SelectData {
 					+ "TRIM(b.ST_EPNM) || ' ' || TRIM(b.ST_ENAME) || ' ' || TRIM(b.ST_ELNAME) AS fullname\r\n"
 					+ "FROM BRLDTA0100.APPCTL1 a\r\n"
 					+ "JOIN BRLDTA0100.STAFFLIST b ON b.ST_N6L3 = a.CTL_UID\r\n"
-					+ "WHERE a.CTL_REM = 'AP' a.CTL_CODE = 'EPR' \r\n"
+					+ "WHERE a.CTL_REM = 'AP' AND a.CTL_CODE = 'EPR' \r\n"
 					+ "AND b.ST_STS = '20'\r\n"
 					+ "AND a.CTL_CONO = '"+cono+"'\r\n"
 					+ "AND a.CTL_UID != '-'\r\n"
