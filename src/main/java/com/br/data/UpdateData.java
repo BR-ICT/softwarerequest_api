@@ -408,25 +408,13 @@ public class UpdateData {
 			}
 
 			// เตรียม SQL
-			String query1 = "UPDATE "+DBNAME+"."+SR_DETAIL+" \n"
+		/*	String query1 = "UPDATE "+DBNAME+"."+SR_DETAIL+" \n"
 					+ "SET FDDATA = '" + vData + "', FDENDA = CURRENT DATE, FDENTI  = CURRENT TIME ,FDDSTA = '" + newStatus + "' \n"
 					+ "WHERE FDSRNO = '" + vID + "'   AND FDCONO = '"+comcono+"' AND FDDIVI = '"+comdivi+"' ";
+			*/
 			
 			
-			/* String query1 = "UPDATE " + DBNAME + "." + SR_DETAIL + " " +
-		               "SET FDDATA = ?, FDENDA = CURRENT DATE, FDENTI = CURRENT TIME, FDDSTA = ? " +
-		               "WHERE FDSRNO = ? AND FDCONO = ? AND FDDIVI = ?";*/
-/*
-			PreparedStatement ps = conn.prepareStatement(query1);
 
-	    ps.setClob(1, new StringReader(vData));
-//		ps.setString(1,(vData));
-		ps.setString(2, newStatus);   // Status ใหม่
-		ps.setString(3, vID);         // SR No
-		ps.setString(4, comcono);     // Company
-		ps.setString(5, comdivi);     // Division
-
-	*/	
 		
 		/////
 
@@ -461,18 +449,36 @@ public class UpdateData {
 					"' , FHENDA = CURRENT DATE ,FHENTI = CURRENT TIME WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '"+comcono+"' AND FHDIVI = '"+comdivi+"'  ";
 
 			
+			String query = "UPDATE " + DBNAME + "." + SR_DETAIL + " " +
+		               "SET FDDATA = ?, FDENDA = CURRENT DATE, FDENTI = CURRENT TIME, FDDSTA = ? " +
+		               "WHERE FDSRNO = ? AND FDCONO = ? AND FDDIVI = ?";
+
+		try (PreparedStatement ps = conn.prepareStatement(query)) {
+
+		    // ใช้ StringReader สำหรับ JSON ยาว ๆ
+		    ps.setCharacterStream(1, new StringReader(vData), vData.length());
+		    ps.setString(2, newStatus);
+		    ps.setString(3, vID);
+		    ps.setString(4, comcono);
+		    ps.setString(5, comdivi);
+
+		    int updated = ps.executeUpdate();
+		    System.out.println("Rows updated: " + updated);
+		}
+
 			
 			
-			tt = query1 + " ; " + query2; // Debug
-			logger.debug(query1);
+			//tt = query1 + " ; " + query2; // Debug
+			//logger.debug(query1);
 			logger.debug(query222);
 			logger.debug(query2);
 			logger.debug(query3);
 
 			//stmt.executeUpdate(query1);
 			logger.debug("xxxxxxxxxxxxxxxxxx");
-			logger.debug(query1);
-			stmt.executeUpdate(query1);
+			//logger.debug(query1);
+			//stmt.executeUpdate(query1);
+			//ps.close();
 			logger.debug("xxxxxxxxxxxxxxxxxx");
 			
 			
