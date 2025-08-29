@@ -407,9 +407,27 @@ public class UpdateData {
 			}
 
 			// เตรียม SQL
-			String query1 = "UPDATE "+DBNAME+"."+SR_DETAIL+" \n"
+		/*	String query1 = "UPDATE "+DBNAME+"."+SR_DETAIL+" \n"
 					+ "SET FDDATA = '" + vData + "', FDENDA = CURRENT DATE, FDENTI  = CURRENT TIME ,FDDSTA = '" + newStatus + "' \n"
 					+ "WHERE FDSRNO = '" + vID + "'   AND FDCONO = '"+comcono+"' AND FDDIVI = '"+comdivi+"' ";
+			*/
+			
+			String query1 = "UPDATE " + DBNAME + "." + SR_DETAIL + " " +
+		               "SET FDDATA = ?, FDENDA = CURRENT DATE, FDENTI = CURRENT TIME, FDDSTA = ? " +
+		               "WHERE FDSRNO = ? AND FDCONO = ? AND FDDIVI = ?";
+
+			PreparedStatement ps = conn.prepareStatement(query1);
+
+		ps.setString(1, vData);       // JSON ยาว ๆ
+		ps.setString(2, newStatus);   // Status ใหม่
+		ps.setString(3, vID);         // SR No
+		ps.setString(4, comcono);     // Company
+		ps.setString(5, comdivi);     // Division
+
+		
+		
+		/////
+
 			
 			if ("false".equalsIgnoreCase(vApproval)) {
 			    cStatus = "01";
@@ -449,7 +467,9 @@ public class UpdateData {
 			logger.debug(query2);
 			logger.debug(query3);
 
+			//stmt.executeUpdate(query1);
 			stmt.executeUpdate(query1);
+			logger.debug(query1);
 			
 			
 			

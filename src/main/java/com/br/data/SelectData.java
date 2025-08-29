@@ -4460,7 +4460,7 @@ public class SelectData {
 					+ "LEFT JOIN \r\n"
 					+ "(\r\n"
 					+ "SELECT ST_N6L3,ST_EMAIL FROM BRLDTA0100.STAFFLIST \r\n"
-					+ "WHERE ST_CONO = '"+cono+"'\r\n"
+					+ "WHERE ST_CONO = '"+cono+"'  AND ST_STS = '20' \r\n"
 					+ ") AS SL\r\n"
 					+ "ON SL.ST_N6L3 = CL.US_LOGIN";
 

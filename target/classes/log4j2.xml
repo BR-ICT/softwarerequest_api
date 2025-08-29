@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="INFO">
 	<Properties>
-		<Property name="logDir">logs</Property>
+	<!-- Windows Server 
+  <Property name="logDir">logs</Property>
+  -->
+  
+  <!-- Use absolute path for reliability in Linux -->
+  <Property name="logDir">/opt/tomcat/logs</Property>
+ 
 	</Properties>
 	<Appenders>
 		<Console name="console" target="SYSTEM_OUT">
