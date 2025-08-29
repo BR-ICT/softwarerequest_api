@@ -260,7 +260,7 @@ public class UpdateData {
 			                  "FROM "+DBNAME+"."+SR_APPROVE+" " +
 			                  "WHERE FACODE = 'ITRQ' " +
 			                  "AND FASRNO = '" + vID + "' " +
-			                  "AND FASTAT = '" + vSTATUS + "' " +
+			                  "AND FASTAT = '" + vSTATUS + "'  AND FACONO = '"+comcono+"'" +
 			                  "FETCH FIRST 1 ROWS ONLY";
 
 			logger.debug("checkSQL: " + checkSQL);
