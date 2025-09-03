@@ -228,7 +228,7 @@ public class SelectData {
 	
 	
 	
-	public static String getdescriptionmitmas(String itemno, String  comcono) {
+	public static String getdescriptionmitmas(String itemno) {
 		logger.info("getdescriptionmitmas");
 
 		Connection conn = null;
@@ -632,7 +632,7 @@ public class SelectData {
 			
 			String  query = "SELECT DISTINCT PMCONO,PMSGRO,WAREHOUSE FROM (\r\n"
 					+ "   SELECT  *\r\n"
-					+ "  FROM BRLDTABK01.SR_PROCESSMASTER\r\n"
+					+ "  FROM "+DBNAME+".SR_PROCESSMASTER\r\n"
 					+ "  WHERE PMCONO = '"+cono+"'\r\n"
 					+ "  AND  PMSTAT = '20'\r\n"
 					+ "  AND PMCODE = 'ITRQ'\r\n"
