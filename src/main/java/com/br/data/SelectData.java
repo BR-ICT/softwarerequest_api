@@ -228,7 +228,7 @@ public class SelectData {
 	
 	
 	
-	public static String getdescriptionmitmas(String itemno) {
+	public static String getdescriptionmitmas(String itemno, String  comcono) {
 		logger.info("getdescriptionmitmas");
 
 		Connection conn = null;

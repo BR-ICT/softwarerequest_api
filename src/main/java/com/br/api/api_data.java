@@ -256,9 +256,9 @@ public class api_data {
 	
 	
 	@GET
-	@Path("/getdescriptionmitmas/{itemno}")
+	@Path("/getdescriptionmitmas/{itemno}/{comcono}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getdescriptionmitmas(@Context HttpHeaders headers, @PathParam("itemno") String itemno, String req)
+	public Response getdescriptionmitmas(@Context HttpHeaders headers, @PathParam("itemno") String itemno, @PathParam("comcono") String comcono, String req)
 			throws JSONException {
 		logger.info("/getdescriptionmitmas");
 
@@ -266,7 +266,7 @@ public class api_data {
 		// String getToken = headers.getRequestHeaders().getFirst("x-access-token");
 
 		try {
-			return Response.ok(SelectData.getdescriptionmitmas(itemno), MediaType.APPLICATION_JSON + ";charset=utf8").build();
+			return Response.ok(SelectData.getdescriptionmitmas(itemno,comcono), MediaType.APPLICATION_JSON + ";charset=utf8").build();
 
 		} catch (Exception e) {
 			mJsonObj.put("result", "nok");
