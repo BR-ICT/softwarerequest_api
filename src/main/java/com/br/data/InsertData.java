@@ -3,6 +3,7 @@ package com.br.data;
 import java.io.InputStream;
 import java.util.Base64;
 import java.util.Map;
+import java.util.Objects;
 import java.sql.ResultSet; // <--- สำคัญตรงนี้
 
 import java.math.BigDecimal;
@@ -1265,6 +1266,23 @@ public class InsertData {
 		String itemname = obj.optString("itemName");
 		
 		String programtype = obj.optString("programtype");
+		
+		String version = obj.optString("vVersion");
+		
+		logger.debug("vVersion: " + version);
+		
+		String checkVersion = SelectData.checkVersion("SRQ");
+		   if (version == null || version.isEmpty() || !Objects.equals(checkVersion, version)) {
+		    mJsonObj.put("result", "nok");
+		    mJsonObj.put("message", "Can't create Takeorder number, Please update your version to " + checkVersion + " :  "+version+" (Click F5 button).");
+		    return mJsonObj.toString();
+
+		   }
+		
+		
+		
+		
+		
 
 		logger.debug("ID programtype: " + programtype);
 

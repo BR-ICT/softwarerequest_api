@@ -246,6 +246,7 @@ public class SelectData {
 			conn = ConnectDB2.doConnect();
 			stmt = conn.createStatement();
 
+			/*
 			String  query = "SELECT MMCONO AS company ,\r\n"
 					+ "   MMSTAT AS status ,\r\n"
 					+ "   MMITNO AS itemCode,\r\n"
@@ -259,6 +260,48 @@ public class SelectData {
 					+ "   MMUNMS AS basicunit \r\n"
 					+ "FROM M3FDBPRD.MITMAS \r\n"
 					+ "WHERE MMCONO = '10'\r\n"
+					+ "AND MMITNO = '"+itemno+"'\r\n"
+					+ "ORDER BY MMCONO, MMITNO"; 
+			*/
+			String  query = "SELECT \r\n"
+					+ "MMCONO AS company,\r\n"
+					+ "MMITNO AS itemCode,\r\n"
+					+ "MMITDS AS itemName,\r\n"
+					+ "MMFUDS AS itemDescription,\r\n"
+					+ "MMITTY AS itemType,\r\n"
+					+ "MMITGR AS itemGroup,\r\n"
+					+ "MMITCL AS productGroup,\r\n"
+					+ "MMMABU AS makebuyCode,\r\n"
+					+ "MMSTAT AS itemstatus,\r\n"
+					+ "MMUNMS AS basicUnit,\r\n"
+					+ "MMACTI AS catchWeight,\r\n"
+					+ "MMBYPR AS byCOProductCode,\r\n"
+					+ "MMPPUN AS poUnit1,\r\n"
+					+ "MMCUCD AS currencyPO,\r\n"
+					+ "MMVTCP AS vatPO,\r\n"
+					+ "MMSUNO AS supplierCode,\r\n"
+					+ "MMPUPR AS purchasePrice,\r\n"
+					+ "MMSPUN AS coUnit1,\r\n"
+					+ "MMCUCS AS currencySales,\r\n"
+					+ "MMVTCS AS vatSales,\r\n"
+					+ "MMSALE AS salesItem,\r\n"
+					+ "MMSAPR AS salesPrice,\r\n"
+					+ "MMDCCD AS quatityDecimalPlaces,\r\n"
+					+ "MMPDCC AS priceDecimalPlaces, \r\n"
+					+ "MMINDI AS lotControlMethod,\r\n"
+					+ "MMBACD AS lotNumberingMethod,\r\n"
+					+ "MMSTCD AS inventoryAccounting,\r\n"
+					+ "M9VAMT AS inventoryAccountMethod,\r\n"
+					+ "M9CPDC AS costingDecimalPlaces,\r\n"
+					+ "MMDIM1 AS scaleID,\r\n"
+					+ "MMSPE2 AS eanCode,\r\n"
+					+ "CASE WHEN SUBSTRING(MMITNO,0,3) IN ('OH', 'EL') THEN '1' ELSE '0' END AS stockType,\r\n"
+					+ "MBWHLO AS warehouse, \r\n"
+					+ "MBWHSL AS location\r\n"
+					+ "FROM M3FDBPRD.MITMAS\r\n"
+					+ "LEFT JOIN (SELECT M9CONO, M9FACI, M9REWH, M9ITNO, M9VAMT, M9CPDC FROM M3FDBPRD.MITFAC WHERE M9CONO = '"+comcono+"' AND M9ITNO = '"+itemno+"' ORDER BY M9CHID, M9LMTS FETCH FIRST 1 ROWS ONLY) b ON 1 = 1 \r\n"
+					+ "LEFT JOIN (SELECT MBCONO, MBFACI, MBWHLO, MBWHSL, MBITNO FROM M3FDBPRD.MITBAL) AS c ON MBCONO = M9CONO AND MBFACI = M9FACI AND MBWHLO = M9REWH AND MBITNO = M9ITNO\r\n"
+					+ "WHERE MMCONO = '"+comcono+"'\r\n"
 					+ "AND MMITNO = '"+itemno+"'\r\n"
 					+ "ORDER BY MMCONO, MMITNO"; 
 		
@@ -4370,6 +4413,57 @@ public class SelectData {
 		return jsonResult;
 
 	}
+	
+	public static String checkVersion(String application) throws Exception {
+		  logger.info("checkVersion");
+
+		  Connection conn = null;
+		  Statement stmt = null;
+		  try {
+		   conn = ConnectDB2.doConnect();
+		   stmt = conn.createStatement();
+
+		   String query = "SELECT CTL3_REM1 AS VERSION \n"
+		     + "FROM " + DBNAME + ".APPCTL3 \n"
+		     + "WHERE CTL3_CODE = '" + application + "'";
+		   
+		  
+		   // System.out.println("getUserM3\n" + query);
+		   ResultSet mRes = stmt.executeQuery(query);
+		   
+		   logger.debug(query);
+
+		   while (mRes.next()) {
+		    return mRes.getString("VERSION").trim();
+		   }
+
+		  } catch (SQLException e) {
+		   logger.error(e.getMessage());
+		  } catch (Exception e) {
+		   logger.error(e.getMessage());
+		  } finally {
+		   try {
+		    if (stmt != null) {
+		     stmt.close();
+		    }
+		   } catch (SQLException e) {
+		    logger.error(e.getMessage());
+		   }
+		   try {
+		    if (conn != null) {
+		     conn.close();
+		    }
+		   } catch (SQLException e) {
+		    logger.error(e.getMessage());
+		   }
+
+		  }
+
+		  return null;
+
+		 }
+	
+	
 	
 	
 	
