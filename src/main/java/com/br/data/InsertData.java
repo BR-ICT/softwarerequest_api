@@ -1257,7 +1257,7 @@ public class InsertData {
 		JSONObject obj = new JSONObject(vData);
 
 		String company = obj.optString("company");
-		String warehouse2 = obj.optString("warehouse2");
+		String warehouse2 = obj.optString("warehouse");
 		
 		String vRemark2 = obj.optString("vUSRemark");
 		
