@@ -12,6 +12,7 @@ import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
@@ -214,6 +215,7 @@ public class UpdateData {
 		
 		
 		
+		
 
 		String tt = "OK";
 		try {
@@ -232,6 +234,18 @@ public class UpdateData {
 			String warehouse2 = obj.optString("warehouse2");
 			
 			String title = obj.optString("serviceTitle");
+			
+			String version = obj.optString("vVersion");
+			
+			logger.debug("vVersion: " + version);
+			
+			String checkVersion = SelectData.checkVersion("SRQ");
+			   if (version == null || version.isEmpty() || !Objects.equals(checkVersion, version)) {
+			    mJsonObj.put("result", "nok");
+			    mJsonObj.put("message", "Can't create Service number, Please update your version to " + checkVersion + " :  "+version+" (Click F5 button).");
+			    return mJsonObj.toString();
+
+			   }
 
 			
 

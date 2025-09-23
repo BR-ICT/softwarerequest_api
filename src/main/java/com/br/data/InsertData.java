@@ -1274,7 +1274,7 @@ public class InsertData {
 		String checkVersion = SelectData.checkVersion("SRQ");
 		   if (version == null || version.isEmpty() || !Objects.equals(checkVersion, version)) {
 		    mJsonObj.put("result", "nok");
-		    mJsonObj.put("message", "Can't create Takeorder number, Please update your version to " + checkVersion + " :  "+version+" (Click F5 button).");
+		    mJsonObj.put("message", "Can't create Service number, Please update your version to " + checkVersion + " :  "+version+" (Click F5 button).");
 		    return mJsonObj.toString();
 
 		   }
