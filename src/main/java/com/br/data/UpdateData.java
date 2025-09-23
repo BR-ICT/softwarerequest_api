@@ -200,6 +200,8 @@ public class UpdateData {
 	public static String updateITEMREQUEST(String vID, String vSTATUS, String vData, String vApproval,String vApprover,String vDepthead, String vRemark)
 			throws Exception {
 		logger.info("UpdateITEMREQUEST");
+		
+		vRemark = ConvertString.convertApostrophe(vRemark); 
 
 		JSONObject mJsonObj = new JSONObject();
 		Connection conn = null;
