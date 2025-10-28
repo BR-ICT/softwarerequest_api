@@ -2,11 +2,18 @@
 package com.br.api;
 
 import java.io.File;
+
+import javax.ws.rs.QueryParam;
+
 import java.io.InputStream;
 import java.text.BreakIterator;
 
+import java.util.List;
+import org.json.JSONArray;
+
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -49,6 +56,15 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+import java.io.*;
+import java.util.List;
+import org.json.*;
 
 @Path("/data")
 public class api_data {
@@ -76,129 +92,736 @@ public class api_data {
 		return Response.status(Response.Status.NOT_FOUND).entity(mJsonObj).build();
 
 	}
-	
-	
-	
-	
 
 	@GET
 	@Path("/getDeptHead/{cono}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getDeptHead(@Context HttpHeaders headers,@PathParam("cono") String cono, @Context HttpServletRequest httpServletRequest)
+	public Response getDeptHead(@Context HttpHeaders headers, @PathParam("cono") String cono,
+			@Context HttpServletRequest httpServletRequest)
 			throws JSONException {
 		logger.info("/getDeptHead");
 
 		JSONObject mJsonObj = new JSONObject();
-	
 
-				try {
+		try {
 
-					return Response
-							.ok(SelectData.getDeptHead(cono), MediaType.APPLICATION_JSON + ";charset=utf8")
-							.build();
+			return Response
+					.ok(SelectData.getDeptHead(cono), MediaType.APPLICATION_JSON + ";charset=utf8")
+					.build();
 
-				} catch (Exception e) {
-					mJsonObj.put("result", "nok");
-					mJsonObj.put("message", e.getMessage());
-					logger.error(e.getMessage());
-				}
+		} catch (Exception e) {
+			mJsonObj.put("result", "nok");
+			mJsonObj.put("message", e.getMessage());
+			logger.error(e.getMessage());
+		}
 
-			
 		return Response.status(Response.Status.NOT_FOUND).entity(mJsonObj).build();
 
 	}
-	
-	
-	
 
 	@GET
 	@Path("/getsupplier/{cono}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getsupplier(@Context HttpHeaders headers,@PathParam("cono") String cono, @Context HttpServletRequest httpServletRequest)
+	public Response getsupplier(@Context HttpHeaders headers, @PathParam("cono") String cono,
+			@Context HttpServletRequest httpServletRequest)
 			throws JSONException {
 		logger.info("/getsupplier");
 
 		JSONObject mJsonObj = new JSONObject();
-	
 
-				try {
+		try {
 
-					return Response
-							.ok(SelectData.getsupplier(cono), MediaType.APPLICATION_JSON + ";charset=utf8")
-							.build();
+			return Response
+					.ok(SelectData.getsupplier(cono), MediaType.APPLICATION_JSON + ";charset=utf8")
+					.build();
 
-				} catch (Exception e) {
-					mJsonObj.put("result", "nok");
-					mJsonObj.put("message", e.getMessage());
-					logger.error(e.getMessage());
-				}
+		} catch (Exception e) {
+			mJsonObj.put("result", "nok");
+			mJsonObj.put("message", e.getMessage());
+			logger.error(e.getMessage());
+		}
 
-			
 		return Response.status(Response.Status.NOT_FOUND).entity(mJsonObj).build();
 
 	}
 	
 	
+
+	///////////////////////////////
+
+	
+	@POST
+	@Path("/files")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response addImage1(
+	    @FormDataParam("vImageFile") InputStream fileInputStream,
+	    @FormDataParam("vImageFile") FormDataContentDisposition fileFormDataContentDisposition,
+	    @FormDataParam("vImageName") String vImageName,
+	    @FormDataParam("vImageName1") String vImageName1,
+
+	    @Context HttpServletRequest httpServletRequest
+	) throws JSONException {
+
+	    JSONObject mJsonObj = new JSONObject();
+	    System.out.println("------------------------------------------------------------");
+
+	    try {
+	        // 📁 เปลี่ยนจาก WEB-INF → uploads (เข้าถึงผ่าน URL ได้)
+	        String uploadDirPath = httpServletRequest.getRealPath("/") + "uploads/";
+	        File uploadDir = new File(uploadDirPath);
+	        if (!uploadDir.exists()) uploadDir.mkdirs();
+
+	        System.out.println("filePath: " + uploadDirPath + vImageName);
+
+	        // ✅ เรียกใช้ Utility เดิม
+	        String savedPath = FileUtillity.writeToFileServerV3(fileInputStream, vImageName, uploadDirPath);
+
+	        // ✅ สร้าง URL สำหรับเข้าถึงไฟล์
+	        String fileUrl = httpServletRequest.getScheme() + "://" +
+	                httpServletRequest.getServerName() + ":" +
+	                httpServletRequest.getServerPort() +
+	                httpServletRequest.getContextPath() + "/uploads/" + vImageName;
+
+	        System.out.println("File uploaded. Access URL: " + fileUrl);
+
+	        // ✅ สร้าง JSON ตอบกลับ
+	        mJsonObj.put("result", "ok");
+	        mJsonObj.put("fileName", vImageName);
+	        mJsonObj.put("url", fileUrl);
+
+	        return Response.ok(mJsonObj.toString()).build();
+
+	    } catch (Exception e) {
+	        mJsonObj.put("result", "nok");
+	        mJsonObj.put("message", e.getMessage());
+	        e.printStackTrace();
+	        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+	                .entity(mJsonObj.toString()).build();
+	    }
+	}
+
 	
 	
+	
+	
+	/*
+	@POST
+	@Path("/files")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response uploadFiles(FormDataMultiPart multiPart, @Context HttpServletRequest request) {
+		JSONObject mJsonObj = new JSONObject();
+		JSONArray uploadedFiles = new JSONArray();
+
+			return Response.ok(mJsonObj.toString()).build();
+
+		
+	}
+	
+	*/
+	
+	
+	
+	
+	/*
+	@POST
+	@Path("/files")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response addImages(
+	        @FormDataParam("vImageFile") List<InputStream> fileInputStreams,
+	        @FormDataParam("vImageFile") List<FormDataContentDisposition> fileFormDataDispositions,
+	        @FormDataParam("vImageName") List<String> vImageNames,
+	        @Context HttpServletRequest request) throws JSONException {
+
+	    JSONObject mJsonObj = new JSONObject();
+	    JSONArray uploadedFiles = new JSONArray();
+
+	    try {
+	        String uploadDirPath = request.getRealPath("/") + "uploads/";
+	        File uploadDir = new File(uploadDirPath);
+	        if (!uploadDir.exists()) uploadDir.mkdirs();
+
+	        for (int i = 0; i < fileInputStreams.size(); i++) {
+	            InputStream in = fileInputStreams.get(i);
+	            String fileName = vImageNames.get(i);
+
+	            FileUtillity.writeToFileServerV3(in, fileName, uploadDirPath);
+
+	            String fileUrl = request.getScheme() + "://" +
+	                    request.getServerName() + ":" +
+	                    request.getServerPort() +
+	                    request.getContextPath() + "/uploads/" + fileName;
+
+	            JSONObject fileObj = new JSONObject();
+	            fileObj.put("fileName", fileName);
+	            fileObj.put("url", fileUrl);
+
+	            uploadedFiles.put(fileObj);
+	        }
+
+	        mJsonObj.put("result", "ok");
+	        mJsonObj.put("files", uploadedFiles);
+
+	        return Response.ok(mJsonObj.toString()).build();
+
+	    } catch (Exception e) {
+	        mJsonObj.put("result", "nok");
+	        mJsonObj.put("message", e.getMessage());
+	        e.printStackTrace();
+	        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+	                .entity(mJsonObj.toString()).build();
+	    }
+	}
+
+	
+	*/ 
+	
+	  
+
+	/*
+	 * @POST
+	 * 
+	 * @Path("/files")
+	 * 
+	 * @Consumes(MediaType.MULTIPART_FORM_DATA)
+	 * 
+	 * @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	 * public Response addImages(
+	 * 
+	 * @FormDataParam("vImageFile") List<InputStream> fileInputStreams,
+	 * 
+	 * @FormDataParam("vImageFile") List<FormDataContentDisposition>
+	 * fileFormDataDispositions,
+	 * 
+	 * @FormDataParam("vImageName") List<String> vImageNames,
+	 * 
+	 * @Context HttpServletRequest request) throws JSONException {
+	 * 
+	 * JSONObject mJsonObj = new JSONObject();
+	 * JSONArray uploadedFiles = new JSONArray();
+	 * 
+	 * 
+	 * try {
+	 * String uploadDirPath = request.getRealPath("/") + "uploads/";
+	 * File uploadDir = new File(uploadDirPath);
+	 * if (!uploadDir.exists()) uploadDir.mkdirs();
+	 * 
+	 * for (int i = 0; i < fileInputStreams.size(); i++) {
+	 * InputStream in = fileInputStreams.get(i);
+	 * String fileName = vImageNames.get(i);
+	 * 
+	 * FileUtillity.writeToFileServerV3(in, fileName, uploadDirPath);
+	 * 
+	 * String fileUrl = request.getScheme() + "://" +
+	 * request.getServerName() + ":" +
+	 * request.getServerPort() +
+	 * request.getContextPath() + "/uploads/" + fileName;
+	 * 
+	 * JSONObject fileObj = new JSONObject();
+	 * fileObj.put("fileName", fileName);
+	 * fileObj.put("url", fileUrl);
+	 * 
+	 * uploadedFiles.put(fileObj);
+	 * }
+	 * 
+	 * mJsonObj.put("result", "ok");
+	 * mJsonObj.put("files", uploadedFiles);
+	 * 
+	 * return Response.ok(mJsonObj.toString()).build();
+	 * 
+	 * } catch (Exception e) {
+	 * mJsonObj.put("result", "nok");
+	 * mJsonObj.put("message", e.getMessage());
+	 * e.printStackTrace();
+	 * return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+	 * .entity(mJsonObj.toString()).build();
+	 * }
+	 * 
+	 * 
+	 * 
+	 * return Response.ok(mJsonObj.toString()).build();
+	 * }
+	 * 
+	 * 
+	 */
+
+	/*
+	 * @POST
+	 * 
+	 * @Path("/files")
+	 * 
+	 * @Consumes(MediaType.MULTIPART_FORM_DATA)
+	 * 
+	 * @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	 * public Response addImages(
+	 * 
+	 * @FormDataParam("vImageFile") List<InputStream> fileInputStreams,
+	 * 
+	 * @FormDataParam("vImageFile") List<FormDataContentDisposition>
+	 * fileFormDataDispositions,
+	 * 
+	 * @FormDataParam("vImageName") List<String> vImageNames,
+	 * 
+	 * @Context HttpServletRequest request) throws JSONException {
+	 * 
+	 * JSONObject mJsonObj = new JSONObject();
+	 * JSONArray uploadedFiles = new JSONArray();
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * try {
+	 * String uploadDirPath = request.getRealPath("/") + "uploads/";
+	 * File uploadDir = new File(uploadDirPath);
+	 * if (!uploadDir.exists()) uploadDir.mkdirs();
+	 * 
+	 * for (int i = 0; i < fileInputStreams.size(); i++) {
+	 * InputStream in = fileInputStreams.get(i);
+	 * String fileName = vImageNames.get(i);
+	 * FileUtillity.writeToFileServerV3(in, fileName, uploadDirPath);
+	 * 
+	 * String fileUrl = request.getScheme() + "://" +
+	 * request.getServerName() + ":" +
+	 * request.getServerPort() +
+	 * request.getContextPath() + "/uploads/" + fileName;
+	 * 
+	 * JSONObject fileObj = new JSONObject();
+	 * fileObj.put("fileName", fileName);
+	 * fileObj.put("url", fileUrl);
+	 * 
+	 * uploadedFiles.put(fileObj);
+	 * }
+	 * 
+	 * mJsonObj.put("result", "ok");
+	 * mJsonObj.put("files", uploadedFiles);
+	 * 
+	 * return Response.ok(mJsonObj.toString()).build();
+	 * 
+	 * } catch (Exception e) {
+	 * mJsonObj.put("result", "nok");
+	 * mJsonObj.put("message", e.getMessage());
+	 * e.printStackTrace();
+	 * return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+	 * .entity(mJsonObj.toString()).build();
+	 * }
+	 * 
+	 * 
+	 * 
+	 * return Response.ok(mJsonObj.toString()).build();
+	 * }
+	 */
+
+	/*
+	 * @POST
+	 * 
+	 * @Path("/files")
+	 * 
+	 * @Consumes(MediaType.MULTIPART_FORM_DATA)
+	 * 
+	 * @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	 * public Response addImage1(
+	 * 
+	 * @FormDataParam("vImageFile") InputStream fileInputStream,
+	 * 
+	 * @FormDataParam("vImageFile") FormDataContentDisposition
+	 * fileFormDataContentDisposition,
+	 * 
+	 * @FormDataParam("vImageName") String vImageName,
+	 * 
+	 * @Context HttpServletRequest httpServletRequest) throws JSONException {
+	 * 
+	 * JSONObject mJsonObj = new JSONObject();
+	 * System.out.println(
+	 * "------------------------------------------------------------");
+	 * 
+	 * try {
+	 * // 📁 เปลี่ยนจาก WEB-INF → uploads (เข้าถึงผ่าน URL ได้)
+	 * String uploadDirPath = httpServletRequest.getRealPath("/") + "uploads/";
+	 * File uploadDir = new File(uploadDirPath);
+	 * if (!uploadDir.exists()) uploadDir.mkdirs();
+	 * 
+	 * System.out.println("filePath: " + uploadDirPath + vImageName);
+	 * 
+	 * // ✅ เรียกใช้ Utility เดิม
+	 * String savedPath = FileUtillity.writeToFileServerV3(fileInputStream,
+	 * vImageName, uploadDirPath);
+	 * 
+	 * // ✅ สร้าง URL สำหรับเข้าถึงไฟล์
+	 * String fileUrl = httpServletRequest.getScheme() + "://" +
+	 * httpServletRequest.getServerName() + ":" +
+	 * httpServletRequest.getServerPort() +
+	 * httpServletRequest.getContextPath() + "/uploads/" + vImageName;
+	 * 
+	 * 
+	 * System.out.println("File uploaded. Access URL: " + fileUrl);
+	 * 
+	 * 
+	 * // ✅ สร้าง JSON ตอบกลับ
+	 * mJsonObj.put("result", "ok");
+	 * mJsonObj.put("fileName", vImageName);
+	 * mJsonObj.put("url", fileUrl);
+	 * 
+	 * return Response.ok(mJsonObj.toString()).build();
+	 * 
+	 * } catch (Exception e) {
+	 * mJsonObj.put("result", "nok");
+	 * mJsonObj.put("message", e.getMessage());
+	 * e.printStackTrace();
+	 * return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+	 * .entity(mJsonObj.toString()).build();
+	 * }
+	 * }
+	 * 
+	 */
+
+	/*
+	 * 
+	 * @POST
+	 * 
+	 * @Path("/files")
+	 * 
+	 * @Consumes(MediaType.MULTIPART_FORM_DATA)
+	 * 
+	 * @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	 * public Response addImages(
+	 * 
+	 * @FormDataParam("vImageFile") List<InputStream> fileInputStreams,
+	 * 
+	 * @FormDataParam("vImageFile") List<FormDataContentDisposition>
+	 * fileDispositions,
+	 * 
+	 * @Context HttpServletRequest httpServletRequest) throws JSONException {
+	 * 
+	 * JSONObject result = new JSONObject();
+	 * JSONArray uploadedFiles = new JSONArray();
+	 * 
+	 * try {
+	 * String uploadDirPath = httpServletRequest.getRealPath("/") + "uploads/";
+	 * File uploadDir = new File(uploadDirPath);
+	 * if (!uploadDir.exists()) uploadDir.mkdirs();
+	 * 
+	 * // 🔁 วน loop ทุกไฟล์ที่ส่งมา
+	 * for (int i = 0; i < fileInputStreams.size(); i++) {
+	 * InputStream fileInputStream = fileInputStreams.get(i);
+	 * String fileName = fileDispositions.get(i).getFileName();
+	 * 
+	 * // ✅ เขียนไฟล์
+	 * FileUtillity.writeToFileServerV3(fileInputStream, fileName, uploadDirPath);
+	 * 
+	 * // ✅ สร้าง URL สำหรับเข้าถึงไฟล์
+	 * String fileUrl = httpServletRequest.getScheme() + "://" +
+	 * httpServletRequest.getServerName() + ":" +
+	 * httpServletRequest.getServerPort() +
+	 * httpServletRequest.getContextPath() + "/uploads/" + fileName;
+	 * 
+	 * JSONObject fileObj = new JSONObject();
+	 * fileObj.put("fileName", fileName);
+	 * fileObj.put("url", fileUrl);
+	 * 
+	 * uploadedFiles.put(fileObj);
+	 * }
+	 * 
+	 * result.put("result", "ok");
+	 * result.put("files", uploadedFiles);
+	 * 
+	 * return Response.ok(result.toString()).build();
+	 * 
+	 * } catch (Exception e) {
+	 * e.printStackTrace();
+	 * result.put("result", "nok");
+	 * result.put("message", e.getMessage());
+	 * return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+	 * .entity(result.toString()).build();
+	 * }
+	 * }
+	 * 
+	 */
+
+	/*
+	 * 
+	 * @POST
+	 * 
+	 * @Path("/files")
+	 * 
+	 * @Consumes(MediaType.MULTIPART_FORM_DATA)
+	 * 
+	 * @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	 * public Response addImage1(
+	 * 
+	 * @FormDataParam("vImageFile") InputStream fileInputStream,
+	 * 
+	 * @FormDataParam("vImageFile") FormDataContentDisposition
+	 * fileFormDataContentDisposition,
+	 * 
+	 * @FormDataParam("vImageName") String vImageName,
+	 * 
+	 * @Context HttpServletRequest httpServletRequest) throws JSONException {
+	 * 
+	 * JSONObject mJsonObj = new JSONObject();
+	 * System.out.println(
+	 * "------------------------------------------------------------");
+	 * 
+	 * try {
+	 * // 📁 เปลี่ยนจาก WEB-INF → uploads (เข้าถึงผ่าน URL ได้)
+	 * String uploadDirPath = httpServletRequest.getRealPath("/") + "uploads/";
+	 * File uploadDir = new File(uploadDirPath);
+	 * if (!uploadDir.exists()) uploadDir.mkdirs();
+	 * 
+	 * System.out.println("filePath: " + uploadDirPath + vImageName);
+	 * 
+	 * // ✅ เรียกใช้ Utility เดิม
+	 * String savedPath = FileUtillity.writeToFileServerV3(fileInputStream,
+	 * vImageName, uploadDirPath);
+	 * 
+	 * // ✅ สร้าง URL สำหรับเข้าถึงไฟล์
+	 * String fileUrl = httpServletRequest.getScheme() + "://" +
+	 * httpServletRequest.getServerName() + ":" +
+	 * httpServletRequest.getServerPort() +
+	 * httpServletRequest.getContextPath() + "/uploads/" + vImageName;
+	 * 
+	 * 
+	 * System.out.println("File uploaded. Access URL: " + fileUrl);
+	 * 
+	 * 
+	 * // ✅ สร้าง JSON ตอบกลับ
+	 * mJsonObj.put("result", "ok");
+	 * mJsonObj.put("fileName", vImageName);
+	 * mJsonObj.put("url", fileUrl);
+	 * 
+	 * return Response.ok(mJsonObj.toString()).build();
+	 * 
+	 * } catch (Exception e) {
+	 * mJsonObj.put("result", "nok");
+	 * mJsonObj.put("message", e.getMessage());
+	 * e.printStackTrace();
+	 * return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+	 * .entity(mJsonObj.toString()).build();
+	 * }
+	 * }
+	 * 
+	 * 
+	 */
+
+	@DELETE
+	@Path("/files")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response deleteFile(@QueryParam("fileName") String fileName,
+			@Context HttpServletRequest request) throws JSONException {
+		JSONObject mJsonObj = new JSONObject();
+		try {
+			// ใช้ ServletContext แทน request.getRealPath
+			String uploadDir = request.getServletContext().getRealPath("/uploads/");
+			File file = new File(uploadDir, fileName);
+
+			System.out.println("xxxxxxx = " + fileName);
+
+			System.out.println("Trying to delete file: " + file.getAbsolutePath());
+			System.out.println("File exists? " + file.exists());
+
+			if (file.exists() && file.delete()) {
+				mJsonObj.put("result", "ok");
+				mJsonObj.put("message", "File deleted successfully");
+			} else {
+				mJsonObj.put("result", "nok");
+				mJsonObj.put("message", "File not found or cannot delete");
+			}
+		} catch (Exception e) {
+			mJsonObj.put("result", "nok");
+			mJsonObj.put("message", e.getMessage());
+		}
+		return Response.ok(mJsonObj.toString()).build();
+	}
+
+	///////////////////////////////
+
+	/*
+	 * 
+	 * @POST
+	 * 
+	 * @Path("/files")
+	 * 
+	 * @Consumes(MediaType.MULTIPART_FORM_DATA)
+	 * // @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	 * public Response addImage1(@FormDataParam("vImageFile") InputStream
+	 * fileInputStream,
+	 * 
+	 * @FormDataParam("vImageFile") FormDataContentDisposition
+	 * fileFormDataContentDisposition,
+	 * 
+	 * @FormDataParam("vImageName") String vImageName, @Context HttpHeaders headers,
+	 * 
+	 * @Context HttpServletRequest httpServletRequest) throws JSONException {
+	 * 
+	 * JSONObject mJsonObj = new JSONObject();
+	 * System.out.println(
+	 * "------------------------------------------------------------" );
+	 * 
+	 * 
+	 * try {
+	 * 
+	 * 
+	 * String uploadFilePath = null;
+	 * String filePath = httpServletRequest.getRealPath("/") + "WEB-INF\\image\\";
+	 * 
+	 * try {
+	 * 
+	 * System.out.println("filePath: " + filePath + vImageName);
+	 * 
+	 * uploadFilePath = FileUtillity.writeToFileServer(fileInputStream, vImageName,
+	 * filePath);
+	 * return Response.status(Response.Status.OK).build();
+	 * 
+	 * } catch (Exception e) {
+	 * mJsonObj.put("result", "nok");
+	 * mJsonObj.put("message", e);
+	 * 
+	 * }
+	 * 
+	 * } catch (SignatureException e) {
+	 * mJsonObj.put("auth", "false");
+	 * mJsonObj.put("message", e.getMessage());
+	 * 
+	 * }
+	 * 
+	 * 
+	 * 
+	 * return Response.status(Response.Status.NOT_FOUND).entity(mJsonObj).build();
+	 * 
+	 * }
+	 * 
+	 */
+
+	////////////////////////
+
+	/*
+	 * 
+	 * 
+	 * @POST
+	 * 
+	 * @Path("/files")
+	 * 
+	 * @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	 * public Response uploadFiles(@Context HttpHeaders headersy
+	 * //@FormDataParam("vDate") String vDate
+	 * // @FormDataParam("username") String username,
+	 * // @FormDataParam("file") InputStream uploadedInputStream,
+	 * // @FormDataParam("file") FormDataContentDisposition fileDetail
+	 * ) {
+	 * logger.info("/upload/files");
+	 * 
+	 * System.out.print("xxxx");
+	 * 
+	 * // logger.info("username : "+username);
+	 * // logger.info("uploadedInputStream : "+uploadedInputStream);
+	 * // logger.info("fileDetail : "+fileDetail);
+	 * 
+	 * //
+	 * // String uploadedFileLocation = "/tmp/" + fileDetail.getFileName();
+	 * // Files.copy(uploadedInputStream, Paths.get(uploadedFileLocation),
+	 * StandardCopyOption.REPLACE_EXISTING);
+	 * //
+	 * 
+	 * 
+	 * /*
+	 * JSONObject res = new JSONObject();
+	 * res.put("result", "ok");
+	 * res.put("fileName", fileDetail.getFileName());
+	 * res.put("username", username);
+	 * 
+	 * 
+	 * JSONObject mJsonObj = new JSONObject();
+	 * try {
+	 * // เรียก method ของคุณเพื่อ save ไฟล์ + insert DB
+	 * // String result =
+	 * InsertData.saveFilesToServerAndDB(username,uploadedInputStream,fileDetail);
+	 * 
+	 * String result = "OK";
+	 * 
+	 * // ส่ง response กลับ
+	 * return Response.ok(result, MediaType.APPLICATION_JSON +
+	 * ";charset=utf-8").build();
+	 * } catch (Exception e) {
+	 * logger.error(e.getMessage(), e);
+	 * try { mJsonObj.put("result", "nok"); mJsonObj.put("message", e.getMessage());
+	 * } catch (Exception ex) {}
+	 * return Response.status(Response.Status.BAD_REQUEST).entity(mJsonObj).build();
+	 * }
+	 * }
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 */
+
+	/////////////////////////////////
+
 	@GET
 	@Path("/getlistuser2/{cono}/{status}/{id}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getlistuser2(@Context HttpHeaders headers,@PathParam("cono") String cono,@PathParam("status") String status ,@PathParam("id") String id, @Context HttpServletRequest httpServletRequest)
+	public Response getlistuser2(@Context HttpHeaders headers, @PathParam("cono") String cono,
+			@PathParam("status") String status, @PathParam("id") String id,
+			@Context HttpServletRequest httpServletRequest)
 			throws JSONException {
 		logger.info("/getDeptHead");
 
 		JSONObject mJsonObj = new JSONObject();
-	
 
-				try {
+		try {
 
-					return Response
-							.ok(SelectData.getlistuser2(cono,status,id), MediaType.APPLICATION_JSON + ";charset=utf8")
-							.build();
+			return Response
+					.ok(SelectData.getlistuser2(cono, status, id), MediaType.APPLICATION_JSON + ";charset=utf8")
+					.build();
 
-				} catch (Exception e) {
-					mJsonObj.put("result", "nok");
-					mJsonObj.put("message", e.getMessage());
-					logger.error(e.getMessage());
-				}
+		} catch (Exception e) {
+			mJsonObj.put("result", "nok");
+			mJsonObj.put("message", e.getMessage());
+			logger.error(e.getMessage());
+		}
 
-			
 		return Response.status(Response.Status.NOT_FOUND).entity(mJsonObj).build();
 
 	}
-	
-	
-
 
 	@GET
 	@Path("/getmailtemplete/{cono}/{program}/{status}/{requester}/{programtype}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getmailtemplete(@Context HttpHeaders headers,@PathParam("cono") String cono,@PathParam("program") String program,@PathParam("status") String status ,@PathParam("requester") String requester,@PathParam("programtype") String programtype, @Context HttpServletRequest httpServletRequest)
+	public Response getmailtemplete(@Context HttpHeaders headers, @PathParam("cono") String cono,
+			@PathParam("program") String program, @PathParam("status") String status,
+			@PathParam("requester") String requester, @PathParam("programtype") String programtype,
+			@Context HttpServletRequest httpServletRequest)
 			throws JSONException {
 		logger.info("/getDeptHead");
 
 		JSONObject mJsonObj = new JSONObject();
-	
 
-				try {
+		try {
 
-					//return Response
-					//		.ok(SelectData.getmailtemplete(program,status,requester,programtype), MediaType.APPLICATION_JSON + ";charset=utf8")
-					//		.build();
-					
-					return Response
-							.ok(SelectData.getmailtempleteV2(cono,program,status,requester,programtype), MediaType.APPLICATION_JSON + ";charset=utf8")
-							.build();
+			// return Response
+			// .ok(SelectData.getmailtemplete(program,status,requester,programtype),
+			// MediaType.APPLICATION_JSON + ";charset=utf8")
+			// .build();
 
+			return Response
+					.ok(SelectData.getmailtempleteV2(cono, program, status, requester, programtype),
+							MediaType.APPLICATION_JSON + ";charset=utf8")
+					.build();
 
-				} catch (Exception e) {
-					mJsonObj.put("result", "nok");
-					mJsonObj.put("message", e.getMessage());
-					logger.error(e.getMessage());
-				}
+		} catch (Exception e) {
+			mJsonObj.put("result", "nok");
+			mJsonObj.put("message", e.getMessage());
+			logger.error(e.getMessage());
+		}
 
-			
 		return Response.status(Response.Status.NOT_FOUND).entity(mJsonObj).build();
 
 	}
@@ -249,16 +872,12 @@ public class api_data {
 		return Response.status(Response.Status.NOT_FOUND).entity(mJsonObj).build();
 
 	}
-	
-	
-	
-	
-	
-	
+
 	@GET
 	@Path("/getdescriptionmitmas/{itemno}/{comcono}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getdescriptionmitmas(@Context HttpHeaders headers, @PathParam("itemno") String itemno, @PathParam("comcono") String comcono, String req)
+	public Response getdescriptionmitmas(@Context HttpHeaders headers, @PathParam("itemno") String itemno,
+			@PathParam("comcono") String comcono, String req)
 			throws JSONException {
 		logger.info("/getdescriptionmitmas");
 
@@ -266,7 +885,9 @@ public class api_data {
 		// String getToken = headers.getRequestHeaders().getFirst("x-access-token");
 
 		try {
-			return Response.ok(SelectData.getdescriptionmitmas(itemno,comcono), MediaType.APPLICATION_JSON + ";charset=utf8").build();
+			return Response
+					.ok(SelectData.getdescriptionmitmas(itemno, comcono), MediaType.APPLICATION_JSON + ";charset=utf8")
+					.build();
 
 		} catch (Exception e) {
 			mJsonObj.put("result", "nok");
@@ -281,7 +902,8 @@ public class api_data {
 	@GET
 	@Path("/history/{id}/{cono}/{divi}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getistory(@Context HttpHeaders headers, @PathParam("id") String id,@PathParam("cono") String cono,@PathParam("divi") String divi, String req)
+	public Response getistory(@Context HttpHeaders headers, @PathParam("id") String id, @PathParam("cono") String cono,
+			@PathParam("divi") String divi, String req)
 			throws JSONException {
 		logger.info("/history");
 
@@ -289,7 +911,8 @@ public class api_data {
 		// String getToken = headers.getRequestHeaders().getFirst("x-access-token");
 
 		try {
-			return Response.ok(SelectData.getHistory(id,cono,divi), MediaType.APPLICATION_JSON + ";charset=utf8").build();
+			return Response.ok(SelectData.getHistory(id, cono, divi), MediaType.APPLICATION_JSON + ";charset=utf8")
+					.build();
 
 		} catch (Exception e) {
 			mJsonObj.put("result", "nok");
@@ -3259,16 +3882,19 @@ public class api_data {
 
 	/////////////////////////////////////////////////////////// REAL WF
 
-	//25000140
-	
+	// 25000140
+
 	/*
-	@GET
-	@Path("/resendemail/{cono}/{divi}/")
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getSTATUSIDITEMRQ(@Context HttpHeaders headers, String req, @PathParam("vID") String vID)
-			throws JSONException {
-		logger.info("/getSTATUSID");
-		*/
+	 * @GET
+	 * 
+	 * @Path("/resendemail/{cono}/{divi}/")
+	 * 
+	 * @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	 * public Response getSTATUSIDITEMRQ(@Context HttpHeaders headers, String
+	 * req, @PathParam("vID") String vID)
+	 * throws JSONException {
+	 * logger.info("/getSTATUSID");
+	 */
 	@POST
 	@Path("/resendemail")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -3289,7 +3915,8 @@ public class api_data {
 
 		try {
 
-			return Response.ok(UpdateData.resendemail(cono, divi, serviceno), MediaType.APPLICATION_JSON + ";charset=utf8")
+			return Response
+					.ok(UpdateData.resendemail(cono, divi, serviceno), MediaType.APPLICATION_JSON + ";charset=utf8")
 					.build();
 
 		} catch (Exception e) {
@@ -3301,9 +3928,7 @@ public class api_data {
 		return Response.status(Response.Status.NOT_FOUND).entity(mJsonObj).build();
 
 	}
-	
-	
-	
+
 	@POST
 	@Path("/updateITEMREQUEST")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -3667,7 +4292,8 @@ public class api_data {
 	@GET
 	@Path("/getSTATUSID/{vID}/{cono}/{divi}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getSTATUSIDITEMRQ(@Context HttpHeaders headers, String req, @PathParam("vID") String vID, @PathParam("cono") String cono, @PathParam("divi") String divi)
+	public Response getSTATUSIDITEMRQ(@Context HttpHeaders headers, String req, @PathParam("vID") String vID,
+			@PathParam("cono") String cono, @PathParam("divi") String divi)
 			throws JSONException {
 		logger.info("/getSTATUSID");
 
@@ -3675,7 +4301,7 @@ public class api_data {
 
 		try {
 			return Response
-					.ok(SelectData.getSTATUSIDITEMRQ(vID,cono,divi), MediaType.APPLICATION_JSON + ";charset=utf8")
+					.ok(SelectData.getSTATUSIDITEMRQ(vID, cono, divi), MediaType.APPLICATION_JSON + ";charset=utf8")
 					.build();
 
 		} catch (Exception e) {
@@ -3687,8 +4313,7 @@ public class api_data {
 		return Response.status(Response.Status.NOT_FOUND).entity(mJsonObj).build();
 
 	}
-	
-	
+
 	@GET
 	@Path("/getUsageWarehouse/{cono}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
