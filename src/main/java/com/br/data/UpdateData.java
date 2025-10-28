@@ -391,8 +391,13 @@ public class UpdateData {
 							
 							
 							
-							if(isVacant) {
+							if(isVacant && newStatus == "15") {
 								newStatus = "20";
+								
+							}
+							else if 
+							(isVacant && newStatus == "20") {
+								newStatus = "30";
 								
 							}
 							
@@ -406,7 +411,7 @@ public class UpdateData {
 						
 						newStatus = "20";
 						
-						String querysetisVacant = "SELECT \r\n"
+						String querysetisVacant2 = "SELECT \r\n"
 								+ "  CASE \r\n"
 								+ "    WHEN COUNT(*) > 0 THEN 'TRUE'\r\n"
 								+ "    ELSE 'FALSE'\r\n"
@@ -418,9 +423,9 @@ public class UpdateData {
 								+ "  AND FACONO  = '"+comcono+"'";
 
 		
-						logger.debug("ID Query: " + querysetisVacant);
+						logger.debug("ID Query: " + querysetisVacant2);
 
-						vcrs = stmt.executeQuery(querysetisVacant);
+						vcrs = stmt.executeQuery(querysetisVacant2);
 						if (vcrs.next()) {
 							isVacant = vcrs.getBoolean("RESULT");
 						}
