@@ -18,11 +18,42 @@ public class FileUtillity {
 
 	private static final Logger logger = LogManager.getLogger(FileUtillity.class);
 
+	
+	
+	
+	
+
+	public static String writeToFileServerV3(InputStream inputStream, String fileName, String filePath)
+	        throws IOException {
+
+	    String qualifiedUploadFilePath = filePath + fileName;
+	    System.out.println("Saving file: " + qualifiedUploadFilePath);
+
+	    // ✅ ใช้ try-with-resources ปลอดภัยกว่า
+	    try (OutputStream outputStream = new FileOutputStream(new File(qualifiedUploadFilePath), false)) {
+	        byte[] bytes = new byte[1024];
+	        int read;
+	        while ((read = inputStream.read(bytes)) != -1) {
+	            outputStream.write(bytes, 0, read);
+	        }
+	    } catch (IOException ioe) {
+	        ioe.printStackTrace();
+	        throw ioe;
+	    }
+
+	    return qualifiedUploadFilePath;
+	}
+
+	
+	
+	
 	public static String writeToFileServer(InputStream inputStream, String fileName, String filePath)
 			throws IOException {
 
 		OutputStream outputStream = null;
 		String qualifiedUploadFilePath = filePath + fileName;
+		
+		System.out.print(qualifiedUploadFilePath);
 
 		try {
 			outputStream = new FileOutputStream(new File(qualifiedUploadFilePath), false);
@@ -40,6 +71,9 @@ public class FileUtillity {
 		return qualifiedUploadFilePath;
 
 	}
+	
+
+
 
 	public static String writeToFileServerV2(HttpServletRequest httpServletRequest, InputStream file, String fileName,
 			String filePath) throws IOException {
@@ -67,6 +101,9 @@ public class FileUtillity {
 		return qualifiedUploadFilePath;
 
 	}
+	
+	
+
 
 	public static void deleteFileServer(String filePath) throws IOException {
 
@@ -85,6 +122,7 @@ public class FileUtillity {
 
 	}
 
+
 	public static void deleteFileServerV2(String filePath) throws IOException {
 
 		// System.out.println("delete " + filePath);
@@ -98,6 +136,8 @@ public class FileUtillity {
 		}
 
 	}
+	
+	
 
 	public static String addFile(InputStream inputStream, String fileName, String filePath) throws IOException {
 

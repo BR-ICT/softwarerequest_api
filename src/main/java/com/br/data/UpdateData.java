@@ -343,7 +343,37 @@ public class UpdateData {
 								+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('10') AND FACONO = '"+comcono+"' ";
 						stmt.executeUpdate(querysetapprove);
 						break;
-					case "10":
+						
+					case "10": 
+												
+						String querycheckapprovestatus = 
+							    "SELECT CASE " +
+							    "        WHEN COUNT(*) > 0 THEN 'TRUE' " +
+							    "        ELSE 'FALSE' " +
+							    "    END AS result " +
+							    "FROM "+DBNAME+"."+SR_APPROVE+" sf " +
+							    "WHERE FACONO = '"+comcono+"' " +
+							    "  AND FACODE = 'ITRQ' " +
+							    "  AND FASRNO = '"+vID+"' " +
+							    "  AND FASTAT = '15'";
+
+							ResultSet rs = stmt.executeQuery(querycheckapprovestatus);
+
+							if (rs.next()) {
+							    String result = rs.getString("RESULT");
+							    if ("TRUE".equalsIgnoreCase(result)) {
+							        newStatus = "15";
+							    } else {
+							        newStatus = "20";
+							    }
+							}
+
+							System.out.println("newStatus = " + newStatus);
+
+						
+						break; 
+						
+					case "15":
 						
 						newStatus = "20";
 						
@@ -513,7 +543,7 @@ public class UpdateData {
 
 				String query2e = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
 						+ "SET  FADES1 = 'Wait for approve', FAAPTI = null,FAAPBY = ' ', FAAPDA = NULL  ,FAENDA  = CURRENT DATE , FAENTI  = CURRENT TIME \n"
-						+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('10','20','30','40','50','60','70','80') AND FACONO = '"+comcono+"'";
+						+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('10','15','20','30','40','50','60','70','80') AND FACONO = '"+comcono+"'";
 
 				String query3e = "UPDATE "+DBNAME+"."+SR_HEAD+" "
 						+ "SET FHDEPH = '-' WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '"+comcono+"' AND FHDIVI = '"+comdivi+"'  ";

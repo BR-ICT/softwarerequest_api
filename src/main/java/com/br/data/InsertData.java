@@ -7,6 +7,8 @@ import java.util.Objects;
 import java.sql.ResultSet; // <--- สำคัญตรงนี้
 
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,6 +25,7 @@ import java.sql.Statement;
 import java.text.DecimalFormat;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -38,6 +41,7 @@ import com.br.utility.ConvertString;
 import com.br.utility.FileUtillity;
 import com.br.utility.HttpConnection;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -47,6 +51,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class InsertData {
+	
+	private static final String UPLOAD_FOLDER = "D:/uploads/";
+
 
 	private static final Logger logger = LogManager.getLogger(InsertData.class);
 
@@ -484,6 +491,72 @@ public class InsertData {
 		return "null";
 
 	}
+	
+	
+	
+	
+	
+	//////////////////////////////
+	
+	
+	/*
+	   public static String saveFilesToServerAndDB(Part[] files, String username) {
+	        JSONObject mJsonObj = new JSONObject();
+	        Connection conn = null;
+	        PreparedStatement pstmt = null;
+
+	        try {
+	            conn = ConnectDB2.doConnect();
+
+	            String insertSQL = "INSERT INTO " + DBNAME + ".UPLOADED_FILES(filename, created_by, created_at) "
+	                             + "VALUES(?, ?, CURRENT_TIMESTAMP)";
+	            pstmt = conn.prepareStatement(insertSQL);
+
+	            for (Part filePart : files) {
+	                String originalFileName = getFileName(filePart);
+	                if (originalFileName == null || originalFileName.isEmpty()) continue;
+
+	                String savedFileName = System.currentTimeMillis() + "_" + originalFileName;
+	                File fileToSave = new File(UPLOAD_FOLDER + savedFileName);
+
+	                try (InputStream input = filePart.getInputStream()) {
+	                    Files.copy(input, fileToSave.toPath(), StandardCopyOption.REPLACE_EXISTING);
+	                }
+
+	                // insert ชื่อไฟล์ลง DB
+	                pstmt.setString(1, savedFileName);
+	                pstmt.setString(2, username);
+	                pstmt.executeUpdate();
+	            }
+
+	            mJsonObj.put("result", "ok");
+	            mJsonObj.put("message", files.length + " ไฟล์อัปโหลดและบันทึกลง DB สำเร็จ!");
+	            logger.info(files.length + " files saved successfully.");
+	        } catch (Exception e) {
+	            logger.error(e.getMessage(), e);
+	            try { mJsonObj.put("result", "nok"); mJsonObj.put("message", e.getMessage()); } catch (Exception ex) {}
+	        } finally {
+	            try { if (pstmt != null) pstmt.close(); } catch (Exception e) { logger.error(e.getMessage(), e); }
+	            try { if (conn != null) conn.close(); } catch (Exception e) { logger.error(e.getMessage(), e); }
+	        }
+
+	        return mJsonObj.toString();
+	    }
+
+	    private static String getFileName(Part part) {
+	        String contentDisp = part.getHeader("content-disposition");
+	        if (contentDisp == null) return null;
+	        for (String cd : contentDisp.split(";")) {
+	            if (cd.trim().startsWith("filename")) {
+	                return cd.substring(cd.indexOf('=') + 1).trim().replace("\"", "");
+	            }
+	        }
+	        return null;
+	    }
+
+	
+	*/ 
+	///////////////////////////////
 
 	// NORMAL
 
