@@ -209,8 +209,10 @@ public class UpdateData {
 		Statement stmt = null;
 		
 		ResultSet vcrs = null;
+		ResultSet vcrs20 = null;
 		Statement stmtvcrs = null;
 		Boolean  isVacant = false; 
+		Boolean  isVacant20 = false; 
 		
 		
 		
@@ -391,15 +393,40 @@ public class UpdateData {
 							
 							
 							
-							if(isVacant && newStatus == "15") {
-								newStatus = "20";
-								
+
+							String querysetisVacant20 = "SELECT \r\n"
+									+ "  CASE \r\n"
+									+ "    WHEN COUNT(*) > 0 THEN 'TRUE'\r\n"
+									+ "    ELSE 'FALSE'\r\n"
+									+ "  END AS result\r\n"
+									+ "  FROM "+DBNAME+".SR_FLOWAPPROVE sf\r\n"
+									+ "	 WHERE FASRNO = '"+vID+"'\r\n"
+									+ "  AND FASTAT = '20'\r\n"
+									+ "  AND TRIM(FAAPLI) = 'VACANT'\r\n"
+									+ "  AND FACONO  = '"+comcono+"'";
+
+			
+							logger.debug("ID Query: " + querysetisVacant20);
+
+							vcrs20 = stmt.executeQuery(querysetisVacant20);
+							if (vcrs20.next()) {
+								isVacant20 = vcrs20.getBoolean("RESULT");
 							}
-							else if 
-							(isVacant && newStatus == "20") {
+							
+							
+							
+							if(isVacant && newStatus  == "15" && isVacant20 ) {
 								newStatus = "30";
 								
 							}
+							else if 
+							(isVacant && newStatus == "20" && isVacant20) {
+								newStatus = "30";
+							}
+							else 
+							{
+								newStatus = "20";
+							}	
 							
 
 							System.out.println("newStatus = " + newStatus);
