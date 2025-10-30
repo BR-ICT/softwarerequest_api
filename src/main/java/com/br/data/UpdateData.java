@@ -372,6 +372,7 @@ public class UpdateData {
 							
 							
 							
+							
 							String querysetisVacant = "SELECT \r\n"
 									+ "  CASE \r\n"
 									+ "    WHEN COUNT(*) > 0 THEN 'TRUE'\r\n"
@@ -379,7 +380,7 @@ public class UpdateData {
 									+ "  END AS result\r\n"
 									+ "  FROM "+DBNAME+".SR_FLOWAPPROVE sf\r\n"
 									+ "	 WHERE FASRNO = '"+vID+"'\r\n"
-									+ "  AND FASTAT = '"+newStatus+"'\r\n"
+									+ "  AND FASTAT = '15'\r\n"
 									+ "  AND TRIM(FAAPLI) = 'VACANT'\r\n"
 									+ "  AND FACONO  = '"+comcono+"'";
 
@@ -414,20 +415,13 @@ public class UpdateData {
 							}
 							
 							
-							
-							if(isVacant && newStatus  == "15" && isVacant20 ) {
-								newStatus = "30";
-								
+							if (isVacant && isVacant20) {
+							    newStatus = "30";
+							} else if (isVacant && !isVacant20) {
+							    newStatus = "20";
+							} else {
+							    newStatus = "15";
 							}
-							else if 
-							(isVacant && newStatus == "20" && isVacant20) {
-								newStatus = "30";
-							}
-							else 
-							{
-								newStatus = "20";
-							}	
-							
 
 							System.out.println("newStatus = " + newStatus);
 
