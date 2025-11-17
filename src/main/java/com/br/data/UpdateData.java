@@ -414,7 +414,7 @@ public class UpdateData {
 							}
 							
 							
-							
+						/*	
 							if(isVacant && newStatus  == "15" && isVacant20 ) {
 								newStatus = "30";
 								
@@ -423,10 +423,34 @@ public class UpdateData {
 							(isVacant && newStatus == "20" && isVacant20) {
 								newStatus = "30";
 							}
+							
+							else if 
+							(isVacant && newStatus == "15" && !isVacant) {
+								newStatus = "15";
+							}
 							else 
 							{
 								newStatus = "20";
 							}	
+							
+							*/ 
+							
+							if (isVacant && newStatus.equals("15") && isVacant20) {
+							    newStatus = "30";
+							}
+							else if (isVacant && newStatus.equals("20") && isVacant20) {
+							    newStatus = "30";
+							}
+							else if (newStatus.equals("15") && !isVacant20 && !isVacant) {
+							    newStatus = "15";   // คงค่าเดิมไว้
+							}
+							else if (newStatus.equals("15") && !isVacant20 && isVacant) {
+							    newStatus = "20";
+							}
+							else {
+							    newStatus = "20";
+							}
+
 							
 
 							System.out.println("newStatus = " + newStatus);
