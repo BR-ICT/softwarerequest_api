@@ -1384,10 +1384,22 @@ public class InsertData {
 			Statement stmt2 = conn.createStatement();
 
 			// สร้าง currentID จาก query
-			String idQuery = "SELECT '25' || RIGHT('000000' || (INT(SUBSTR(COALESCE(MAX(FDSRNO), '25000000'), 3)) + 1), 6) AS CURRENT_ID \r\n"
+			
+			/* String idQuery = "SELECT '25' || RIGHT('000000' || (INT(SUBSTR(COALESCE(MAX(FDSRNO), '25000000'), 3)) + 1), 6) AS CURRENT_ID \r\n"
+			
 					+ "FROM " + DBNAME + "." + SR_DETAIL + " \n"
 					+ "WHERE SUBSTR(FDSRNO, 1, 2) = '25' AND FDCONO  = '" + comcono + "' AND　FDDIVI = '" + comdivi
-					+ "' ";
+					+ "' AND FDCODE ='ITRQ'  ";
+			*/	
+			
+			String idQuery = "SELECT RIGHT(YEAR(CURRENT_DATE), 2)\r\n"
+					+ "|| RIGHT('000000' || (INT(SUBSTR(COALESCE(MAX(FDSRNO), RIGHT(YEAR(CURRENT_DATE),2) || '000000'), 3)) + 1), 6)\r\n"
+					+ "AS CURRENT_ID\r\n"
+					+ "FROM " + DBNAME + "." + SR_DETAIL + "\r\n"
+					+ "WHERE SUBSTR(FDSRNO, 1, 2) = RIGHT(YEAR(CURRENT_DATE), 2)\r\n"
+					+ "AND FDCONO = '" + comcono +"'\r\n"
+					+ "AND FDDIVI = '" + comdivi + "'\r\n"
+					+ "AND FDCODE = 'ITRQ'";
 
 			/*
 			 * String idQuery =
