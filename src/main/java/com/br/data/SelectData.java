@@ -4270,7 +4270,7 @@ public class SelectData {
 					+ "    TRIM(s.ST_N6L3) AS ST_N6L3,\r\n"
 					+ "    ROW_NUMBER() OVER () AS rn\r\n"
 					+ "  FROM SplitNames sn\r\n"
-					+ "  JOIN BRLDTABK01.STAFFLIST s ON s.ST_N6L3 = sn.APPROVER\r\n"
+					+ "  JOIN BRLDTA0100.STAFFLIST s ON s.ST_N6L3 = sn.APPROVER\r\n"
 					+ ")\r\n"
 					+ "SELECT \r\n"
 					+ "  ST_EMAIL,\r\n"
