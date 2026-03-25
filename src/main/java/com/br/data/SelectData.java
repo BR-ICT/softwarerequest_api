@@ -366,7 +366,8 @@ public class SelectData {
 					+ "  COALESCE(CHAR(FARJDA), '') ||' '||  COALESCE(CHAR(FARJTI), '') AS REJECT_DATE,\r\n"
 					+ "  COALESCE(FADES4, '') AS REJECT_REMARK\r\n"
 					+ "FROM "+DBNAME+"."+SR_APPROVE+"\r\n"
-					+ "WHERE FASRNO = '"+id+"' AND FACONO = '"+cono+"'"; 
+					+ "WHERE FASRNO = '"+id+"' AND FACONO = '"+cono+"'\n"
+					+ "AND FACODE = 'SWRQ'"; 
 			/*
 			String query = "SELECT  \r\n"
 					+ "COALESCE(ID, '') AS ID,\r\n"
@@ -726,6 +727,83 @@ public class SelectData {
 	}
 
 
+	public static String getSTATUSIDSWRQ(String vID,String cono, String divi)
+			throws Exception {
+
+		logger.info("getSTATUSIDSWRQ");
+
+		List<String> getListData = new ArrayList<String>();
+
+		Connection conn = null;
+		Statement stmt = null;
+		try {
+			conn = ConnectDB2.doConnect();
+			stmt = conn.createStatement();
+
+			
+			String  query = "SELECT \r\n"
+					+ "   dt.FDDATA,\r\n"
+					+ "   dt.FDDSTA,\r\n"
+					+ "   dt.FDSRNO,\r\n"
+					+ "   fh.FHDEPH,\r\n"
+					+ "   na.CCROW3 AS COMNAME,\r\n"
+					+ "   fh.FHREQU,  fh.FHHSTA,\r\n"
+					+ "   s.ST_EMAIL AS DEPTHEAD_EMAIL,\r\n"
+					+ "   rq.ST_EMAIL AS REQUESTER_EMAIL\r\n"
+					+ "FROM (\r\n"
+					+ "   SELECT FDDATA,FDDSTA,FDSRNO,FDCONO\r\n"
+					+ "   FROM  "+DBNAME+"."+SR_DETAIL+" sf \r\n"
+					+ "   WHERE FDSRNO = '" + vID + "'\r\n"
+					+ "     AND FDCODE = 'SWRQ' AND FDCONO = '"+cono.trim()+"' AND FDDIVI = '"+divi.trim()+"' \r\n"
+					+ ") AS dt\r\n"
+					+ "LEFT JOIN "+DBNAME+"."+SR_HEAD+"  fh\r\n"
+					+ "  ON fh.FHSRNO = dt.FDSRNO\r\n"
+					+ "  AND fh.FHCONO = dt.FDCONO\r\n"
+					+ "  AND fh.FHCODE = 'SWRQ'\n"
+					+ "LEFT JOIN BRLDTA0100.STAFFLIST s\r\n"
+					+ "  ON s.ST_N6L3 = fh.FHDEPH\r\n"
+					+ "LEFT  JOIN M3FDBPRD.CMNDIV na \r\n"
+					+ "  ON na.CCCONO = fh.FHCONO\r\n"
+					+ "  AND na.CCDIVI = fh.FHDIVI\r\n"
+					+ "LEFT JOIN BRLDTA0100.STAFFLIST rq\r\n"
+					+ "  ON fh.FHREQU = rq.ST_N6L3";
+
+			logger.debug(query);
+			logger.debug(getListData);
+
+			ResultSet mRes = stmt.executeQuery(query);
+
+			return ConvertResultSet.convertResultSetToJson(mRes);
+
+			// return ConvertResultSet.convertResultSetToJsonVPP(mRes);
+
+		} catch (SQLException e) {
+			logger.error(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		} finally {
+			try {
+				if (stmt != null) {
+					stmt.close();
+				}
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+			try {
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+
+		}
+
+		return null;
+
+	}
+	
+	
 	public static String getSTATUSIDITEMRQ(String vID,String cono, String divi)
 			throws Exception {
 
@@ -4133,7 +4211,7 @@ public class SelectData {
 	        }
 */
 	        String query = "SELECT * FROM " + Constant.DBNAME + ".M3_WORKFLOWPROGRAMEMAIL mw \n"
-	                + "WHERE EDOCUMENT  = 'ITRQ'\n"
+	                + "WHERE EDOCUMENT  = 'SWRQ'\n"
 	                + "AND ESTATUSNO = '" + status + "' AND ESTATUS = '" + programtype + "'";
 
 	        System.out.println("getDeptHead\n" + query);

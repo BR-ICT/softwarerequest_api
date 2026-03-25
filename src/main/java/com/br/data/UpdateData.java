@@ -197,6 +197,381 @@ public class UpdateData {
 		return mJsonObj.toString();
 	}
 	
+	
+	public static String prepareUpdateSWRQ(String vID, String vSTATUS, String vData, String vApproval,String vApprover,String vDepthead, String vRemark)
+			throws Exception {
+		logger.info("UpdateITEMREQUEST");
+		
+		vRemark = ConvertString.convertApostrophe(vRemark); 
+
+		JSONObject mJsonObj = new JSONObject();
+		Connection conn = null;
+		Statement stmt = null;
+		
+		ResultSet vcrs = null;
+		ResultSet vcrs20 = null;
+		Statement stmtvcrs = null;
+		Boolean  isVacant = false; 
+		Boolean  isVacant20 = false; 
+		
+		
+		String tt = "OK";
+		try {
+			conn = ConnectDB2.doConnect();
+			stmt = conn.createStatement();
+
+			// ตรวจสอบและกำหนดสถานะใหม่
+			String newStatus = vSTATUS;
+			String Status = vSTATUS;
+			String cStatus = "10";
+			
+			
+			JSONObject obj = new JSONObject(vData);
+
+			String company = obj.optString("company");
+//			String warehouse2 = obj.optString("warehouse2");
+			
+			String title = obj.optString("serviceTitle");
+			
+			String version = obj.optString("vVersion");
+			
+			logger.debug("vVersion: " + version);
+			
+			String checkVersion = SelectData.checkVersion("SRQ");
+			   if (version == null || version.isEmpty() || !Objects.equals(checkVersion, version)) {
+			    mJsonObj.put("result", "nok");
+			    mJsonObj.put("message", "Can't create Service number, Please update your version to " + checkVersion + " :  "+version+" (Click F5 button).");
+			    return mJsonObj.toString();
+
+			   }
+
+			
+
+			logger.debug("company: " + company);
+//			logger.debug("warehouse2: " + warehouse2);
+			
+			Map<String, String[]> companyMapping = new HashMap<>();
+			companyMapping.put("10", new String[] { "10", "101" });
+			companyMapping.put("600", new String[] { "600", "600" });
+			// เพิ่มได้เรื่อยๆ เช่น
+			// companyMapping.put("300", new String[] { "300", "301" });
+
+			// ดึงข้อมูลตาม company
+			String[] mapping = companyMapping.getOrDefault(company, new String[] { company, company });
+			String comcono = mapping[0];
+			String comdivi = mapping[1];
+
+			logger.debug("cono: " + comcono);
+			logger.debug("divi: " + comdivi);
+			
+			String FADES = "FADES3"; 
+			
+			
+			
+			
+			// เพิ่มก่อนเริ่ม update ใดๆ
+			String checkSQL = "SELECT FAAPBY " +
+			                  "FROM "+DBNAME+"."+SR_APPROVE+" " +
+			                  "WHERE FACODE = 'SWRQ' " +
+			                  "AND FASRNO = '" + vID + "' " +
+			                  "AND FASTAT = '" + vSTATUS + "'  AND FACONO = '"+comcono+"'" +
+			                  "FETCH FIRST 1 ROWS ONLY";
+
+			logger.debug("checkSQL: " + checkSQL);
+
+			try (ResultSet rs = stmt.executeQuery(checkSQL)) {
+			    if (rs.next()) {
+			        String faapby = rs.getString("FAAPBY");
+			        if (faapby != null && !faapby.trim().isEmpty()) {
+			            logger.info("FAAPBY already has value: " + faapby);
+			            mJsonObj.put("result", "nok");
+			            mJsonObj.put("message", "Approver already set. No update performed.");
+			            return mJsonObj.toString(); // ออกจาก method ทันที
+			        }
+			    }
+			}
+			
+			
+
+			if ("false".equalsIgnoreCase(vApproval)) {
+				newStatus = "00";
+				
+				FADES = "FADES4"; 
+				  rejectSWRQ(vID,  vSTATUS,  vData,  vApproval, vApprover, vDepthead,  vRemark,Status,comcono,comdivi);
+			} else {switch (vSTATUS) {
+			case "00":
+				newStatus = "10";
+				
+				String querysetapprove = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
+						+ "SET  FAAPLI = '"+vDepthead+"' \n"
+						+ "WHERE FACODE = 'SWRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('10') AND FACONO = '"+comcono+"' ";
+				stmt.executeUpdate(querysetapprove);
+				break;
+				
+			case "10": 
+				newStatus = "20";
+				break;
+			case "20":
+				newStatus = "30";
+				break;
+			case "30":
+				newStatus = "40";
+				break;
+			case "40":
+				newStatus = "50";
+				break;
+			case "50":
+				newStatus = "60";
+				break;
+		
+			
+			default:
+				break;
+				
+		}
+			}
+
+			// สร้าง timestamp และวันที่
+			java.sql.Timestamp currentTimestamp = new java.sql.Timestamp(System.currentTimeMillis());
+			String dateYYYYMMDD = new java.text.SimpleDateFormat("yyyyMMdd").format(currentTimestamp);
+
+			// บวก STATUS เป็นเลข
+			int nextStatusInt = 0;
+			try {
+				nextStatusInt = Integer.parseInt(vSTATUS) + 10;
+			} catch (NumberFormatException e) {
+				logger.warn("STATUS is not numeric, using default nextStatusInt = 0");
+			}
+
+			// เตรียม SQL
+		/*	String query1 = "UPDATE "+DBNAME+"."+SR_DETAIL+" \n"
+					+ "SET FDDATA = '" + vData + "', FDENDA = CURRENT DATE, FDENTI  = CURRENT TIME ,FDDSTA = '" + newStatus + "' \n"
+					+ "WHERE FDSRNO = '" + vID + "'   AND FDCONO = '"+comcono+"' AND FDDIVI = '"+comdivi+"' ";
+			*/
+			
+			
+
+		
+		/////
+
+			
+			if ("false".equalsIgnoreCase(vApproval)) {
+			    cStatus = "01";
+			} else {
+			    if ("00".equals(vSTATUS)) {
+			        cStatus = "00";
+			    } else if ("60".equals(vSTATUS)) {
+			        cStatus = "60";
+			    }
+			    else {
+			    		 cStatus = "99";
+			    }
+			}
+
+			
+			
+			String query222 = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n"
+	                + "SET FAENUS = '"+vApprover+"' ,FAAPBY = '" + vDepthead + "', FAAPDA = CURRENT DATE , FADES1 = 'Approved' \n"
+	                + "WHERE FACODE = 'SWRQ' AND FASRNO = '" + vID + "' AND FASTAT  = '"+cStatus+"' AND FACONO = '"+comcono+"'";
+
+
+
+			String query2 = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
+					+ "SET   FAAPTI = CURRENT TIME ,  FAENUS = '"+vApprover+"' ,FADES1 = 'Approved',  FAAPDA = CURRENT DATE,FAENTI =  CURRENT TIME,FAAPBY = '"+vApprover+"' , "+FADES+" = '"+vRemark+"' , FAENDA = CURRENT DATE" +
+					" WHERE FACODE = 'SWRQ' AND FASRNO = '" + vID + "' AND FASTAT = '" + Status + "' AND FACONO = '"+comcono+"' ";
+
+			String query3 = "UPDATE "+DBNAME+"."+SR_HEAD+" "
+					+ "SET   FHDSTA = '" + newStatus +
+					"' , FHENDA = CURRENT DATE ,FHENTI = CURRENT TIME WHERE FHCODE = 'SWRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '"+comcono+"' AND FHDIVI = '"+comdivi+"'  ";
+
+			
+			String query = "UPDATE " + DBNAME + "." + SR_DETAIL + " " +
+		               "SET FDDATA = ?, FDENDA = CURRENT DATE, FDENTI = CURRENT TIME, FDDSTA = ? " +
+		               "WHERE FDSRNO = ? AND FDCONO = ? AND FDDIVI = ?";
+
+		try (PreparedStatement ps = conn.prepareStatement(query)) {
+
+		    // ใช้ StringReader สำหรับ JSON ยาว ๆ
+		    ps.setCharacterStream(1, new StringReader(vData), vData.length());
+		    ps.setString(2, newStatus);
+		    ps.setString(3, vID);
+		    ps.setString(4, comcono);
+		    ps.setString(5, comdivi);
+
+		    int updated = ps.executeUpdate();
+		    System.out.println("Rows updated: " + updated);
+		}
+
+			
+			
+			//tt = query1 + " ; " + query2; // Debug
+			//logger.debug(query1);
+			logger.debug(query222);
+			logger.debug(query2);
+			logger.debug(query3);
+
+			//stmt.executeUpdate(query1);
+			logger.debug("xxxxxxxxxxxxxxxxxx");
+			//logger.debug(query1);
+			//stmt.executeUpdate(query1);
+			//ps.close();
+			logger.debug("xxxxxxxxxxxxxxxxxx");
+			
+			
+			
+			stmt.executeUpdate(query222);
+			
+			
+			stmt.executeUpdate(query2);
+			stmt.executeUpdate(query3);
+			
+			if ("false".equalsIgnoreCase(vApproval)) {
+				newStatus = "00";
+				
+				rejectreverseSWRQ( vID,  vSTATUS,  vData,  vApproval, vApprover, vDepthead,  vRemark, Status,FADES, comcono, comdivi);
+
+				
+				
+			}
+			
+			//uncomment this when apply
+//
+//			String data = SelectData.getSTATUSIDITEMRQ(vID.toString(),comcono,comdivi);
+//			String url = "https://workflow.br-bangkokranch.com/webhook/saveitemrequest2"; 
+//
+//			String response = HttpConnection.sendRequest(
+//					"POST",
+//					url,
+//					Map.of("x-access-token",
+//							"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMCA6IDEwMSA6IOC4muC4o-C4tOC4qeC4seC4lyDguJrguLLguIfguIHguK3guIHguYHguKPguYnguJnguIrguYwg4LiI4Liz4LiB4Lix4LiUICjguKHguKvguLLguIrguJkpIiwiaXNzIjoiYXV0aGVuLXNlcnZpY2UiLCJhdWQiOiIwMTAyOTA2Iiwicm9sZSI6Ik1QTV8xQTEgOiBBUFBST1ZFIDogU0FMRU1BTiA6IDAiLCJleHAiOjE3NTAxNzY1NzF9.cAMs1gdcg3cxfYNTJi_WTHpBCKDxaw-MjwrDpmFPPSo"), // headers
+//					data,
+//					null // form-data
+//			);
+//			
+//			logger.debug("response: " + response);
+
+			
+			
+			
+			
+			
+
+			mJsonObj.put("result", "ok");
+			mJsonObj.put("message", "Update complete.");
+			return mJsonObj.toString();
+
+		} catch (SQLException e) {
+			logger.error("SQL Error: " + e.getMessage());
+			mJsonObj.put("result", "error");
+			mJsonObj.put("message", e.getMessage());
+		} catch (Exception e) {
+			logger.error("Error: " + e.getMessage());
+			mJsonObj.put("result", "error");
+			mJsonObj.put("message", e.getMessage());
+		} finally {
+			try {
+				if (stmt != null)
+					stmt.close();
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+			try {
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+		}
+
+		return mJsonObj.toString();
+	}
+	
+	public static void rejectreverseSWRQ(String vID, String vSTATUS, String vData, String vApproval,String vApprover,String vDepthead, String vRemark,String Status,String FADES,String comcono,String comdivi) throws Exception {
+
+		JSONObject mJsonObj = new JSONObject();
+		Connection conn = null;
+		Statement stmt = null;
+		
+		ResultSet vcrs = null;
+		ResultSet vcrs20 = null;
+		Statement stmtvcrs = null;
+		Boolean  isVacant = false; 
+		Boolean  isVacant20 = false; 
+		
+
+
+		String query2e = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
+				+ "SET  FADES1 = 'Wait for approve', FAAPTI = null,FAAPBY = ' ', FAAPDA = NULL  ,FAENDA  = CURRENT DATE , FAENTI  = CURRENT TIME \n"
+				+ "WHERE FACODE = 'SWRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('10','15','20','30','40','50','60','70','80') AND FACONO = '"+comcono+"'";
+
+		String query3e = "UPDATE "+DBNAME+"."+SR_HEAD+" "
+				+ "SET FHDEPH = '-' WHERE FHCODE = 'SWRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '"+comcono+"' AND FHDIVI = '"+comdivi+"'  ";
+		
+		
+		String query4re = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
+				+ "SET  "+FADES+" = '"+vRemark+"' \n"
+				+ "WHERE FACODE = 'SWRQ' AND FASRNO = '" + vID + "'  AND  FASTAT = '"+Status+"' AND FACONO = '"+comcono+"' ";
+
+		logger.debug(query2e);
+		logger.debug(query3e);
+		logger.debug(query4re);
+
+		
+		stmt.executeUpdate(query2e);
+		stmt.executeUpdate(query3e);
+		stmt.executeUpdate(query4re);
+
+		
+
+		
+	}
+	
+	public static void rejectSWRQ(String vID, String vSTATUS, String vData, String vApproval,String vApprover,String vDepthead, String vRemark,String Status,String comcono,String comdivi) throws Exception {
+
+		JSONObject mJsonObj = new JSONObject();
+		Connection conn = null;
+		Statement stmt = null;
+		
+		ResultSet vcrs = null;
+		ResultSet vcrs20 = null;
+		Statement stmtvcrs = null;
+		
+		/*
+		String query1e = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
+				+ "SET  FAAPLI = '' \n"
+				+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('10') ";
+				*/
+
+
+		String query2e = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
+				+ "SET  FADES1 = 'Wait for approve', FAAPTI = null,FAAPBY = ' ', FAAPDA = NULL  ,FAENDA  = CURRENT DATE , FAENTI  = CURRENT TIME ,FADES3 = '' \n"
+				+ "WHERE FACODE = 'SWRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('00','10','20','30','40','50','60','70','80') AND  FACONO = '"+comcono+"' AND FADIVI = '"+comdivi+"' ";
+
+		String query3e = "UPDATE "+DBNAME+"."+SR_HEAD+" "
+				+ "SET FHDEPH = '-' WHERE FHCODE = 'SWRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '"+comcono+"'  ";
+	 
+		
+		String query4e ="UPDATE "+DBNAME+"."+SR_APPROVE+" \r\n"
+				+ "	SET  FARJDA  = CURRENT DATE , FARJTI  = CURRENT TIME , FARJBY = '"+vApprover+"' \r\n"
+				+ "	WHERE FACODE = 'SWRQ' AND FASRNO =  '"+vID+"'   AND  FASTAT = '"+Status+"' AND FACONO = '"+comcono+"'  ";
+
+		//logger.debug(query1e);
+		logger.debug(query2e);
+		logger.debug(query3e);
+		logger.debug(query4e);
+
+		//stmt.executeUpdate(query1e);
+		stmt.executeUpdate(query2e);
+		stmt.executeUpdate(query3e);
+		stmt.executeUpdate(query4e);
+
+		
+	}
+	
+	
+
+	
+	
 
 	public static String updateITEMREQUEST(String vID, String vSTATUS, String vData, String vApproval,String vApprover,String vDepthead, String vRemark)
 			throws Exception {

@@ -4022,6 +4022,102 @@ public class api_data {
 		return Response.status(Response.Status.NOT_FOUND).entity(mJsonObj).build();
 
 	}
+	
+	
+	@POST
+	@Path("/insertsrm")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+
+	public Response insertSRM(@Context HttpHeaders headers, @Context HttpServletRequest httpServletRequest,
+			@FormDataParam("vData") String vData, @FormDataParam("username") String username,
+			@FormDataParam("depthead") String depthead, @FormDataParam("remark") String remark)
+			throws JSONException {
+		logger.info("/insertSRM");
+
+		JSONObject mJsonObj = new JSONObject();
+
+		System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxx");
+
+		try {
+
+			return Response
+					.ok(InsertData.prepareInsertSRM(vData, username, depthead), MediaType.APPLICATION_JSON + ";charset=utf8")
+					.build();
+
+		} catch (Exception e) {
+			mJsonObj.put("result", "nok");
+			mJsonObj.put("message", e.getMessage());
+			logger.error(e.getMessage());
+		}
+
+		return Response.status(Response.Status.NOT_FOUND).entity(mJsonObj).build();
+
+	}
+	
+	
+	
+	@POST
+	@Path("/updatesrm")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+
+	public Response updateSWRQ(@Context HttpHeaders headers, @Context HttpServletRequest httpServletRequest,
+			@FormDataParam("vID") String vID, @FormDataParam("vSTATUS") String vSTATUS,
+			@FormDataParam("vData") String vData, @FormDataParam("vApproval") String vApproval,
+			@FormDataParam("vApprover") String vApprover, @FormDataParam("vDepthead") String vDepthead,
+			@FormDataParam("vRemark") String vRemark)
+			throws JSONException {
+		logger.info("/updatesrm");
+
+		JSONObject mJsonObj = new JSONObject();
+
+		System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxx");
+		System.out.println(vSTATUS);
+		System.out.println(vID);
+		System.out.println(vApproval);
+		System.out.println(vData);
+		System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxx");
+
+		try {
+
+			return Response.ok(UpdateData.prepareUpdateSWRQ(vID, vSTATUS, vData,
+					vApproval, vApprover, vDepthead, vRemark), MediaType.APPLICATION_JSON + ";charset=utf8")
+					.build();
+
+		} catch (Exception e) {
+			mJsonObj.put("result", "nok");
+			mJsonObj.put("message", e.getMessage());
+			logger.error(e.getMessage());
+		}
+
+		return Response.status(Response.Status.NOT_FOUND).entity(mJsonObj).build();
+
+	}
+	
+	
+	@GET
+	@Path("/getSTATUSIDSWRQ/{vID}/{cono}/{divi}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getSTATUSIDSWRQ(@Context HttpHeaders headers, String req, @PathParam("vID") String vID,
+			@PathParam("cono") String cono, @PathParam("divi") String divi)
+			throws JSONException {
+		logger.info("/getSTATUSID");
+
+		JSONObject mJsonObj = new JSONObject();
+
+		try {
+			return Response
+					.ok(SelectData.getSTATUSIDSWRQ(vID, cono, divi), MediaType.APPLICATION_JSON + ";charset=utf8")
+					.build();
+
+		} catch (Exception e) {
+			mJsonObj.put("result", "nok");
+			mJsonObj.put("message", e.getMessage());
+			logger.error(e.getMessage());
+		}
+
+		return Response.status(Response.Status.NOT_FOUND).entity(mJsonObj).build();
+
+	}
 
 	////////////
 
@@ -4313,6 +4409,7 @@ public class api_data {
 		return Response.status(Response.Status.NOT_FOUND).entity(mJsonObj).build();
 
 	}
+	
 
 	@GET
 	@Path("/getUsageWarehouse/{cono}")

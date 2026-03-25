@@ -1986,6 +1986,1374 @@ public class InsertData {
 				}
 		}
 	}
+	
+	
+	public static String insertSRM(String vData, String username, String depthead) throws Exception {
+		logger.info("insertRQ");
+
+		JSONObject mJsonObj = new JSONObject();
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		ResultSet rs9 = null;
+
+		logger.debug("vData: " + vData);
+
+		JSONObject obj = new JSONObject(vData);
+
+		String company = obj.optString("company");
+		String warehouse2 = obj.optString("warehouse");
+		
+		String vRemark2 = obj.optString("vUSRemark");
+		
+
+		String itemcode = obj.optString("vItemcode");
+		String itemname = obj.optString("itemName");
+		
+		String programtype = obj.optString("programtype");
+		
+		String version = obj.optString("vVersion");
+		
+		logger.debug("vVersion: " + version);
+		
+		String checkVersion = SelectData.checkVersion("SRQ");
+		   if (version == null || version.isEmpty() || !Objects.equals(checkVersion, version)) {
+		    mJsonObj.put("result", "nok");
+		    mJsonObj.put("message", "Can't create Service number, Please update your version to " + checkVersion + " :  "+version+" (Click F5 button).");
+		    return mJsonObj.toString();
+
+		   }
+		
+		
+		
+		
+		
+
+		logger.debug("ID programtype: " + programtype);
+
+		logger.debug("company: " + company);
+		logger.debug("warehouse2: " + warehouse2);
+		logger.debug("vRemark: " + vRemark2);
+
+		Map<String, String[]> companyMapping = new HashMap<>();
+		companyMapping.put("10", new String[] { "10", "101" });
+		companyMapping.put("600", new String[] { "600", "600" });
+		companyMapping.put("500", new String[] { "500", "500" });
+		// เพิ่มได้เรื่อยๆ เช่น
+		// companyMapping.put("300", new String[] { "300", "301" });
+
+		// ดึงข้อมูลตาม company
+		String[] mapping = companyMapping.getOrDefault(company, new String[] { company, company });
+		String comcono = mapping[0];
+		String comdivi = mapping[1];
+
+		logger.debug("cono: " + comcono);
+		logger.debug("divi: " + comdivi);
+
+		try {
+			conn = ConnectDB2.doConnect();
+			stmt = conn.createStatement();
+			Statement stmt2 = conn.createStatement();
+
+			// สร้าง currentID จาก query
+			
+			/* String idQuery = "SELECT '25' || RIGHT('000000' || (INT(SUBSTR(COALESCE(MAX(FDSRNO), '25000000'), 3)) + 1), 6) AS CURRENT_ID \r\n"
+			
+					+ "FROM " + DBNAME + "." + SR_DETAIL + " \n"
+					+ "WHERE SUBSTR(FDSRNO, 1, 2) = '25' AND FDCONO  = '" + comcono + "' AND　FDDIVI = '" + comdivi
+					+ "' AND FDCODE ='ITRQ'  ";
+			*/	
+			
+//			String idQuery = "SELECT RIGHT(YEAR(CURRENT_DATE), 2)\r\n"
+//					+ "|| RIGHT('000000' || (INT(SUBSTR(COALESCE(MAX(FDSRNO), RIGHT(YEAR(CURRENT_DATE),2) || '000000'), 3)) + 1), 6)\r\n"
+//					+ "AS CURRENT_ID\r\n"
+//					+ "FROM " + DBNAME + "." + SR_DETAIL + "\r\n"
+//					+ "WHERE SUBSTR(FDSRNO, 1, 2) = RIGHT(YEAR(CURRENT_DATE), 2)\r\n"
+//					+ "AND FDCONO = '" + comcono +"'\r\n"
+//					+ "AND FDDIVI = '" + comdivi + "'\r\n"
+//					+ "AND FDCODE = 'ITRQ'";
+			
+			String idQuery = "SELECT RIGHT(YEAR(CURRENT_DATE), 2)\n"
+					+ "|| RIGHT('000000' || (INT(SUBSTR(COALESCE(MAX(FDSRNO), RIGHT(YEAR(CURRENT_DATE),2) || '000000'), 3)) + 1), 6)\n"
+					+ "AS CURRENT_ID\n"
+					+ "FROM "+DBNAME+"."+SR_DETAIL+" sf \n"
+					+ "WHERE SUBSTR(FDSRNO, 1, 2) = RIGHT(YEAR(CURRENT_DATE), 2)\n"
+					+ "AND FDCONO = '"+comcono+"'\n"
+					+ "AND FDDIVI = '"+comdivi+"'\n"
+					+ "AND FDCODE = 'SWRQ'";
+
+			/*
+			 * String idQuery =
+			 * "SELECT '25' || RIGHT('000000' || (INT(SUBSTR(COALESCE(MAX(SERVICE_ID), '25000000'), 3)) + 1), 6) AS CURRENT_ID \r\n"
+			 * + "FROM "+DBNAME+"."+SR_DETAIL+" \n"
+			 * + "WHERE SUBSTR(SERVICE_ID, 1, 2) = '25'";
+			 */
+			logger.debug("ID Query: " + idQuery);
+
+			rs = stmt.executeQuery(idQuery);
+			
+			String currentID = null;
+			String fdtype = "1";
+
+			if (rs.next()) {
+				currentID = rs.getString("CURRENT_ID");
+			}
+
+			String getFDTYPEQuery = "SELECT RQTYPE  FROM BRLDTABK01.sr_requesttype\r\n"
+					+ "WHERE RQCONO = '" + comcono + "'\r\n"
+					+ "AND RQDIVI = '" + comdivi + "' AND RQNAME = '"+programtype+"'\r\n"
+					+ "AND rqcode = 'SWRQ'";
+		
+			rs9 = stmt.executeQuery(getFDTYPEQuery);
+			logger.debug("ID Query: " + getFDTYPEQuery);
+			
+
+			if (rs9.next()) {
+				fdtype = rs9.getString("RQTYPE");
+			}
+			
+			logger.debug("ID fdtype: " + fdtype);
+
+			if (currentID != null) {
+				// insert ด้วย currentID
+				/*
+				 * String insertQuery = "INSERT INTO "+DBNAME+"."+SR_DETAIL+"  \n"
+				 * + "( json_data,SERVICE_ID,PROMGRAM_CODE,STATUS,DATE,TIME) \n"
+				 * + "VALUES ('" + vData + "','" + currentID +
+				 * "','ITMRQ', '10' ,CURRENT DATE ,CURRENT TIME)";
+				 */
+
+				String insertQuery = "INSERT INTO " + DBNAME + "." + SR_DETAIL + "\r\n"
+						+ "(FDCONO,FDDIVI,FDTYPE,  FDDATA, FDSRNO,FDCODE, FDDSTA , FDENDA, FDENTI,FDENUS) \r\n"
+						+ "VALUES ('" + comcono + "','" + comdivi + "','"+fdtype+"','" + vData + "','" + currentID
+						+ "','SWRQ', '10', CURRENT DATE, CURRENT TIME ,'" + username.toString() + "')";
+
+				logger.debug("Insert Query: " + insertQuery);
+
+				java.sql.Timestamp currentTimestamp = new java.sql.Timestamp(System.currentTimeMillis());
+				String dateYYYYMMDD = new java.text.SimpleDateFormat("yyyyMMdd").format(currentTimestamp);
+
+				/*
+				 * String insertQueryHead = "INSERT INTO "+DBNAME+"."+SR_HEAD+"  \n"
+				 * +
+				 * "( DOC_CODE,DOC_NO,REQUETER,CREATE_DATE,CREATE_TIME,STATUS,DEPTHEAD ,H_STATUS) \n"
+				 * + "VALUES ('ITRQ','" + currentID +
+				 * "','"+username+"',CURRENT DATE ,CURRENT TIME, '10','"+depthead+"',1)";
+				 */
+
+				String insertQueryHead = "INSERT INTO " + DBNAME + "." + SR_HEAD + "\r\n"
+						+ "(FHCONO,FHDIVI, FHCODE, FHSRNO,FHREQU ,FHENDA ,FHENTI,FHENUS ,FHREDA,FHHSTA ,FHDEPH , FHDSTA , FHDES1)\r\n"
+						+ "VALUES ('" + comcono + "','" + comdivi + "','SWRQ', '" + currentID + "', '" + username
+						+ "', CURRENT DATE , CURRENT TIME,'" + username + "' ,CURRENT DATE, 2, '" + depthead
+						+ "', 10 , 'SWRQ-" + currentID + "-" + "" + programtype + "-"+itemname+"')";
+				logger.debug("Insert Query: " + insertQueryHead);
+				
+				
+				
+				
+				
+
+				/*
+				 * String insertQueryTemp = "\r\n"
+				 * + "INSERT INTO BRLDTABK01.Approve_Detail02 (\r\n"
+				 * + "    ID,\r\n"
+				 * + "    DOC_CODE,\r\n"
+				 * + "    DOC_NO,\r\n"
+				 * + "APPROVE,\r\n"
+				 * + "APPROVE_DATE,\r\n"
+				 * + "STATUS,\r\n"
+				 * + "STS_DESC,\r\n"
+				 * + "TIME_ST \r\n"
+				 * + ")\r\n"
+				 * + "SELECT\r\n"
+				 * + "    STATUS,\r\n"
+				 * + "    DOC_CODE,\r\n"
+				 * + "    '" + currentID + "',\r\n"
+				 * + "    'PP',\r\n"
+				 * + "	'-',\r\n"
+				 * + "	STATUS,\r\n"
+				 * + "    'Wait for approve',\r\n"
+				 * + "    '-'\r\n"
+				 * + "FROM BRLDTABK01.flow_master\r\n"
+				 * 
+				 * + "WHERE DOC_CODE = 'ITRQ'\r\n"
+				 * + "";
+				 */
+				stmt.executeUpdate(insertQuery);
+
+				stmt.executeUpdate(insertQueryHead);
+
+				// stmt.executeUpdate(insertQueryTemp);
+				
+			
+				String recursiveQuery = "WITH RECURSIVE FILTERED_MASTER AS (\r\n"
+						+ "  SELECT *\r\n"
+						+ "  FROM "+DBNAME+"."+SR_FLOW +"\r\n"
+						+ "  WHERE PMCONO = '"+comcono+"'\r\n"
+						+ "    AND PMDIVI = '"+comdivi+"'\r\n"
+						+ "    AND PMCODE = 'SWRQ'\r\n"
+						+ "),\r\n"
+						+ "FILTERED_GROUP AS (\r\n"
+						+ "  SELECT *\r\n"
+						+ "  FROM "+DBNAME+"."+SR_GROUP+"\r\n"
+						+ "),\r\n"
+						+ "JOINED_DATA AS (\r\n"
+						+ "  SELECT\r\n"
+						+ "    M.PMCONO,\r\n"
+						+ "    M.PMDIVI,\r\n"
+						+ "    M.PMCODE,\r\n"
+						+ "    M.PMGROU,\r\n"
+						+ "    M.PMSGRO,\r\n"
+						+ "    M.PMSTAT,\r\n"
+						+ "    M.PMDES1,\r\n"
+						+ "    M.PMDES2,\r\n"
+						+ "    M.PMDES3,        -- ⭐ เพิ่ม\r\n"
+						+ "    M.PMDES4,        -- ⭐ เพิ่ม\r\n"
+						+ "    G.GMUSER,\r\n"
+						+ "    (\r\n"
+						+ "      SELECT MIN(M2.PMSTAT)\r\n"
+						+ "      FROM "+DBNAME+"."+SR_FLOW+" M2\r\n"
+						+ "      WHERE M2.PMCONO = M.PMCONO\r\n"
+						+ "        AND M2.PMDIVI = M.PMDIVI\r\n"
+						+ "        AND M2.PMCODE = M.PMCODE\r\n"
+						+ "        AND M2.PMSTAT > M.PMSTAT\r\n"
+						+ "    ) AS NEXT_STAT,\r\n"
+						+ "    ROW_NUMBER() OVER (\r\n"
+						+ "      PARTITION BY M.PMCONO, M.PMDIVI, M.PMCODE, M.PMSTAT\r\n"
+						+ "      ORDER BY\r\n"
+						+ "        CASE WHEN M.PMSGRO = '" + warehouse2 + "' THEN 0 ELSE 1 END,\r\n"
+						+ "        M.PMDES2 DESC,\r\n"
+						+ "        G.GMUSER ASC\r\n"
+						+ "    ) AS RN\r\n"
+						+ "  FROM FILTERED_MASTER M\r\n"
+						+ "  JOIN FILTERED_GROUP G\r\n"
+						+ "    ON M.PMCONO = G.GMCONO\r\n"
+						+ "   AND M.PMDIVI = G.GMDIVI\r\n"
+						+ "   AND M.PMGROU = G.GMGROU\r\n"
+						+ "   AND M.PMSGRO = G.GMSGRO\r\n"
+						+ "),\r\n"
+						+ "VACANT_FLAG AS (\r\n"
+						+ "  SELECT\r\n"
+						+ "    M.PMCONO,\r\n"
+						+ "    M.PMDIVI,\r\n"
+						+ "    M.PMCODE,\r\n"
+						+ "    M.PMGROU,\r\n"
+						+ "    M.PMSGRO,\r\n"
+						+ "    CASE WHEN COUNT(G2.GMUSER) > 0 THEN 'Y' ELSE 'N' END AS SKIP_IF_VACANT\r\n"
+						+ "  FROM FILTERED_MASTER M\r\n"
+						+ "  LEFT JOIN "+DBNAME+"."+SR_GROUP+" G2\r\n"
+						+ "    ON G2.GMCONO = M.PMCONO\r\n"
+						+ "   AND G2.GMDIVI = M.PMDIVI\r\n"
+						+ "   AND G2.GMGROU = M.PMGROU\r\n"
+						+ "   AND G2.GMSGRO = M.PMSGRO\r\n"
+						+ "   AND UPPER(TRIM(G2.GMUSER)) = 'VACANT'\r\n"
+						+ "  GROUP BY M.PMCONO, M.PMDIVI, M.PMCODE, M.PMGROU, M.PMSGRO\r\n"
+						+ "),\r\n"
+						+ "CONCAT_CTE (\r\n"
+						+ "  PMCONO, PMDIVI, PMCODE, PMGROU, PMSGRO,\r\n"
+						+ "  PMSTAT, PMDES1, PMDES2, PMDES3, PMDES4,   -- ⭐ เพิ่ม\r\n"
+						+ "  RN, NAME_SERIAL\r\n"
+						+ ") AS (\r\n"
+						+ "  SELECT\r\n"
+						+ "    PMCONO, PMDIVI, PMCODE, PMGROU, PMSGRO,\r\n"
+						+ "    PMSTAT, PMDES1, PMDES2, PMDES3, PMDES4,  -- ⭐ เพิ่ม\r\n"
+						+ "    RN,\r\n"
+						+ "    GMUSER AS NAME_SERIAL\r\n"
+						+ "  FROM JOINED_DATA\r\n"
+						+ "  WHERE RN = 1\r\n"
+						+ "  UNION ALL\r\n"
+						+ "  SELECT\r\n"
+						+ "    J.PMCONO, J.PMDIVI, J.PMCODE, J.PMGROU, J.PMSGRO,\r\n"
+						+ "    J.PMSTAT, J.PMDES1, J.PMDES2, J.PMDES3, J.PMDES4,  -- ⭐ เพิ่ม\r\n"
+						+ "    J.RN,\r\n"
+						+ "    C.NAME_SERIAL || ',' || J.GMUSER\r\n"
+						+ "  FROM CONCAT_CTE C\r\n"
+						+ "  JOIN JOINED_DATA J\r\n"
+						+ "    ON C.PMCONO = J.PMCONO\r\n"
+						+ "   AND C.PMDIVI = J.PMDIVI\r\n"
+						+ "   AND C.PMCODE = J.PMCODE\r\n"
+						+ "   AND C.PMGROU = J.PMGROU\r\n"
+						+ "   AND C.PMSGRO = J.PMSGRO\r\n"
+						+ "   AND J.RN = C.RN + 1\r\n"
+						+ ")\r\n"
+						+ "SELECT\r\n"
+						+ "  C.PMCONO,\r\n"
+						+ "  C.PMDIVI,\r\n"
+						+ "  C.PMCODE,\r\n"
+						+ "  C.PMGROU,\r\n"
+						+ "  C.PMSGRO,\r\n"
+						+ "  C.PMSTAT,\r\n"
+						+ "  C.PMDES1,\r\n"
+						+ "  C.PMDES2,\r\n"
+						+ "  C.PMDES3 AS NEXT_STAT,\r\n"
+						+ "  C.PMDES4 AS PREVIOUS_STAT,    \r\n"
+						+ "  C.NAME_SERIAL,\r\n"
+						+ "  V.SKIP_IF_VACANT\r\n"
+						+ "FROM CONCAT_CTE C\r\n"
+						+ "LEFT JOIN VACANT_FLAG V\r\n"
+						+ "  ON C.PMCONO = V.PMCONO\r\n"
+						+ " AND C.PMDIVI = V.PMDIVI\r\n"
+						+ " AND C.PMCODE = V.PMCODE\r\n"
+						+ " AND C.PMGROU = V.PMGROU\r\n"
+						+ " AND C.PMSGRO = V.PMSGRO\r\n"
+						+ "LEFT JOIN CONCAT_CTE C2\r\n"
+						+ "  ON C2.PMCONO = C.PMCONO\r\n"
+						+ " AND C2.PMDIVI = C.PMDIVI\r\n"
+						+ " AND C2.PMCODE = C.PMCODE\r\n"
+						+ " AND C2.PMGROU = C.PMGROU\r\n"
+						+ " AND C2.PMSGRO = C.PMSGRO\r\n"
+						+ " AND C2.RN = C.RN + 1\r\n"
+						+ "WHERE C2.PMCONO IS NULL\r\n"
+						+ "ORDER BY C.PMSTAT, C.PMGROU, C.PMSGRO\r\n"
+						+ "";
+				
+				
+				/*
+				String recursiveQuery = "WITH RECURSIVE FILTERED_MASTER AS (\r\n"
+						+ "  --  Step 1: Select all rows for PMCONO, PMDIVI, PMCODE='ITRQ' from SR_PROCESSMASTER\r\n"
+						+ "  SELECT *\r\n"
+						+ "  FROM " + DBNAME + "." + SR_FLOW + "\r\n"
+						+ "  WHERE PMCONO = '" + comcono + "'\r\n"
+						+ "    AND PMDIVI = '" + comdivi + "'\r\n"
+						+ "    AND PMCODE = 'ITRQ'\r\n"
+						+ "),\r\n"
+						+ "FILTERED_GROUP AS (\r\n"
+						+ "  --  Step 2: Select all rows from SR_GROUPMASTER (no filter applied)\r\n"
+						+ "  SELECT *\r\n"
+						+ "  FROM " + DBNAME + "." + SR_GROUP + "\r\n"
+						+ "),\r\n"
+						+ "JOINED_DATA AS (\r\n"
+						+ "  --  Step 3: Join PROCESSMASTER and GROUPMASTER on CONO, DIVI, GROUP, SUBGROUP\r\n"
+						+ "  -- Assign row numbers to handle duplicates per PMSTAT\r\n"
+						+ "  SELECT\r\n"
+						+ "    M.PMCONO,\r\n"
+						+ "    M.PMDIVI,\r\n"
+						+ "    M.PMCODE,\r\n"
+						+ "    M.PMGROU,\r\n"
+						+ "    M.PMSGRO,\r\n"
+						+ "    M.PMSTAT,\r\n"
+						+ "    M.PMDES1,\r\n"
+						+ "    M.PMDES2,\r\n"
+						+ "    G.GMUSER,\r\n"
+						+ "    ROW_NUMBER() OVER (\r\n"
+						+ "      PARTITION BY M.PMCONO, M.PMDIVI, M.PMCODE, M.PMSTAT\r\n"
+						+ "      ORDER BY\r\n"
+						+ "        --  Priority 1: PMSGRO matches :TARGET_SUBGROUP\r\n"
+						+ "        CASE\r\n"
+						+ "          WHEN M.PMSGRO = '" + warehouse2 + "' THEN 0\r\n"
+						+ "          ELSE 1\r\n"
+						+ "        END,\r\n"
+						+ "        --  Priority 2: PMDES2 DESC (higher value preferred)\r\n"
+						+ "        M.PMDES2 DESC,\r\n"
+						+ "        --  Tie-breaker: PMSGRO alphabetically\r\n"
+						+ "        M.PMSGRO ASC\r\n"
+						+ "    ) AS RN\r\n"
+						+ "  FROM FILTERED_MASTER M\r\n"
+						+ "  JOIN FILTERED_GROUP G\r\n"
+						+ "    ON M.PMCONO = G.GMCONO         -- ✅ Match company\r\n"
+						+ "   AND M.PMDIVI = G.GMDIVI         -- ✅ Match division\r\n"
+						+ "   AND M.PMGROU = G.GMGROU         -- ✅ Match group\r\n"
+						+ "   AND M.PMSGRO = G.GMSGRO         -- ✅ Match subgroup\r\n"
+						+ "),\r\n"
+						+ "CONCAT_CTE (\r\n"
+						+ "  PMCONO, PMDIVI, PMCODE, PMGROU, PMSGRO, PMSTAT, PMDES1, PMDES2, RN, NAME_SERIAL\r\n"
+						+ ") AS (\r\n"
+						+ "  --  Step 4: Start recursive concatenation\r\n"
+						+ "  -- Pick only the highest priority row per PMSTAT (RN=1)\r\n"
+						+ "  SELECT\r\n"
+						+ "    PMCONO,\r\n"
+						+ "    PMDIVI,\r\n"
+						+ "    PMCODE,\r\n"
+						+ "    PMGROU,\r\n"
+						+ "    PMSGRO,\r\n"
+						+ "    PMSTAT,\r\n"
+						+ "    PMDES1,\r\n"
+						+ "    PMDES2,\r\n"
+						+ "    RN,\r\n"
+						+ "    GMUSER\r\n"
+						+ "  FROM JOINED_DATA\r\n"
+						+ "  WHERE RN = 1\r\n"
+						+ "  UNION ALL\r\n"
+						+ "  --  Step 5: Concatenate GMUSER values for rows with RN > 1\r\n"
+						+ "  SELECT\r\n"
+						+ "    J.PMCONO,\r\n"
+						+ "    J.PMDIVI,\r\n"
+						+ "    J.PMCODE,\r\n"
+						+ "    J.PMGROU,\r\n"
+						+ "    J.PMSGRO,\r\n"
+						+ "    J.PMSTAT,\r\n"
+						+ "    J.PMDES1,\r\n"
+						+ "    J.PMDES2,\r\n"
+						+ "    J.RN,\r\n"
+						+ "    C.NAME_SERIAL || ',' || J.GMUSER\r\n"
+						+ "  FROM CONCAT_CTE C\r\n"
+						+ "  JOIN JOINED_DATA J\r\n"
+						+ "    ON C.PMCONO = J.PMCONO\r\n"
+						+ "   AND C.PMDIVI = J.PMDIVI\r\n"
+						+ "   AND C.PMCODE = J.PMCODE\r\n"
+						+ "   AND C.PMGROU = J.PMGROU\r\n"
+						+ "   AND C.PMSGRO = J.PMSGRO\r\n"
+						+ "   AND J.RN = C.RN + 1\r\n"
+						+ ")\r\n"
+						+ "--  Step 6: Select only rows with no next RN (final row per group)\r\n"
+						+ "SELECT\r\n"
+						+ "  PMCONO,\r\n"
+						+ "  PMDIVI,\r\n"
+						+ "  PMCODE,\r\n"
+						+ "  PMGROU,\r\n"
+						+ "  PMSGRO,\r\n"
+						+ "  PMSTAT,\r\n"
+						+ "  PMDES1,\r\n"
+						+ "  NAME_SERIAL\r\n"
+						+ "FROM CONCAT_CTE C\r\n"
+						+ "WHERE NOT EXISTS (\r\n"
+						+ "  SELECT 1\r\n"
+						+ "  FROM CONCAT_CTE C2\r\n"
+						+ "  WHERE\r\n"
+						+ "    C2.PMCONO = C.PMCONO\r\n"
+						+ "    AND C2.PMDIVI = C.PMDIVI\r\n"
+						+ "    AND C2.PMCODE = C.PMCODE\r\n"
+						+ "    AND C2.PMGROU = C.PMGROU\r\n"
+						+ "    AND C2.PMSGRO = C.PMSGRO\r\n"
+						+ "    AND C2.RN = C.RN + 1\r\n"
+						+ ")\r\n"
+						+ "--  Step 7: Final sorting of result\r\n"
+						+ "ORDER BY PMSTAT, PMGROU, PMSGRO";
+
+				/*
+				 * String recursiveQuery = "WITH RECURSIVE filtered_master AS (\r\n"
+				 * + "SELECT *\r\n"
+				 * + "FROM "+DBNAME+"."+SR_FLOW+"\r\n"
+				 * + "WHERE DOC_CODE = 'ITRQ'\r\n"
+				 * + "),\r\n"
+				 * + "filtered_group AS (\r\n"
+				 * + "SELECT *\r\n"
+				 * + "FROM "+DBNAME+"."+SR_GROUP+"\r\n"
+				 * + "WHERE WHS = 'A91'\r\n"
+				 * + "),\r\n"
+				 * + "joined_data AS (\r\n"
+				 * + "SELECT\r\n"
+				 * + "m.DOC_CODE,\r\n"
+				 * + "m.GROUP,\r\n"
+				 * + "m.SUBGROUP,\r\n"
+				 * + "m.STATUS,\r\n"
+				 * + "m.REMARK,\r\n"
+				 * + "g.NAME,\r\n"
+				 * + "ROW_NUMBER() OVER (\r\n"
+				 * + "PARTITION BY m.DOC_CODE, m.GROUP, m.SUBGROUP\r\n"
+				 * + "ORDER BY g.NAME\r\n"
+				 * + ") AS RN\r\n"
+				 * + "FROM filtered_master m\r\n"
+				 * + "JOIN filtered_group g\r\n"
+				 * + "ON m.GROUP = g.PROGROUP AND m.SUBGROUP = g.SUBGROUP\r\n"
+				 * + "),\r\n"
+				 * + "concat_cte (\r\n"
+				 * + "DOC_CODE, GROUP_ID, SUBGROUP, STATUS, REMARK, RN, NAME_SERIAL\r\n"
+				 * + ") AS (\r\n"
+				 * + "SELECT\r\n"
+				 * + "DOC_CODE,\r\n"
+				 * + "GROUP,\r\n"
+				 * + "SUBGROUP,\r\n"
+				 * + "STATUS,\r\n"
+				 * + "REMARK,\r\n"
+				 * + "RN,\r\n"
+				 * + "NAME\r\n"
+				 * + "FROM joined_data\r\n"
+				 * + "WHERE RN = 1\r\n"
+				 * + "\r\n"
+				 * + "UNION ALL\r\n"
+				 * + "\r\n"
+				 * + "SELECT\r\n"
+				 * + "j.DOC_CODE,\r\n"
+				 * + "j.GROUP,\r\n"
+				 * + "j.SUBGROUP,\r\n"
+				 * + "j.STATUS,\r\n"
+				 * + "j.REMARK,\r\n"
+				 * + "j.RN,\r\n"
+				 * + "c.NAME_SERIAL || ',' || j.NAME\r\n"
+				 * + "FROM concat_cte c\r\n"
+				 * + "JOIN joined_data j\r\n"
+				 * + "ON c.DOC_CODE = j.DOC_CODE\r\n"
+				 * + "AND c.GROUP_ID = j.GROUP\r\n"
+				 * + "AND c.SUBGROUP = j.SUBGROUP\r\n"
+				 * + "AND j.RN = c.RN + 1\r\n"
+				 * + ")\r\n"
+				 * + "\r\n"
+				 * + "SELECT\r\n"
+				 * + "DOC_CODE,\r\n"
+				 * + "STATUS,\r\n"
+				 * + "REMARK,\r\n"
+				 * + "NAME_SERIAL\r\n"
+				 * + "FROM concat_cte c\r\n"
+				 * + "WHERE NOT EXISTS (\r\n"
+				 * + "SELECT 1\r\n"
+				 * + "FROM concat_cte c2\r\n"
+				 * + "WHERE\r\n"
+				 * + "c2.DOC_CODE = c.DOC_CODE\r\n"
+				 * + "AND c2.GROUP_ID = c.GROUP_ID\r\n"
+				 * + "AND c2.SUBGROUP = c.SUBGROUP\r\n"
+				 * + "AND c2.RN = c.RN + 1\r\n"
+				 * + ")\r\n"
+				 * + "ORDER BY STATUS";
+				 * 
+				 */
+
+				/*
+				 * String recursiveQuery = "WITH RECURSIVE " +
+				 * "filtered_master AS ( " +
+				 * "  SELECT * FROM "+DBNAME+"."+SR_FLOW+" WHERE DOC_CODE = 'ITRQ' " +
+				 * "), " +
+				 * "filtered_group AS ( " +
+				 * "  SELECT * FROM "+DBNAME+"."+SR_GROUP+" WHERE WHS = 'A91' " +
+				 * "), " +
+				 * "joined_data AS ( " +
+				 * "  SELECT m.DOC_CODE, m.GROUP, m.SUBGROUP, m.STATUS, g.NAME, " +
+				 * "         ROW_NUMBER() OVER (PARTITION BY m.DOC_CODE, m.GROUP, m.SUBGROUP ORDER BY g.NAME) AS RN "
+				 * +
+				 * "  FROM filtered_master m " +
+				 * "  JOIN filtered_group g ON m.GROUP = g.PROGROUP AND m.SUBGROUP = g.SUBGROUP "
+				 * +
+				 * "), " +
+				 * "concat_cte (DOC_CODE, GROUP_ID, SUBGROUP, STATUS, RN, NAME_SERIAL) AS ( " +
+				 * "  SELECT DOC_CODE, GROUP, SUBGROUP, STATUS, RN, NAME FROM joined_data WHERE RN = 1 "
+				 * +
+				 * "  UNION ALL " +
+				 * "  SELECT j.DOC_CODE, j.GROUP, j.SUBGROUP, j.STATUS, j.RN, c.NAME_SERIAL || ':' || j.NAME "
+				 * +
+				 * "  FROM concat_cte c JOIN joined_data j " +
+				 * "  ON c.DOC_CODE = j.DOC_CODE AND c.GROUP_ID = j.GROUP AND c.SUBGROUP = j.SUBGROUP AND j.RN = c.RN + 1 "
+				 * +
+				 * ") " +
+				 * "SELECT DOC_CODE, STATUS, NAME_SERIAL FROM concat_cte c " +
+				 * "WHERE NOT EXISTS ( " +
+				 * "  SELECT 1 FROM concat_cte c2 " +
+				 * "  WHERE c2.DOC_CODE = c.DOC_CODE AND c2.GROUP_ID = c.GROUP_ID AND c2.SUBGROUP = c.SUBGROUP AND c2.RN = c.RN + 1 "
+				 * +
+				 * ") ORDER BY STATUS";
+				 * 
+				 */
+
+				logger.debug("PPPPPP : " + recursiveQuery);
+				rs = stmt.executeQuery(recursiveQuery);
+
+				while (rs.next()) {
+					String cono = rs.getString("PMCONO");
+					String divi = rs.getString("PMDIVI");
+					String docCode = rs.getString("PMCODE");
+					String status = rs.getString("PMSTAT");
+					String approve = rs.getString("NAME_SERIAL");
+					String remark = rs.getString("PMDES1");
+					/*
+					 * String insertDetail = "INSERT INTO "+DBNAME+"."+SR_APPROVE+" " +
+					 * "( DOC_CODE, DOC_NO, APPROVE, APPROVE_DATE, STATUS, STS_DESC, TIME_ST, APPROVED_USER ,REMARK) "
+					 * +
+					 * "VALUES (" +
+					 * "'" + docCode + "', " +
+					 * "'" + currentID + "', " +
+					 * "'" + approve + "', " +
+					 * "'-', " +
+					 * "'" + status + "', " +
+					 * "'Wait for approve', " +
+					 * "'-', " +
+					 * "'-',  " +
+					 * "'" + remark + "'" +
+					 * ")";
+					 * 
+					 */
+
+					String insertDetail = "INSERT INTO " + DBNAME + "." + SR_APPROVE + " " +
+							"(FATYPE,FACONO,FADIVI, FACODE,FASRNO ,FAAPLI ,FAAPDA ,FASTAT , FADES1, FAENTI,FAENDA,FAAPBY,FADES2) "
+							+
+							"VALUES (" +
+							" '1' , '" + comcono + "','" + comdivi + "','" + docCode + "', " +
+							"'" + currentID + "', " +
+							"'" + approve + "', " +
+							"NULL, " +
+							"'" + status + "', " +
+							"'Wait for approve', " +
+							"CURRENT TIME, " +
+							"CURRENT DATE, " +
+							"'',  " +
+							"'" + remark + "'" +
+							")";
+
+					logger.debug("xxxxxxin " + insertDetail);
+					stmt2.executeUpdate(insertDetail);
+
+				}
+
+				/*
+				 * 
+				 * String query2 = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
+				 * + "SET  STS_DESC = 'Approved',APPROVE = '"+username+"' , TIME_ST = '" +
+				 * currentTimestamp + "',APPROVED_USER = 'PP', APPROVE_DATE = '" + dateYYYYMMDD
+				 * +
+				 * "' WHERE DOC_CODE = 'ITRQ' AND DOC_NO = '" + currentID +
+				 * "' AND STATUS = '10' ";
+				 */
+
+				String query2 = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n"
+						+ "SET FAENUS = '" + username + "', FADES1 = 'Approved',FAAPLI = '" + username
+						+ "' ,FAAPDA = CURRENT DATE, FAENTI = CURRENT TIME, FAAPTI = CURRENT TIME ,FAAPBY = '"
+						+ username + "', FAENDA = CURRENT DATE ,  FADES3 = '"+vRemark2+"' WHERE FACODE = 'ITRQ' AND FASRNO = '" + currentID
+						+ "' AND FASTAT = '00'  AND FACONO = '"+comcono+"' AND  FADIVI = '"+comdivi+"' ";
+
+				logger.debug("xxxxxxin " + query2);
+
+				stmt2.executeUpdate(query2);
+
+				/*
+				 * 
+				 * String query222 = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n"
+				 * + "SET APPROVE = '" + depthead + "' \n"
+				 * + "WHERE DOC_CODE = 'ITRQ' AND DOC_NO = '" + currentID +
+				 * "' AND STATUS = '20'";
+				 * 
+				 */
+
+				String query222 = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n"
+						+ "SET  FAAPLI = '" + depthead + "' \n"
+						+ "WHERE  FACODE = 'ITRQ' AND FASRNO  = '" + currentID + "' AND FASTAT = '10' AND FACONO = '"+comcono+"' AND FADIVI = '"+comdivi+"' ";
+
+				logger.debug("xxxxxxin " + query222);
+				stmt2.executeUpdate(query222);
+
+				String data = SelectData.getSTATUSIDITEMRQ(currentID.toString(), comcono, comdivi);
+				String url = "https://workflow.br-bangkokranch.com/webhook/sendtodb2";
+
+				String response = HttpConnection.sendRequest(
+						"POST",
+						url,
+						Map.of("x-access-token",
+								"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMCA6IDEwMSA6IOC4muC4o-C4tOC4qeC4seC4lyDguJrguLLguIfguIHguK3guIHguYHguKPguYnguJnguIrguYwg4LiI4Liz4LiB4Lix4LiUICjguKHguKvguLLguIrguJkpIiwiaXNzIjoiYXV0aGVuLXNlcnZpY2UiLCJhdWQiOiIwMTAyOTA2Iiwicm9sZSI6Ik1QTV8xQTEgOiBBUFBST1ZFIDogU0FMRU1BTiA6IDAiLCJleHAiOjE3NTAxNzY1NzF9.cAMs1gdcg3cxfYNTJi_WTHpBCKDxaw-MjwrDpmFPPSo"), // headers
+						data,
+						null // form-data
+				);
+
+				logger.debug("response: " + response);
+
+				mJsonObj.put("result", "ok");
+				mJsonObj.put("message", "Service No. " + currentID);
+			} else {
+				mJsonObj.put("result", "nok");
+				mJsonObj.put("message", "Cannot generate Service No.");
+			}
+
+			return mJsonObj.toString();
+
+		} catch (SQLException e) {
+			logger.error("SQL Error: " + e.getMessage());
+			mJsonObj.put("result", "nok");
+			mJsonObj.put("message", e.getMessage());
+			return mJsonObj.toString();
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					logger.error(e.getMessage());
+				}
+			if (stmt != null)
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					logger.error(e.getMessage());
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					logger.error(e.getMessage());
+				}
+		}
+	}
+	
+	public static String prepareInsertSRM(String vData, String username, String depthead) throws Exception {
+		logger.info("insertRQ");
+
+		JSONObject mJsonObj = new JSONObject();
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		ResultSet rs9 = null;
+
+		logger.debug("vData: " + vData);
+
+		JSONObject obj = new JSONObject(vData);
+
+		String company = obj.optString("company");
+	
+		
+		String programtype = obj.optString("programtype");
+		
+		String version = obj.optString("vVersion");
+	
+		String MaxNo = InsertSRMHead( vData,  username,  depthead);
+		
+		InsertSRMDetail(vData,username,depthead,MaxNo);
+		InsertSRMApprove(vData,username,depthead,MaxNo);
+		
+		//SEND EMAIL
+		SendEmail(vData,username,depthead,MaxNo);
+		
+		return vData;
+	}
+	
+
+	
+	public static void  SendEmail(String vData, String username, String depthead,String Maxno) throws Exception {
+		logger.info("insertRQ");
+		JSONObject mJsonObj = new JSONObject();
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		ResultSet rs9 = null;
+		try {
+			
+		
+		
+		conn = ConnectDB2.doConnect();
+		stmt = conn.createStatement();
+		Statement stmt2 = conn.createStatement();
+
+		logger.debug("vData: " + vData);
+
+		JSONObject obj = new JSONObject(vData);
+
+		String company = obj.optString("company");
+	
+		
+		String programtype = obj.optString("programtype");
+		
+		String version = obj.optString("vVersion");
+		String softwareName = obj.optString("softwareName");
+		String requestDate = obj.optString("requestDate");
+		logger.debug("vVersion: " + version);
+		String year2digit = requestDate.substring(0,4).substring(2);
+		String maxNo = "";
+		
+		Map<String, String[]> companyMapping = new HashMap<>();
+		companyMapping.put("10", new String[] { "10", "101" });
+		companyMapping.put("600", new String[] { "600", "600" });
+		companyMapping.put("500", new String[] { "500", "500" });
+		// เพิ่มได้เรื่อยๆ เช่น
+		// companyMapping.put("300", new String[] { "300", "301" });
+
+		// ดึงข้อมูลตาม company
+		String[] mapping = companyMapping.getOrDefault(company, new String[] { company, company });
+		String comcono = mapping[0];
+		String comdivi = mapping[1];
+
+		logger.debug("cono: " + comcono);
+		logger.debug("divi: " + comdivi);
+
+		String data = SelectData.getSTATUSIDSWRQ(Maxno.toString(), comcono, comdivi);
+		String url = "https://workflow.br-bangkokranch.com/webhook/softwarereq_sendmail";
+
+		String response = HttpConnection.sendRequest(
+				"POST",
+				url,
+				Map.of("x-access-token",
+						"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMCA6IDEwMSA6IOC4muC4o-C4tOC4qeC4seC4lyDguJrguLLguIfguIHguK3guIHguYHguKPguYnguJnguIrguYwg4LiI4Liz4LiB4Lix4LiUICjguKHguKvguLLguIrguJkpIiwiaXNzIjoiYXV0aGVuLXNlcnZpY2UiLCJhdWQiOiIwMTAyOTA2Iiwicm9sZSI6Ik1QTV8xQTEgOiBBUFBST1ZFIDogU0FMRU1BTiA6IDAiLCJleHAiOjE3NTAxNzY1NzF9.cAMs1gdcg3cxfYNTJi_WTHpBCKDxaw-MjwrDpmFPPSo"), // headers
+				data,
+				null // form-data
+		);
+		
+		logger.debug("vVersion: " + version);
+		
+		} catch (SQLException e) {
+			logger.error("SQL Error: " + e.getMessage());
+			mJsonObj.put("result", "nok");
+			mJsonObj.put("message", e.getMessage());
+//			return mJsonObj.toString();
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					logger.error(e.getMessage());
+				}
+			if (stmt != null)
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					logger.error(e.getMessage());
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					logger.error(e.getMessage());
+				}
+		}
+	}
+	
+	
+	
+
+	
+	public static String InsertSRMHead(String vData, String username, String depthead) throws Exception {
+		logger.info("insertRQ");
+		JSONObject mJsonObj = new JSONObject();
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		ResultSet rs9 = null;
+		try {
+			
+		
+		
+		conn = ConnectDB2.doConnect();
+		stmt = conn.createStatement();
+		Statement stmt2 = conn.createStatement();
+
+		logger.debug("vData: " + vData);
+
+		JSONObject obj = new JSONObject(vData);
+
+		String company = obj.optString("company");
+	
+		
+		String programtype = obj.optString("programtype");
+		
+		String version = obj.optString("vVersion");
+		String softwareName = obj.optString("softwareName");
+		String requestDate = obj.optString("requestDate");
+		logger.debug("vVersion: " + version);
+		String year2digit = requestDate.substring(0,4).substring(2);
+		String maxNo = "";
+		
+		Map<String, String[]> companyMapping = new HashMap<>();
+		companyMapping.put("10", new String[] { "10", "101" });
+		companyMapping.put("600", new String[] { "600", "600" });
+		companyMapping.put("500", new String[] { "500", "500" });
+		// เพิ่มได้เรื่อยๆ เช่น
+		// companyMapping.put("300", new String[] { "300", "301" });
+
+		// ดึงข้อมูลตาม company
+		String[] mapping = companyMapping.getOrDefault(company, new String[] { company, company });
+		String comcono = mapping[0];
+		String comdivi = mapping[1];
+
+		logger.debug("cono: " + comcono);
+		logger.debug("divi: " + comdivi);
+		
+		
+		String insertQueryHead = "INSERT INTO " + DBNAME + "." + SR_HEAD + "\n"
+				+ "(FHCONO,FHDIVI, FHCODE, FHSRNO,FHREQU ,FHENDA ,FHENTI,FHENUS ,FHREDA,FHHSTA ,FHDEPH , FHDSTA , FHDES1)\n"
+				+ "VALUES ('" + comcono + "','" + comdivi + "','SWRQ', ( SELECT \r\n"
+						+ "   RIGHT(TRIM(CHAR(YEAR(CURRENT DATE))), 2) ||\r\n"
+						+ "    RIGHT('000000' ||\n"
+						+ "          COALESCE(\n"
+						+ "              MAX(INTEGER(SUBSTR(FHSRNO,3,6))) + 1,\n"
+						+ "              1\n"
+						+ "          ),\n"
+						+ "    6) AS NEXT_NUMBER\n"
+						+ "FROM "+DBNAME+"."+SR_HEAD+" sf \n"
+						+ "WHERE SUBSTR(FHSRNO,1,2) = "+year2digit+" AND FHCODE = 'SWRQ' ), '" + username + "'\n"
+				+ ", CURRENT DATE , CURRENT TIME,'" + username + "' ,CURRENT DATE, 2, '" + depthead + "'\n"
+				+ ", 10 , 'SWRQ-'||( SELECT \n"
+				+ "   RIGHT(TRIM(CHAR(YEAR(CURRENT DATE))), 2) ||\n"
+				+ "    RIGHT('000000' ||\r\n"
+				+ "          COALESCE(\r\n"
+				+ "              MAX(INTEGER(SUBSTR(FHSRNO,3,6))) + 1,\n"
+				+ "              1\r\n"
+				+ "          ),\r\n"
+				+ "    6) AS NEXT_NUMBER\r\n"
+				+ "FROM "+DBNAME+"."+SR_HEAD+" sf \r\n"
+				+ "WHERE SUBSTR(FHSRNO,1,2) = 26 AND FHCODE = 'SWRQ')||'-" + "" + programtype + "-"+softwareName+"')";
+		logger.debug("Insert Query: " + insertQueryHead);
+		stmt.executeUpdate(insertQueryHead);
+		
+		
+		String getMaxNumber = "SELECT MAX(FHSRNO) as MAXNO\r\n"
+				+ "FROM "+DBNAME+"." + SR_HEAD +"\n"
+				+ "WHERE FHCONO = '"+comcono+"'\n"
+				+ "AND FHDIVI = '"+comdivi+"'\n"
+				+ "AND FHCODE = 'SWRQ'\n"
+				+ "AND FHREQU = '" + username + "'\n";
+		
+		rs9 = stmt.executeQuery(getMaxNumber);
+		logger.debug("ID Query: " + getMaxNumber);
+		
+
+		if (rs9.next()) {
+			maxNo = rs9.getString("MAXNO");
+		}
+		
+	
+		return maxNo;
+		} catch (SQLException e) {
+			logger.error("SQL Error: " + e.getMessage());
+			mJsonObj.put("result", "nok");
+			mJsonObj.put("message", e.getMessage());
+			return mJsonObj.toString();
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					logger.error(e.getMessage());
+				}
+			if (stmt != null)
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					logger.error(e.getMessage());
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					logger.error(e.getMessage());
+				}
+		}
+	}
+	
+	
+	
+
+	
+	
+	
+	public static String InsertSRMDetail(String vData, String username, String depthead,String maxNo) throws Exception {
+		logger.info("insertRQ");
+		JSONObject mJsonObj = new JSONObject();
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		ResultSet rs9 = null;
+		try {
+			
+		
+		
+		conn = ConnectDB2.doConnect();
+		stmt = conn.createStatement();
+		Statement stmt2 = conn.createStatement();
+
+		logger.debug("vData: " + vData);
+
+		JSONObject obj = new JSONObject(vData);
+
+		String company = obj.optString("company");
+	
+		
+		String programtype = obj.optString("programtype");
+		
+		String version = obj.optString("vVersion");
+		String softwareName = obj.optString("softwareName");
+		String requestDate = obj.optString("requestDate");
+		logger.debug("vVersion: " + version);
+		String year2digit = requestDate.substring(0,4).substring(2);
+		
+		
+		Map<String, String[]> companyMapping = new HashMap<>();
+		companyMapping.put("10", new String[] { "10", "101" });
+		companyMapping.put("600", new String[] { "600", "600" });
+		companyMapping.put("500", new String[] { "500", "500" });
+		// เพิ่มได้เรื่อยๆ เช่น
+		// companyMapping.put("300", new String[] { "300", "301" });
+
+		// ดึงข้อมูลตาม company
+		String[] mapping = companyMapping.getOrDefault(company, new String[] { company, company });
+		String comcono = mapping[0];
+		String comdivi = mapping[1];
+		String fdtype = "1";
+		logger.debug("cono: " + comcono);
+		logger.debug("divi: " + comdivi);
+		
+		
+
+		String insertQuery = "INSERT INTO " + DBNAME + "." + SR_DETAIL + "\n"
+				+ "(FDCONO,FDDIVI,FDTYPE,  FDDATA, FDSRNO,FDCODE, FDDSTA , FDENDA, FDENTI,FDENUS) \n"
+				+ "VALUES ('" + comcono + "','" + comdivi + "','"+fdtype+"','" + vData + "','" + maxNo + "'\n"
+				+ ",'SWRQ', '10', CURRENT DATE, CURRENT TIME ,'" + username.toString() + "')";
+
+		logger.debug("Insert Query: " + insertQuery);
+//		logger.debug("Insert Query: " + insertQueryHead);
+		
+		stmt.executeUpdate(insertQuery);
+		return "Yay it updated";
+		} catch (SQLException e) {
+			logger.error("SQL Error: " + e.getMessage());
+			mJsonObj.put("result", "nok");
+			mJsonObj.put("message", e.getMessage());
+			return mJsonObj.toString();
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					logger.error(e.getMessage());
+				}
+			if (stmt != null)
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					logger.error(e.getMessage());
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					logger.error(e.getMessage());
+				}
+		}
+	}
+	
+	
+	public static String InsertSRMApprove(String vData, String username, String depthead,String maxNo) throws Exception {
+		logger.info("insertSRMAPPROVE");
+		JSONObject mJsonObj = new JSONObject();
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		ResultSet rs9 = null;
+		try {
+			
+		
+		
+		conn = ConnectDB2.doConnect();
+		stmt = conn.createStatement();
+		Statement stmt2 = conn.createStatement();
+
+		logger.debug("vData: " + vData);
+
+		JSONObject obj = new JSONObject(vData);
+
+		String company = obj.optString("company");
+	
+		
+		String programtype = obj.optString("programtype");
+		
+		String version = obj.optString("vVersion");
+		String softwareName = obj.optString("softwareName");
+		String requestDate = obj.optString("requestDate");
+		logger.debug("vVersion: " + version);
+		String year2digit = requestDate.substring(0,4).substring(2);
+		
+		
+		Map<String, String[]> companyMapping = new HashMap<>();
+		companyMapping.put("10", new String[] { "10", "101" });
+		companyMapping.put("600", new String[] { "600", "600" });
+		companyMapping.put("500", new String[] { "500", "500" });
+		// เพิ่มได้เรื่อยๆ เช่น
+		// companyMapping.put("300", new String[] { "300", "301" });
+
+		// ดึงข้อมูลตาม company
+		String[] mapping = companyMapping.getOrDefault(company, new String[] { company, company });
+		String comcono = mapping[0];
+		String comdivi = mapping[1];
+		String fdtype = "1";
+		logger.debug("cono: " + comcono);
+		logger.debug("divi: " + comdivi);
+		
+		
+
+		String recursiveQuery = "WITH RECURSIVE FILTERED_MASTER AS (\r\n"
+				+ "  SELECT *\r\n"
+				+ "  FROM "+DBNAME+"."+SR_FLOW +"\r\n"
+				+ "  WHERE PMCONO = '"+comcono+"'\r\n"
+				+ "    AND PMDIVI = '"+comdivi+"'\r\n"
+				+ "    AND PMCODE = 'SWRQ'\r\n"
+				+ "),\r\n"
+				+ "FILTERED_GROUP AS (\r\n"
+				+ "  SELECT *\r\n"
+				+ "  FROM "+DBNAME+"."+SR_GROUP+"\r\n"
+				+ "),\r\n"
+				+ "JOINED_DATA AS (\r\n"
+				+ "  SELECT\r\n"
+				+ "    M.PMCONO,\r\n"
+				+ "    M.PMDIVI,\r\n"
+				+ "    M.PMCODE,\r\n"
+				+ "    M.PMGROU,\r\n"
+				+ "    M.PMSGRO,\r\n"
+				+ "    M.PMSTAT,\r\n"
+				+ "    M.PMDES1,\r\n"
+				+ "    M.PMDES2,\r\n"
+				+ "    M.PMDES3,        -- ⭐ เพิ่ม\r\n"
+				+ "    M.PMDES4,        -- ⭐ เพิ่ม\r\n"
+				+ "    G.GMUSER,\r\n"
+				+ "    (\r\n"
+				+ "      SELECT MIN(M2.PMSTAT)\r\n"
+				+ "      FROM "+DBNAME+"."+SR_FLOW+" M2\r\n"
+				+ "      WHERE M2.PMCONO = M.PMCONO\r\n"
+				+ "        AND M2.PMDIVI = M.PMDIVI\r\n"
+				+ "        AND M2.PMCODE = M.PMCODE\r\n"
+				+ "        AND M2.PMSTAT > M.PMSTAT\r\n"
+				+ "    ) AS NEXT_STAT,\r\n"
+				+ "    ROW_NUMBER() OVER (\r\n"
+				+ "      PARTITION BY M.PMCONO, M.PMDIVI, M.PMCODE, M.PMSTAT\r\n"
+				+ "      ORDER BY\r\n"
+				+ "        CASE WHEN M.PMSGRO = 'MANAGER' THEN 0 ELSE 1 END,\r\n"
+				+ "        M.PMDES2 DESC,\r\n"
+				+ "        G.GMUSER ASC\r\n"
+				+ "    ) AS RN\r\n"
+				+ "  FROM FILTERED_MASTER M\r\n"
+				+ "  JOIN FILTERED_GROUP G\r\n"
+				+ "    ON M.PMCONO = G.GMCONO\r\n"
+				+ "   AND M.PMDIVI = G.GMDIVI\r\n"
+				+ "   AND M.PMGROU = G.GMGROU\r\n"
+				+ "   AND M.PMSGRO = G.GMSGRO\r\n"
+				+ "),\r\n"
+				+ "VACANT_FLAG AS (\r\n"
+				+ "  SELECT\r\n"
+				+ "    M.PMCONO,\r\n"
+				+ "    M.PMDIVI,\r\n"
+				+ "    M.PMCODE,\r\n"
+				+ "    M.PMGROU,\r\n"
+				+ "    M.PMSGRO,\r\n"
+				+ "    CASE WHEN COUNT(G2.GMUSER) > 0 THEN 'Y' ELSE 'N' END AS SKIP_IF_VACANT\r\n"
+				+ "  FROM FILTERED_MASTER M\r\n"
+				+ "  LEFT JOIN "+DBNAME+"."+SR_GROUP+" G2\r\n"
+				+ "    ON G2.GMCONO = M.PMCONO\r\n"
+				+ "   AND G2.GMDIVI = M.PMDIVI\r\n"
+				+ "   AND G2.GMGROU = M.PMGROU\r\n"
+				+ "   AND G2.GMSGRO = M.PMSGRO\r\n"
+				+ "   AND UPPER(TRIM(G2.GMUSER)) = 'VACANT'\r\n"
+				+ "  GROUP BY M.PMCONO, M.PMDIVI, M.PMCODE, M.PMGROU, M.PMSGRO\r\n"
+				+ "),\r\n"
+				+ "CONCAT_CTE (\r\n"
+				+ "  PMCONO, PMDIVI, PMCODE, PMGROU, PMSGRO,\r\n"
+				+ "  PMSTAT, PMDES1, PMDES2, PMDES3, PMDES4,   -- ⭐ เพิ่ม\r\n"
+				+ "  RN, NAME_SERIAL\r\n"
+				+ ") AS (\r\n"
+				+ "  SELECT\r\n"
+				+ "    PMCONO, PMDIVI, PMCODE, PMGROU, PMSGRO,\r\n"
+				+ "    PMSTAT, PMDES1, PMDES2, PMDES3, PMDES4,  -- ⭐ เพิ่ม\r\n"
+				+ "    RN,\r\n"
+				+ "    GMUSER AS NAME_SERIAL\r\n"
+				+ "  FROM JOINED_DATA\r\n"
+				+ "  WHERE RN = 1\r\n"
+				+ "  UNION ALL\r\n"
+				+ "  SELECT\r\n"
+				+ "    J.PMCONO, J.PMDIVI, J.PMCODE, J.PMGROU, J.PMSGRO,\r\n"
+				+ "    J.PMSTAT, J.PMDES1, J.PMDES2, J.PMDES3, J.PMDES4,  -- ⭐ เพิ่ม\r\n"
+				+ "    J.RN,\r\n"
+				+ "    C.NAME_SERIAL || ',' || J.GMUSER\r\n"
+				+ "  FROM CONCAT_CTE C\r\n"
+				+ "  JOIN JOINED_DATA J\r\n"
+				+ "    ON C.PMCONO = J.PMCONO\r\n"
+				+ "   AND C.PMDIVI = J.PMDIVI\r\n"
+				+ "   AND C.PMCODE = J.PMCODE\r\n"
+				+ "   AND C.PMGROU = J.PMGROU\r\n"
+				+ "   AND C.PMSGRO = J.PMSGRO\r\n"
+				+ "   AND J.RN = C.RN + 1\r\n"
+				+ ")\r\n"
+				+ "SELECT\r\n"
+				+ "  C.PMCONO,\r\n"
+				+ "  C.PMDIVI,\r\n"
+				+ "  C.PMCODE,\r\n"
+				+ "  C.PMGROU,\r\n"
+				+ "  C.PMSGRO,\r\n"
+				+ "  C.PMSTAT,\r\n"
+				+ "  C.PMDES1,\r\n"
+				+ "  C.PMDES2,\r\n"
+				+ "  C.PMDES3 AS NEXT_STAT,\r\n"
+				+ "  C.PMDES4 AS PREVIOUS_STAT,    \r\n"
+				+ "  C.NAME_SERIAL,\r\n"
+				+ "  V.SKIP_IF_VACANT\r\n"
+				+ "FROM CONCAT_CTE C\r\n"
+				+ "LEFT JOIN VACANT_FLAG V\r\n"
+				+ "  ON C.PMCONO = V.PMCONO\r\n"
+				+ " AND C.PMDIVI = V.PMDIVI\r\n"
+				+ " AND C.PMCODE = V.PMCODE\r\n"
+				+ " AND C.PMGROU = V.PMGROU\r\n"
+				+ " AND C.PMSGRO = V.PMSGRO\r\n"
+				+ "LEFT JOIN CONCAT_CTE C2\r\n"
+				+ "  ON C2.PMCONO = C.PMCONO\r\n"
+				+ " AND C2.PMDIVI = C.PMDIVI\r\n"
+				+ " AND C2.PMCODE = C.PMCODE\r\n"
+				+ " AND C2.PMGROU = C.PMGROU\r\n"
+				+ " AND C2.PMSGRO = C.PMSGRO\r\n"
+				+ " AND C2.RN = C.RN + 1\r\n"
+				+ "WHERE C2.PMCONO IS NULL\r\n"
+				+ "ORDER BY C.PMSTAT, C.PMGROU, C.PMSGRO\r\n"
+				+ "";
+		
+		logger.debug("PPPPPP : " + recursiveQuery);
+		rs = stmt.executeQuery(recursiveQuery);
+
+		while (rs.next()) {
+			String cono = rs.getString("PMCONO");
+			String divi = rs.getString("PMDIVI");
+			String docCode = rs.getString("PMCODE");
+			String status = rs.getString("PMSTAT");
+			String approve = rs.getString("NAME_SERIAL");
+			String remark = rs.getString("PMDES1");
+			/*
+			 * String insertDetail = "INSERT INTO "+DBNAME+"."+SR_APPROVE+" " +
+			 * "( DOC_CODE, DOC_NO, APPROVE, APPROVE_DATE, STATUS, STS_DESC, TIME_ST, APPROVED_USER ,REMARK) "
+			 * +
+			 * "VALUES (" +
+			 * "'" + docCode + "', " +
+			 * "'" + currentID + "', " +
+			 * "'" + approve + "', " +
+			 * "'-', " +
+			 * "'" + status + "', " +
+			 * "'Wait for approve', " +
+			 * "'-', " +
+			 * "'-',  " +
+			 * "'" + remark + "'" +
+			 * ")";
+			 * 
+			 */
+
+			String insertDetail = "INSERT INTO " + DBNAME + "." + SR_APPROVE + " " +
+					"(FATYPE,FACONO,FADIVI, FACODE,FASRNO ,FAAPLI ,FAAPDA ,FASTAT , FADES1, FAENTI,FAENDA,FAAPBY,FADES2) "
+					+
+					"VALUES (" +
+					" '1' , '" + comcono + "','" + comdivi + "','" + docCode + "', " +
+					"'" + maxNo + "', " +
+					"'" + approve + "', " +
+					"NULL, " +
+					"'" + status + "', " +
+					"'Wait for approve', " +
+					"CURRENT TIME, " +
+					"CURRENT DATE, " +
+					"'',  " +
+					"'" + remark + "'" +
+					")";
+
+			logger.debug("xxxxxxin " + insertDetail);
+			stmt2.executeUpdate(insertDetail);
+
+		}
+
+//		logger.debug("Insert Query: " + insertQuery);
+//		logger.debug("Insert Query: " + insertQueryHead);
+		
+//		stmt.executeUpdate(insertQuery);
+		return "Yay it updated";
+		} catch (SQLException e) {
+			logger.error("SQL Error: " + e.getMessage());
+			mJsonObj.put("result", "nok");
+			mJsonObj.put("message", e.getMessage());
+			return mJsonObj.toString();
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					logger.error(e.getMessage());
+				}
+			if (stmt != null)
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					logger.error(e.getMessage());
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					logger.error(e.getMessage());
+				}
+		}
+	}
+	
+	
+	
+	
+	
+	public static String addOrderHeadV2(String cono, String divi, String customerno, String orderdate, String delidate,
+			   String round, String pricelist, String ordertype, String whs, String status, String type, String remark,
+			   String pono, String day, String userid, String version) throws Exception {
+			  logger.info("addOrderHeadV2");
+
+			  Connection conn = null;
+			  Statement stmt = null;
+			  JSONObject mJsonObj = new JSONObject();
+			  try {
+			   String checkVersion = SelectData.checkVersion("TOD");
+			   if (version == null || version.isEmpty() || !Objects.equals(checkVersion, version)) {
+			    mJsonObj.put("result", "nok");
+			    mJsonObj.put("message", "Can't create Takeorder number, Please update your version to " + checkVersion + " (Click F5 button).");
+			    return mJsonObj.toString();
+
+			   }
+			   
+			   conn = ConnectDB2.doConnect();
+			   stmt = conn.createStatement();
+
+			   String getYear = delidate.substring(2, 4);
+			   String saleSupport = SelectData.getSalesuport(cono, divi, userid);
+
+			   // String getOrderNumber = SelectData.getMaxOrderNumber(cono, divi, getYear);
+			   // if (Integer.valueOf(getOrderNumber) == 0) {// Create new ordernumber
+			   // getOrderNumber = getYear + "00000001";
+			   //
+			   // }
+
+			   remark = ConvertString.convertApostrophe(remark);
+			   pono = ConvertString.convertApostrophe(pono);
+
+			   String query = "INSERT INTO " + DBNAME + ".M3_TAKEORDERHEAD \n"
+			     + "(THCONO, THDIVI, THORNO, THORTY, THWHLO, THCOCE, THORDA, THDEDA, THCUNO, THROUN, THPRIC, THCHAN, THNCHA, THGROU, THAREA, THSANO, THSASU, THREM1, THREM2, THSTAS, THENDA, THENTI, THENUS) \n"
+			     + "VALUES('" + cono + "' \n"
+			     + ", '" + divi + "' \n"
+			     + ", (SELECT CASE WHEN CAST(MAX(THORNO) AS DECIMAL(10,0)) > 0 THEN CAST(MAX(THORNO) AS DECIMAL(10,0)) + 1 ELSE CAST(('"
+			     + getYear + "' || '00000001') AS DECIMAL(10,0)) END AS THORNO \n"
+			     + "FROM " + DBNAME + ".M3_TAKEORDERHEAD \n"
+			     + "WHERE THCONO = '" + cono + "' \n"
+			     + "AND THDIVI = '" + divi + "'  \n"
+			     + "AND SUBSTRING(THORNO,0,3) = '" + getYear + "') \n"
+			     + ", '" + ordertype + "' \n"
+			     + ", '" + whs + "' \n"
+			     + ", '' \n"
+			     + ", '" + orderdate + "' \n"
+			     + ", '" + delidate + "' \n"
+			     + ", '" + customerno + "' \n"
+			     + ", '" + round + "' \n"
+			     + ", '" + pricelist + "' \n"
+			     + ", '' \n"
+			     + ", '' \n"
+			     + ", '' \n"
+			     + ", '' \n"
+			     + ", '" + userid + "' \n"
+			     + ", '" + saleSupport + "' \n"
+			     + ", '" + remark + "' \n"
+			     + ", '" + pono + "' \n"
+			     + ", '" + status + "' \n"
+			     + ", CURRENT DATE \n"
+			     + ", CURRENT TIME \n"
+			     + ", '" + userid + "')";
+			   // System.out.println("addOrderHeadV2\n" + query);
+			   logger.debug(query);
+			   stmt.execute(query);
+
+//			   String getTakeOrderNumber = SelectData.getMaxOrderNumberV3(cono, divi, getYear, userid);
+			
+
+			   mJsonObj.put("result", "ok");
+//			   mJsonObj.put("message", getTakeOrderNumber);
+			//   mJsonObj.put("order", getOrderNumber);
+
+			  } catch (SQLException e) {
+			   logger.error(e.getMessage());
+			  } catch (Exception e) {
+			   logger.error(e.getMessage());
+			  } finally {
+			   try {
+			    if (stmt != null) {
+			     stmt.close();
+			    }
+			   } catch (SQLException e) {
+			    logger.error(e.getMessage());
+			   }
+			   try {
+			    if (conn != null) {
+			     conn.close();
+			    }
+			   } catch (SQLException e) {
+			    logger.error(e.getMessage());
+			   }
+
+			  }
+
+			  return mJsonObj.toString();
+
+			 }
 
 	public static String insertRQ(String vID, String vCOM, String vWH, String vITM, String vAPV) throws Exception {
 		logger.info("insertRQ");
