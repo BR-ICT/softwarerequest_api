@@ -4332,7 +4332,7 @@ public class SelectData {
 					+ "    SUBSTR(FAAPLI|| ',', LOCATE(',', FAAPLI|| ',') + 1)\r\n"
 					+ "  FROM "+DBNAME+"."+SR_APPROVE+"\r\n"
 					+ "  WHERE FASTAT = '"+statusInt+"'  -- แทนด้วยค่าจริง\r\n"
-					+ "    AND FACODE = 'ITRQ'\r\n"
+					+ "    AND FACODE = 'SWRQ'\r\n"
 					+ "    AND FASRNO = '"+id+"'  AND FACONO = '"+cono+"'        -- แทนด้วยค่าจริง\r\n"
 					+ "  UNION ALL\r\n"
 					+ "  SELECT \r\n"
