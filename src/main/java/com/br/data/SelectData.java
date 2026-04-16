@@ -818,8 +818,8 @@ public class SelectData {
 			stmt = conn.createStatement();
 
 			
-			String  query = "SELECT TRIM(CTL3_CODE)||' : '|| TRIM(CTL3_NAME)||' : '||TRIM(CTL3_REM1) AS Choice,TRIM(CTL3_CODE) AS Softwarecode\n"
-					+ " FROM BRLDTABK01.APPCTL3\n"
+			String  query = "SELECT TRIM(CTL3_NAME)||' : '||TRIM(CTL3_CODE) ||' : '||TRIM(CTL3_REM1) AS Choice,TRIM(CTL3_CODE) AS Softwarecode\n"
+					+ " FROM "+DBNAME+".APPCTL3\n"
 					+ "  WHERE CTL3_CONO = '"+cono+"'\n"
 					+ "  AND CTL3_NAME != ''";
 
