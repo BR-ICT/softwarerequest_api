@@ -804,6 +804,61 @@ public class SelectData {
 	}
 	
 	
+	public static String getSoftwareCode(String cono)
+			throws Exception {
+
+		logger.info("getSTATUSIDSWRQ");
+
+		List<String> getListData = new ArrayList<String>();
+
+		Connection conn = null;
+		Statement stmt = null;
+		try {
+			conn = ConnectDB2.doConnect();
+			stmt = conn.createStatement();
+
+			
+			String  query = "SELECT TRIM(CTL3_CODE)||' : '|| TRIM(CTL3_NAME)||' : '||TRIM(CTL3_REM1) AS Choice,TRIM(CTL3_CODE) AS Softwarecode\n"
+					+ " FROM BRLDTABK01.APPCTL3\n"
+					+ "  WHERE CTL3_CONO = '"+cono+"'\n"
+					+ "  AND CTL3_NAME != ''";
+
+			logger.debug(query);
+			logger.debug(getListData);
+
+			ResultSet mRes = stmt.executeQuery(query);
+
+			return ConvertResultSet.convertResultSetToJson(mRes);
+
+			// return ConvertResultSet.convertResultSetToJsonVPP(mRes);
+
+		} catch (SQLException e) {
+			logger.error(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		} finally {
+			try {
+				if (stmt != null) {
+					stmt.close();
+				}
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+			try {
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+
+		}
+
+		return null;
+
+	}
+	
+	
 	public static String getSTATUSIDITEMRQ(String vID,String cono, String divi)
 			throws Exception {
 
@@ -4181,7 +4236,61 @@ public class SelectData {
 	}
 	
 	
-	
+	public static String getimage2(String vID) throws Exception {
+
+		  Connection conn = null;
+		  Statement stmt = null;
+
+		  try {
+		   conn = ConnectDB2.doConnect();
+		   stmt = conn.createStatement();
+
+		   // String query = "SELECT H_COMPANYNAME, H_IMG FROM "
+		   // + Constant.DBNAME + ".VISITOR_HEAD WHERE H_ID = '" + vID + "'";
+
+		   String query = "SELECT  FISNAM,FIFNAM,FIREM1 FROM " + Constant.DBNAME + ".SR_FILE sf \r\n"
+		     + "WHERE  FISRNO  = '" + vID + "' AND  FICODE = 'SWRQ'";
+		   logger.debug(query);
+
+		   ResultSet rs = stmt.executeQuery(query);
+
+		   // ใช้ JSONArray เพื่อรองรับหลายบรรทัด
+		   JSONArray arr = new JSONArray();
+
+		   while (rs.next()) {
+		    JSONObject obj = new JSONObject();
+		    obj.put("itemName", rs.getString("FISNAM"));
+		    obj.put("originfileName", rs.getString("FIFNAM"));
+		    obj.put("fileName", rs.getString("FIREM1"));
+		    
+		    arr.put(obj);
+		   }
+
+		   return arr.toString();
+
+		  } catch (SQLException e) {
+		   logger.error(e.getMessage());
+		  } catch (Exception e) {
+		   logger.error(e.getMessage());
+		  } finally {
+		   try {
+		    if (stmt != null) {
+		     stmt.close();
+		    }
+		   } catch (SQLException e) {
+		    logger.error(e.getMessage());
+		   }
+		   try {
+		    if (conn != null) {
+		     conn.close();
+		    }
+		   } catch (SQLException e) {
+		    logger.error(e.getMessage());
+		   }
+		  }
+
+		  return "[]"; // ถ้าว่างให้คืน array เปล่า
+		 }
 	
 	//////////////////// convert email //////////////////
 	

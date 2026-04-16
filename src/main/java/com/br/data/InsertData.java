@@ -77,6 +77,115 @@ public class InsertData {
 
 	////////////////////////// BANKMAPPING ////////////////////////////////
 
+	
+	 public static String insertFILETODB(
+	         String cono,
+	         String divi,
+	         String vID,
+	         String filename,
+	         String filetype,
+	         String fieldname,
+	         String username,
+	         int fileIndex,
+	         String originalFileName
+	 ) throws Exception {
+
+	     logger.info("insertFILETODB");
+
+	     JSONObject mJsonObj = new JSONObject();
+	     Connection conn = null;
+	     PreparedStatement ps = null;
+	     ResultSet rs = null;
+
+	     try {
+	         conn = ConnectDB2.doConnect();
+
+	         // ---- 1) สร้าง currentID ----
+
+	         // ---- 2) INSERT ----
+	        String selectQuery = ""
+	                + "SELECT FILINE "
+	                + "FROM " + DBNAME +".SR_FILE "
+	                + "WHERE FICONO = ? AND FIDIVI = ? AND FISRNO = ? AND FISNAM = ?";
+
+	        try (PreparedStatement selectStmt = conn.prepareStatement(selectQuery)) {
+	            selectStmt.setString(1, cono);
+	            selectStmt.setString(2, divi);
+	            selectStmt.setString(3, vID);
+	            selectStmt.setString(4, fieldname);
+
+	            try (ResultSet selectRs = selectStmt.executeQuery()) {
+	                if (selectRs.next()) {
+	                    String updateQuery = ""
+	                            + "UPDATE " + DBNAME +".SR_FILE "
+	                            + "SET FIFNAM = ?, FITYPE = ?, FIENDA = CURRENT DATE, FIENTI = CURRENT TIME, FIENUS = ?, FILINE = ?  , FIREM1 = ?"
+	                            + "WHERE FICONO = ? AND FIDIVI = ? AND FISRNO = ? AND FISNAM = ?";
+
+	                    try (PreparedStatement updateStmt = conn.prepareStatement(updateQuery)) {
+	                        updateStmt.setString(1, originalFileName);
+	                        updateStmt.setString(2, filetype);
+	                        updateStmt.setString(3, username);
+	                        updateStmt.setInt(4, fileIndex);
+	                        updateStmt.setString(5, filename);
+
+	                        updateStmt.setString(6, cono);
+	                        updateStmt.setString(7, divi);
+	                        updateStmt.setString(8, vID);
+	                        updateStmt.setString(9, fieldname);
+	                        updateStmt.executeUpdate();
+	                    }
+
+	                    mJsonObj.put("result", "ok");
+	                    mJsonObj.put("action", "update");
+	                    logger.debug("Updated SR_FILE record for " + vID + " / " + fieldname);
+
+	                    return mJsonObj.toString();
+	                }
+	            }
+	        }
+
+
+	        String insertQuery = "\r\n"
+	           + "INSERT INTO " + DBNAME +".SR_FILE\r\n"
+	                    + "(FICONO, FIDIVI,FICODE , FISRNO, FISNAM,FIFNAM ,FITYPE ,FIENDA,FIENTI,FIENUS,FILINE, FIREM1 ) \r\n"
+	                    + "VALUES (?, ?, ?, ?, ?, ?, ?,CURRENT DATE, CURRENT TIME,? , ? , ?)";
+
+	         logger.debug("Insert Query: " + insertQuery);
+
+	         ps = conn.prepareStatement(insertQuery);
+	         ps.setString(1, cono);
+	         ps.setString(2, divi);
+	         ps.setString(3, "SWRQ");
+	         ps.setString(4, vID);
+	         ps.setString(5, fieldname);
+	         ps.setString(6, originalFileName);
+	         ps.setString(7, filetype);
+	         ps.setString(8, username);
+	         ps.setInt(9, fileIndex);
+	            ps.setString(10, filename);
+	         
+
+
+	         ps.executeUpdate();
+
+	         mJsonObj.put("result", "ok");
+
+	         return mJsonObj.toString();
+
+	     } catch (SQLException e) {
+	         logger.error("SQL Error: " + e.getMessage());
+	         mJsonObj.put("result", "nok");
+	         mJsonObj.put("message", e.getMessage());
+	         return mJsonObj.toString();
+
+	     } finally {
+	         try { if (rs != null) rs.close(); } catch (Exception ignored) {}
+	         try { if (ps != null) ps.close(); } catch (Exception ignored) {}
+	         try { if (conn != null) conn.close(); } catch (Exception ignored) {}
+	     }
+	 }
+	
+	
 	public static JSONObject uploadTempFiles(String base64FileData, String username, String depthead) throws Exception {
 		JSONObject result = new JSONObject();
 
@@ -2687,16 +2796,28 @@ public class InsertData {
 		String programtype = obj.optString("programtype");
 		
 		String version = obj.optString("vVersion");
-	
+		Map<String, String[]> companyMapping = new HashMap<>();
+		companyMapping.put("10", new String[] { "10", "101" });
+		companyMapping.put("600", new String[] { "600", "600" });
+		companyMapping.put("500", new String[] { "500", "500" });
+		// เพิ่มได้เรื่อยๆ เช่น
+		// companyMapping.put("300", new String[] { "300", "301" });
+
+		// ดึงข้อมูลตาม company
+		String[] mapping = companyMapping.getOrDefault(company, new String[] { company, company });
+		String comcono = mapping[0];
+		String comdivi = mapping[1];
+		
+		
 		String MaxNo = InsertSRMHead( vData,  username,  depthead);
 		
 		InsertSRMDetail(vData,username,depthead,MaxNo);
 		InsertSRMApprove(vData,username,depthead,MaxNo);
-		
+		UpdateData.UpdateSRMUserforinsert(username,MaxNo,comcono,comdivi,depthead);
 		//SEND EMAIL
 		SendEmail(vData,username,depthead,MaxNo);
 		
-		return vData;
+		return MaxNo;
 	}
 	
 

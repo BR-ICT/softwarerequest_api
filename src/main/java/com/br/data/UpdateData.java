@@ -200,7 +200,7 @@ public class UpdateData {
 	
 	public static String prepareUpdateSWRQ(String vID, String vSTATUS, String vData, String vApproval,String vApprover,String vDepthead, String vRemark)
 			throws Exception {
-		logger.info("UpdateITEMREQUEST");
+		logger.info("UpdateSWRQ");
 		
 		vRemark = ConvertString.convertApostrophe(vRemark); 
 
@@ -316,6 +316,11 @@ public class UpdateData {
 				break;
 			case "30":
 				newStatus = "40";
+
+				String querysetapprove2 = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
+						+ "SET  FAAPLI = '"+vDepthead+"' \n"
+						+ "WHERE FACODE = 'SWRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('10') AND FACONO = '"+comcono+"' ";
+				stmt.executeUpdate(querysetapprove2);
 				break;
 			case "40":
 				newStatus = "50";
@@ -490,6 +495,64 @@ public class UpdateData {
 
 		return mJsonObj.toString();
 	}
+	public static void UpdateSRMUserforinsert(String username,String MaxNo,String cono,String divi,String vDepthead)
+			throws Exception {
+		logger.info("UpdateSRMUserforstep40");
+		
+
+		JSONObject mJsonObj = new JSONObject();
+		Connection conn = null;
+		Statement stmt = null;
+		
+		
+		String tt = "OK";
+		try {
+			conn = ConnectDB2.doConnect();
+			stmt = conn.createStatement();	
+			
+			String querysetapprove1 = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
+					+ "SET  FAAPLI = '"+username+"' \n"
+					+ "WHERE FACODE = 'SWRQ' AND FASRNO = '" + MaxNo + "'  AND  FASTAT IN ('00') AND FACONO = '"+cono+"' AND FADIVI = '"+divi+"'";
+			stmt.executeUpdate(querysetapprove1);
+
+			String querysetapprove2 = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
+					+ "SET  FAAPLI = '"+vDepthead+"' \n"
+					+ "WHERE FACODE = 'SWRQ' AND FASRNO = '" + MaxNo + "'  AND  FASTAT IN ('10') AND FACONO = '"+cono+"' AND FADIVI = '"+divi+"'";
+			stmt.executeUpdate(querysetapprove2);
+			
+			String querysetapprove3 = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
+					+ "SET  FAAPLI = '"+username+"' \n"
+					+ "WHERE FACODE = 'SWRQ' AND FASRNO = '" + MaxNo + "' \n "
+					+ "AND  FASTAT IN ('40') \n"
+					+ "AND FACONO = '"+cono+"'\n "
+					+ "AND FADIVI = '"+divi+"'";
+			stmt.executeUpdate(querysetapprove3);
+			mJsonObj.put("result", "ok");
+			mJsonObj.put("message", "Update complete.");
+
+		} catch (SQLException e) {
+			logger.error("SQL Error: " + e.getMessage());
+			mJsonObj.put("result", "error");
+			mJsonObj.put("message", e.getMessage());
+		} catch (Exception e) {
+			logger.error("Error: " + e.getMessage());
+			mJsonObj.put("result", "error");
+			mJsonObj.put("message", e.getMessage());
+		} finally {
+			try {
+				if (stmt != null)
+					stmt.close();
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+			try {
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+		}
+	}
 	
 	public static void rejectreverseSWRQ(String vID, String vSTATUS, String vData, String vApproval,String vApprover,String vDepthead, String vRemark,String Status,String FADES,String comcono,String comdivi) throws Exception {
 
@@ -502,8 +565,9 @@ public class UpdateData {
 		Statement stmtvcrs = null;
 		Boolean  isVacant = false; 
 		Boolean  isVacant20 = false; 
+		conn = ConnectDB2.doConnect();
+		stmt = conn.createStatement();
 		
-
 
 		String query2e = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
 				+ "SET  FADES1 = 'Wait for approve', FAAPTI = null,FAAPBY = ' ', FAAPDA = NULL  ,FAENDA  = CURRENT DATE , FAENTI  = CURRENT TIME \n"
@@ -540,7 +604,9 @@ public class UpdateData {
 		ResultSet vcrs = null;
 		ResultSet vcrs20 = null;
 		Statement stmtvcrs = null;
-		
+		conn = ConnectDB2.doConnect();
+		stmt = conn.createStatement();
+//		conn = ConnectDB2.doConnect();
 		/*
 		String query1e = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
 				+ "SET  FAAPLI = '' \n"

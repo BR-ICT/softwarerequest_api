@@ -7,10 +7,17 @@ import javax.ws.rs.QueryParam;
 
 import java.io.InputStream;
 import java.text.BreakIterator;
-
-import java.util.List;
+import com.sun.jersey.multipart.FormDataBodyPart;
+import com.sun.jersey.multipart.FormDataMultiPart;
+import com.sun.jersey.multipart.FormDataParam;
 import org.json.JSONArray;
+import org.json.JSONObject;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+
+import org.apache.commons.codec.binary.Base64;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
@@ -32,7 +39,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.tools.picocli.CommandLine.Parameters;
 import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+
 
 import com.br.auth.JwtManager;
 import com.br.data.DeleteData;
@@ -4027,10 +4034,92 @@ public class api_data {
 	@POST
 	@Path("/insertsrm")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public Response insertSRM(FormDataMultiPart formData,@Context HttpServletRequest request)
+			 {
 
-	public Response insertSRM(@Context HttpHeaders headers, @Context HttpServletRequest httpServletRequest,
-			@FormDataParam("vData") String vData, @FormDataParam("username") String username,
-			@FormDataParam("depthead") String depthead, @FormDataParam("remark") String remark)
+
+		try {
+			logger.info("/insertSRM");
+
+			JSONObject mJsonObj = new JSONObject();
+
+			System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxx");
+
+			  String vData = formData.getField("vData").getValue();
+		         String username = formData.getField("username").getValue();
+		         String depthead = formData.getField("depthead").getValue();
+		         String remark = formData.getField("remark").getValue();
+		       
+			
+			JSONObject obj = new JSONObject(vData);
+
+			String company = obj.optString("company");
+		
+			
+		
+			Map<String, String[]> companyMapping = new HashMap<>();
+			companyMapping.put("10", new String[] { "10", "101" });
+			companyMapping.put("600", new String[] { "600", "600" });
+			companyMapping.put("500", new String[] { "500", "500" });
+			String[] mapping = companyMapping.getOrDefault(company, new String[] { company, company });
+			String comcono = mapping[0];
+			String comdivi = mapping[1];
+
+			String result = 
+					(InsertData.prepareInsertSRM(vData, username, depthead));
+					
+
+			List<FormDataBodyPart> fileParts = formData.getFields("files");
+	         List<FormDataBodyPart> fieldNameParts = formData.getFields("fieldnames");
+
+	         JSONArray outputs = new JSONArray();
+
+	         if (fileParts != null && !fileParts.isEmpty()) {
+
+//	             String filePath = request.getRealPath("/") + "WEB-INF/image/";
+	    String filePath = "D:\\files\\api_project\\softwarerequest_files\\"; // Window
+//	    String filePath = "/home/wattana/files/api_project/supplier_files"; // Ubuntu 
+
+	             // ⬅ เรียกฟังก์ชันที่แยกออกมา
+	             outputs = FileUtillity.saveUploadedFiles(
+	                     fileParts,
+	                     fieldNameParts,
+	                     filePath,
+	                      comcono,
+	                comdivi,
+	                result,
+	                username
+	             );
+	         }
+		
+
+		
+
+	         JSONObject resp = new JSONObject();
+	         resp.put("REQUEST COMPLETE SERVICE ID : ", result);
+	        // resp.put("files", outputs);
+
+	         return Response.ok(resp.toString()).build();
+		 } catch (Exception e) {
+		        e.printStackTrace();
+		        logger.error(e.getMessage()); 
+		        return Response.status(Response.Status.BAD_REQUEST)
+		                .entity(e.getMessage())
+		                .build();
+		    }
+
+	}
+	
+	
+	
+	@POST
+	@Path("/fileuploadsoftwarerequest")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+
+	public Response fileuploadsoftwarerequest(
+	         FormDataMultiPart formData,
+	         @Context HttpServletRequest request
+	 )
 			throws JSONException {
 		logger.info("/insertSRM");
 
@@ -4039,11 +4128,28 @@ public class api_data {
 		System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxx");
 
 		try {
+			List<FormDataBodyPart> fileParts = formData.getFields("files");
+	         List<FormDataBodyPart> fieldNameParts = formData.getFields("fieldnames");
 
-			return Response
-					.ok(InsertData.prepareInsertSRM(vData, username, depthead), MediaType.APPLICATION_JSON + ";charset=utf8")
-					.build();
+	         JSONArray outputs = new JSONArray();
 
+	         if (fileParts != null && !fileParts.isEmpty()) {
+
+//	             String filePath = request.getRealPath("/") + "WEB-INF/image/";
+	    String filePath = "D:\\files\\api_project\\softwarerequest_files\\"; // Window
+//	    String filePath = "/home/wattana/files/api_project/supplier_files"; // Ubuntu 
+
+	             // ⬅ เรียกฟังก์ชันที่แยกออกมา
+	             outputs = FileUtillity.saveUploadedFiles(
+	                     fileParts,
+	                     fieldNameParts,
+	                     filePath,
+	                      "11",
+	                "111",
+	                "10001",
+	                "MAHAKI_CHU"
+	             );
+	         }
 		} catch (Exception e) {
 			mJsonObj.put("result", "nok");
 			mJsonObj.put("message", e.getMessage());
@@ -4118,7 +4224,111 @@ public class api_data {
 		return Response.status(Response.Status.NOT_FOUND).entity(mJsonObj).build();
 
 	}
+	
+	
+	@GET
+	@Path("/getSoftwareCode/{cono}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getSoftwareCode(@Context HttpHeaders headers, String req, @PathParam("cono") String cono)
+			throws JSONException {
+		logger.info("/getSoftwareCode");
 
+		JSONObject mJsonObj = new JSONObject();
+
+		try {
+			return Response
+					.ok(SelectData.getSoftwareCode(cono), MediaType.APPLICATION_JSON + ";charset=utf8")
+					.build();
+
+		} catch (Exception e) {
+			mJsonObj.put("result", "nok");
+			mJsonObj.put("message", e.getMessage());
+			logger.error(e.getMessage());
+		}
+
+		return Response.status(Response.Status.NOT_FOUND).entity(mJsonObj).build();
+
+	}
+
+
+	
+	@GET
+	 @Path("/getFile")
+	 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	 public Response getFile(
+	   @QueryParam("vID") String vID,
+	   @Context HttpServletRequest request) {
+
+	  try {
+	   // 1) ดึงข้อมูลจาก DB (ตอนนี้ส่งกลับ JSONArray)
+	   String jsonStr = SelectData.getimage2(vID);
+	   System.out.println("jsonStr : " + jsonStr);
+
+	   if (jsonStr == null || jsonStr.trim().isEmpty()) {
+	    return Response.status(Response.Status.NOT_FOUND)
+	      .entity("{\"message\":\"Data not found in DB\"}")
+	      .build();
+	   }
+
+	   // เปลี่ยนจาก JSONObject → JSONArray
+	   JSONArray arr = new JSONArray(jsonStr);
+
+	   // เตรียมผลลัพธ์ออกมาเป็น array
+	   JSONArray resultArr = new JSONArray();
+
+	   // วนทุกบรรทัด
+	   for (int i = 0; i < arr.length(); i++) {
+	    JSONObject dbObj = arr.getJSONObject(i);
+
+	    String fileName = dbObj.optString("fileName", "");
+	    String itemName = dbObj.optString("itemName", "");
+	    String originfileName = dbObj.optString("originfileName", "");
+
+	    if (fileName == null || fileName.trim().isEmpty()) {
+	     continue; // ข้ามถ้าไม่มี fileName
+	    }
+
+	    // 2) โหลดไฟล์จากโฟลเดอร์
+	    // String filePath = request.getServletContext().getRealPath("/WEB-INF/image/");
+	    String filePath = "D:\\files\\api_project\\softwarerequest_files\\"; // Window
+	    // String filePath = "/home/wattana/files/api_project/supplier_files"; // Ubuntu
+
+	    File file = new File(filePath, fileName);
+
+	    if (!file.exists()) {
+	     continue;
+	    }
+
+	    byte[] fileBytes = Files.readAllBytes(file.toPath());
+	    String base64 = Base64.encodeBase64String(fileBytes);
+
+	    String mimeType = Files.probeContentType(file.toPath());
+	    if (mimeType == null)
+	     mimeType = "application/octet-stream";
+
+	    // 3) ใส่ผลลัพธ์แต่ละไฟล์เข้า array
+	    JSONObject fileObj = new JSONObject();
+	    fileObj.put("vID", vID);
+	    fileObj.put("itemName", itemName);
+	    fileObj.put("fileName", originfileName);
+	    fileObj.put("type", mimeType);
+	    fileObj.put("content", "data:" + mimeType + ";base64," + base64);
+
+	    resultArr.put(fileObj);
+	   }
+
+	   return Response.ok(resultArr.toString()).build();
+
+	  } catch (Exception e) {
+	   e.printStackTrace();
+	   return Response.status(Response.Status.BAD_REQUEST)
+	     .entity("{\"message\":\"" + e.getMessage() + "\"}")
+	     .build();
+	  }
+	 }
+	
+	
+	
 	////////////
 
 	/*
