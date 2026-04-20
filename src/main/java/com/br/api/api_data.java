@@ -799,12 +799,47 @@ public class api_data {
 
 	}
 
+//	@GET
+//	@Path("/getmailtemplete/{cono}/{program}/{status}/{requester}/{programtype}")
+//	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+//	public Response getmailtemplete(@Context HttpHeaders headers, @PathParam("cono") String cono,
+//			@PathParam("program") String program, @PathParam("status") String status,
+//			@PathParam("requester") String requester, @PathParam("programtype") String programtype,
+//			@Context HttpServletRequest httpServletRequest)
+//			throws JSONException {
+//		logger.info("/getDeptHead");
+//
+//		JSONObject mJsonObj = new JSONObject();
+//
+//		try {
+//
+//			// return Response
+//			// .ok(SelectData.getmailtemplete(program,status,requester,programtype),
+//			// MediaType.APPLICATION_JSON + ";charset=utf8")
+//			// .build();
+//
+//			return Response
+//					.ok(SelectData.getmailtempleteV2(cono, program, status, requester, programtype),
+//							MediaType.APPLICATION_JSON + ";charset=utf8")
+//					.build();
+//
+//		} catch (Exception e) {
+//			mJsonObj.put("result", "nok");
+//			mJsonObj.put("message", e.getMessage());
+//			logger.error(e.getMessage());
+//		}
+//
+//		return Response.status(Response.Status.NOT_FOUND).entity(mJsonObj).build();
+//
+//	}
+	
 	@GET
-	@Path("/getmailtemplete/{cono}/{program}/{status}/{requester}/{programtype}")
+	@Path("/getmailtemplete/{cono}/{program}/{status}/{requester}/{programtype}/{requesttype}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response getmailtemplete(@Context HttpHeaders headers, @PathParam("cono") String cono,
 			@PathParam("program") String program, @PathParam("status") String status,
 			@PathParam("requester") String requester, @PathParam("programtype") String programtype,
+		 @PathParam("requesttype") String requesttype,
 			@Context HttpServletRequest httpServletRequest)
 			throws JSONException {
 		logger.info("/getDeptHead");
@@ -819,7 +854,7 @@ public class api_data {
 			// .build();
 
 			return Response
-					.ok(SelectData.getmailtempleteV2(cono, program, status, requester, programtype),
+					.ok(SelectData.getmailtempleteV2(cono, program, status, requester, programtype,requesttype),
 							MediaType.APPLICATION_JSON + ";charset=utf8")
 					.build();
 
@@ -4049,12 +4084,12 @@ public class api_data {
 		         String username = formData.getField("username").getValue();
 		         String depthead = formData.getField("depthead").getValue();
 		         String remark = formData.getField("remark").getValue();
-		       
-			
+		        
 			JSONObject obj = new JSONObject(vData);
 
 			String company = obj.optString("company");
-		
+			 String constantSoftwareType =obj.optString("constantSoftwareType");
+//				System.out.println("Softwaretype"+constantSoftwareType);
 			
 		
 			Map<String, String[]> companyMapping = new HashMap<>();
@@ -4066,7 +4101,7 @@ public class api_data {
 			String comdivi = mapping[1];
 
 			String result = 
-					(InsertData.prepareInsertSRM(vData, username, depthead));
+					(InsertData.prepareInsertSRM(vData, username, depthead,constantSoftwareType));
 					
 
 			List<FormDataBodyPart> fileParts = formData.getFields("files");

@@ -2777,7 +2777,7 @@ public class InsertData {
 		}
 	}
 	
-	public static String prepareInsertSRM(String vData, String username, String depthead) throws Exception {
+	public static String prepareInsertSRM(String vData, String username, String depthead,String constantSoftwareType) throws Exception {
 		logger.info("insertRQ");
 
 		JSONObject mJsonObj = new JSONObject();
@@ -2809,7 +2809,7 @@ public class InsertData {
 		String comdivi = mapping[1];
 		
 		
-		String MaxNo = InsertSRMHead( vData,  username,  depthead);
+		String MaxNo = InsertSRMHead( vData,  username,  depthead,constantSoftwareType);
 		
 		InsertSRMDetail(vData,username,depthead,MaxNo);
 		InsertSRMApprove(vData,username,depthead,MaxNo);
@@ -2914,7 +2914,7 @@ public class InsertData {
 	
 
 	
-	public static String InsertSRMHead(String vData, String username, String depthead) throws Exception {
+	public static String InsertSRMHead(String vData, String username, String depthead,String constantSoftwareType) throws Exception {
 		logger.info("insertRQ");
 		JSONObject mJsonObj = new JSONObject();
 		Connection conn = null;
@@ -2983,7 +2983,7 @@ public class InsertData {
 				+ "          ),\r\n"
 				+ "    6) AS NEXT_NUMBER\r\n"
 				+ "FROM "+DBNAME+"."+SR_HEAD+" sf \r\n"
-				+ "WHERE SUBSTR(FHSRNO,1,2) = 26 AND FHCODE = 'SWRQ')||'-" + "" + programtype + "-"+softwareName+"')";
+				+ "WHERE SUBSTR(FHSRNO,1,2) = 26 AND FHCODE = 'SWRQ')||'-" + "" + programtype + "/"+constantSoftwareType +"-"+softwareName+"')";
 		logger.debug("Insert Query: " + insertQueryHead);
 		stmt.executeUpdate(insertQueryHead);
 		

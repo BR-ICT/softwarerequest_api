@@ -4295,7 +4295,7 @@ public class SelectData {
 	//////////////////// convert email //////////////////
 	
 	
-	public static String getmailtempleteV2(String cono, String program,String status, String requester, String programtype)
+	public static String getmailtempleteV2(String cono, String program,String status, String requester, String programtype,String requesttype)
 	        throws Exception {
 	    logger.info("getListEmail");
 
@@ -4321,9 +4321,9 @@ public class SelectData {
 */
 	        String query = "SELECT * FROM " + Constant.DBNAME + ".M3_WORKFLOWPROGRAMEMAIL mw \n"
 	                + "WHERE EDOCUMENT  = 'SWRQ'\n"
-	                + "AND ESTATUSNO = '" + status + "' AND ESTATUS = '" + programtype + "'";
+	                + "AND ESTATUSNO = '" + status + "' AND ESTATUS = '" + programtype + "/"+requesttype+"'";
 
-	        System.out.println("getDeptHead\n" + query);
+	        System.out.println("getmailtempleteV2\n" + query);
 	        logger.debug(query);
 	        ResultSet mRes = stmt.executeQuery(query);
 
