@@ -4171,7 +4171,7 @@ public class api_data {
 	         if (fileParts != null && !fileParts.isEmpty()) {
 
 //	             String filePath = request.getRealPath("/") + "WEB-INF/image/";
-	    String filePath = "D:\\files\\api_project\\softwarerequest_files\\"; // Window
+	    String filePath = "D:\\files\\api_project\\software_files"; // Window
 //	    String filePath = "/home/wattana/files/api_project/supplier_files"; // Ubuntu 
 
 	             // ⬅ เรียกฟังก์ชันที่แยกออกมา

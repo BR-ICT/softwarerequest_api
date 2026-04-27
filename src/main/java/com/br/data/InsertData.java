@@ -2869,7 +2869,8 @@ public class InsertData {
 		logger.debug("divi: " + comdivi);
 
 		String data = SelectData.getSTATUSIDSWRQ(Maxno.toString(), comcono, comdivi);
-		String url = "https://workflow.br-bangkokranch.com/webhook/createsoftware_req";
+		System.out.println("test");
+		String url = "https://workflow.br-bangkokranch.com/webhook/savesoftware_req";
 		//createsupplier
 
 		String response = HttpConnection.sendRequest(

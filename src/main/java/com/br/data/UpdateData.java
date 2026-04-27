@@ -411,6 +411,7 @@ public class UpdateData {
 
 		    int updated = ps.executeUpdate();
 		    System.out.println("Rows updated: " + updated);
+		    System.out.println("Check vData: " + vData);
 		}
 
 			

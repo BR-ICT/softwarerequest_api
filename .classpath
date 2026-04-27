@@ -67,5 +67,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="D:/files/api_project/mar_api-master/softwarerequest_api/WebContent/WEB-INF/lib/jasperreports-6.20.0.jar"/>
+	<classpathentry kind="src" path="/itemreq_api"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
