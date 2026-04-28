@@ -99,11 +99,21 @@ public class FileUtillity {
 	         FormDataBodyPart filePart = fileParts.get(i);
 
 	         InputStream fileInputStream = filePart.getValueAs(InputStream.class);
-
 	         String originalFileName = filePart.getContentDisposition().getFileName();
+	         if (originalFileName != null) {
+	             originalFileName = new String(originalFileName.getBytes("ISO-8859-1"), "UTF-8");
+	         }
 
 	         String fieldName = fieldNameParts.get(i).getValue();
+	         if (fieldName != null) {
+	             fieldName = new String(fieldName.getBytes("ISO-8859-1"), "UTF-8");
+	         }
 	         
+//	         
+//	         String originalFileName = filePart.getContentDisposition().getFileName();
+//
+//	         String fieldName = fieldNameParts.get(i).getValue();
+//	         
 	         int fileIndex = i + 1;  
 
 	         String newFileName = vID+'_'+fileIndex+'_'+originalFileName;
