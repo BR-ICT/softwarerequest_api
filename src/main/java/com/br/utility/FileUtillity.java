@@ -106,7 +106,7 @@ public class FileUtillity {
 	         
 	         int fileIndex = i + 1;  
 
-	         String newFileName = +'_'+fileIndex+'_'+originalFileName;
+	         String newFileName = vID+'_'+fileIndex+'_'+originalFileName;
 	         
 	         String filetype = filePart.getMediaType().toString();
 	         

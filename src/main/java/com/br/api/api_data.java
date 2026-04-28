@@ -4147,53 +4147,6 @@ public class api_data {
 	
 	
 	
-	@POST
-	@Path("/fileuploadsoftwarerequest")
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
-
-	public Response fileuploadsoftwarerequest(
-	         FormDataMultiPart formData,
-	         @Context HttpServletRequest request
-	 )
-			throws JSONException {
-		logger.info("/insertSRM");
-
-		JSONObject mJsonObj = new JSONObject();
-
-		System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxx");
-
-		try {
-			List<FormDataBodyPart> fileParts = formData.getFields("files");
-	         List<FormDataBodyPart> fieldNameParts = formData.getFields("fieldnames");
-
-	         JSONArray outputs = new JSONArray();
-
-	         if (fileParts != null && !fileParts.isEmpty()) {
-
-//	             String filePath = request.getRealPath("/") + "WEB-INF/image/";
-	    String filePath = "D:\\files\\api_project\\software_files"; // Window
-//	    String filePath = "/home/wattana/files/api_project/supplier_files"; // Ubuntu 
-
-	             // ⬅ เรียกฟังก์ชันที่แยกออกมา
-	             outputs = FileUtillity.saveUploadedFiles(
-	                     fileParts,
-	                     fieldNameParts,
-	                     filePath,
-	                      "11",
-	                "111",
-	                "10001",
-	                "MAHAKI_CHU"
-	             );
-	         }
-		} catch (Exception e) {
-			mJsonObj.put("result", "nok");
-			mJsonObj.put("message", e.getMessage());
-			logger.error(e.getMessage());
-		}
-
-		return Response.status(Response.Status.NOT_FOUND).entity(mJsonObj).build();
-
-	}
 	
 	
 	
