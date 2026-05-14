@@ -1,4 +1,5 @@
 package com.br.data;
+
 import java.io.StringReader;
 
 import java.io.InputStream;
@@ -35,13 +36,12 @@ public class UpdateData {
 
 	protected static String DBNAME = Constant.DBNAME;
 	protected static String DBM3NAME = Constant.DBM3NAME;
-	
-	  public static String SR_HEAD =  Constant.SR_HEAD;
-	  public static String SR_DETAIL = Constant.SR_DETAIL; 
-	  public static String SR_APPROVE = Constant.SR_APPROVE; 
-	  public static String SR_FLOW = Constant.SR_FLOW; 
-	  public static String SR_GROUP = Constant.SR_GROUP; 
-	
+
+	public static String SR_HEAD = Constant.SR_HEAD;
+	public static String SR_DETAIL = Constant.SR_DETAIL;
+	public static String SR_APPROVE = Constant.SR_APPROVE;
+	public static String SR_FLOW = Constant.SR_FLOW;
+	public static String SR_GROUP = Constant.SR_GROUP;
 
 	// protected static String DBNAMEPP = ""+Constant.DBNAME+"";
 	protected static String DBNAMEPP = "" + DBNAME + "";
@@ -70,9 +70,8 @@ public class UpdateData {
 			remark = ConvertString.convertApostrophe(remark);
 
 			String query = "UPDATE " + Constant.DBNAME + ".M3_MARHEAD \n" + "SET MHTYPE = '" + type + "' \n"
-					+ ", MHBU = '" + bu
-					+ "' \n" + ", MHCOCE = '" + costcenter + "' \n" + ", MHACCT = '" + accountant + "' \n"
-					+ ", MHAPP1 = '" + approve1 + "' \n" + ", MHAPP2 = '" + approve2 + "' \n" + ", MHAPP3 = '"
+					+ ", MHBU = '" + bu + "' \n" + ", MHCOCE = '" + costcenter + "' \n" + ", MHACCT = '" + accountant
+					+ "' \n" + ", MHAPP1 = '" + approve1 + "' \n" + ", MHAPP2 = '" + approve2 + "' \n" + ", MHAPP3 = '"
 					+ approve3 + "' \n" + ", MHAPP4 = '" + approve4 + "' \n" + ", MHAPP5 = '" + approve5 + "' \n"
 					+ ", MHREM1 = '" + remark + "' \n" + ", MHREM2 = '" + purpose + "' \n"
 					// + ", MHACCRE = '" + + "' \n"
@@ -120,11 +119,10 @@ public class UpdateData {
 		return null;
 
 	}
-	
+
 //itemreq_api/resendemail/{cono}/{divi}/{serviceno}
-	
-	public static String resendemail(String cono, String divi, String serviceno)
-			throws Exception {
+
+	public static String resendemail(String cono, String divi, String serviceno) throws Exception {
 		logger.info("resendemail");
 
 		JSONObject mJsonObj = new JSONObject();
@@ -136,37 +134,25 @@ public class UpdateData {
 			conn = ConnectDB2.doConnect();
 			stmt = conn.createStatement();
 
-		
-			//vApproval
+			// vApproval
 
-			
+			String data = SelectData.getSTATUSIDITEMRQ(serviceno, cono, divi);
 
-			String data = SelectData.getSTATUSIDITEMRQ(serviceno,cono,divi);
+			String url = "https://workflow.br-bangkokranch.com/webhook/saveitemrequest2";
 
-			String url = "https://workflow.br-bangkokranch.com/webhook/saveitemrequest2"; 
-			
-			/* if (data != null && data.trim().startsWith("{")) {
-			    JSONObject json = new JSONObject(data);
-			    json.put("vApproval", true);
-			    data = json.toString();
-			}
-			*/
-			
+			/*
+			 * if (data != null && data.trim().startsWith("{")) { JSONObject json = new
+			 * JSONObject(data); json.put("vApproval", true); data = json.toString(); }
+			 */
+
 			logger.debug("data: " + data);
 
-
-			String response = HttpConnection.sendRequest(
-					"POST",
-					url,
-					Map.of("x-access-token",
-							"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMCA6IDEwMSA6IOC4muC4o-C4tOC4qeC4seC4lyDguJrguLLguIfguIHguK3guIHguYHguKPguYnguJnguIrguYwg4LiI4Liz4LiB4Lix4LiUICjguKHguKvguLLguIrguJkpIiwiaXNzIjoiYXV0aGVuLXNlcnZpY2UiLCJhdWQiOiIwMTAyOTA2Iiwicm9sZSI6Ik1QTV8xQTEgOiBBUFBST1ZFIDogU0FMRU1BTiA6IDAiLCJleHAiOjE3NTAxNzY1NzF9.cAMs1gdcg3cxfYNTJi_WTHpBCKDxaw-MjwrDpmFPPSo"), // headers
-					data,
-					null // form-data
+			String response = HttpConnection.sendRequest("POST", url, Map.of("x-access-token",
+					"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMCA6IDEwMSA6IOC4muC4o-C4tOC4qeC4seC4lyDguJrguLLguIfguIHguK3guIHguYHguKPguYnguJnguIrguYwg4LiI4Liz4LiB4Lix4LiUICjguKHguKvguLLguIrguJkpIiwiaXNzIjoiYXV0aGVuLXNlcnZpY2UiLCJhdWQiOiIwMTAyOTA2Iiwicm9sZSI6Ik1QTV8xQTEgOiBBUFBST1ZFIDogU0FMRU1BTiA6IDAiLCJleHAiOjE3NTAxNzY1NzF9.cAMs1gdcg3cxfYNTJi_WTHpBCKDxaw-MjwrDpmFPPSo"), // headers
+					data, null // form-data
 			);
-			
+
 			logger.debug("response: " + response);
-
-
 
 			mJsonObj.put("result", "ok");
 			mJsonObj.put("message", "Send email complete.");
@@ -197,25 +183,23 @@ public class UpdateData {
 
 		return mJsonObj.toString();
 	}
-	
-	
-	public static String prepareUpdateSWRQ(String vID, String vSTATUS, String vData, String vApproval,String vApprover,String vDepthead, String vRemark)
-			throws Exception {
+
+	public static String prepareUpdateSWRQ(String vID, String vSTATUS, String vData, String vApproval, String vApprover,
+			String vDepthead, String vRemark) throws Exception {
 		logger.info("UpdateSWRQ");
-		
-		vRemark = ConvertString.convertApostrophe(vRemark); 
+
+		vRemark = ConvertString.convertApostrophe(vRemark);
 
 		JSONObject mJsonObj = new JSONObject();
 		Connection conn = null;
 		Statement stmt = null;
-		
+
 		ResultSet vcrs = null;
 		ResultSet vcrs20 = null;
 		Statement stmtvcrs = null;
-		Boolean  isVacant = false; 
-		Boolean  isVacant20 = false; 
-		
-		
+		Boolean isVacant = false;
+		Boolean isVacant20 = false;
+
 		String tt = "OK";
 		try {
 			conn = ConnectDB2.doConnect();
@@ -225,32 +209,30 @@ public class UpdateData {
 			String newStatus = vSTATUS;
 			String Status = vSTATUS;
 			String cStatus = "10";
-			
-			
+
 			JSONObject obj = new JSONObject(vData);
 
 			String company = obj.optString("company");
 //			String warehouse2 = obj.optString("warehouse2");
-			
+
 			String title = obj.optString("serviceTitle");
-			
+
 			String version = obj.optString("vVersion");
-			
+
 			logger.debug("vVersion: " + version);
-			
+
 			String checkVersion = SelectData.checkVersion("SRQ");
-			   if (version == null || version.isEmpty() || !Objects.equals(checkVersion, version)) {
-			    mJsonObj.put("result", "nok");
-			    mJsonObj.put("message", "Can't create Service number, Please update your version to " + checkVersion + " :  "+version+" (Click F5 button).");
-			    return mJsonObj.toString();
+			if (version == null || version.isEmpty() || !Objects.equals(checkVersion, version)) {
+				mJsonObj.put("result", "nok");
+				mJsonObj.put("message", "Can't create Service number, Please update your version to " + checkVersion
+						+ " :  " + version + " (Click F5 button).");
+				return mJsonObj.toString();
 
-			   }
-
-			
+			}
 
 			logger.debug("company: " + company);
 //			logger.debug("warehouse2: " + warehouse2);
-			
+
 			Map<String, String[]> companyMapping = new HashMap<>();
 			companyMapping.put("10", new String[] { "10", "101" });
 			companyMapping.put("600", new String[] { "600", "600" });
@@ -264,83 +246,76 @@ public class UpdateData {
 
 			logger.debug("cono: " + comcono);
 			logger.debug("divi: " + comdivi);
-			
-			String FADES = "FADES3"; 
-			
-			
-			
-			
+
+			String FADES = "FADES3";
+
 			// เพิ่มก่อนเริ่ม update ใดๆ
-			String checkSQL = "SELECT FAAPBY " +
-			                  "FROM "+DBNAME+"."+SR_APPROVE+" " +
-			                  "WHERE FACODE = 'SWRQ' " +
-			                  "AND FASRNO = '" + vID + "' " +
-			                  "AND FASTAT = '" + vSTATUS + "'  AND FACONO = '"+comcono+"'" +
-			                  "FETCH FIRST 1 ROWS ONLY";
+			String checkSQL = "SELECT FAAPBY " + "FROM " + DBNAME + "." + SR_APPROVE + " " + "WHERE FACODE = 'SWRQ' "
+					+ "AND FASRNO = '" + vID + "' " + "AND FASTAT = '" + vSTATUS + "'  AND FACONO = '" + comcono + "'"
+					+ "FETCH FIRST 1 ROWS ONLY";
 
 			logger.debug("checkSQL: " + checkSQL);
 
 			try (ResultSet rs = stmt.executeQuery(checkSQL)) {
-			    if (rs.next()) {
-			        String faapby = rs.getString("FAAPBY");
-			        if (faapby != null && !faapby.trim().isEmpty()) {
-			            logger.info("FAAPBY already has value: " + faapby);
-			            mJsonObj.put("result", "nok");
-			            mJsonObj.put("message", "Approver already set. No update performed.");
-			            return mJsonObj.toString(); // ออกจาก method ทันที
-			        }
-			    }
+				if (rs.next()) {
+					String faapby = rs.getString("FAAPBY");
+					if (faapby != null && !faapby.trim().isEmpty()) {
+						logger.info("FAAPBY already has value: " + faapby);
+						mJsonObj.put("result", "nok");
+						mJsonObj.put("message", "Approver already set. No update performed.");
+						return mJsonObj.toString(); // ออกจาก method ทันที
+					}
+				}
 			}
-			
-			
 
 			if ("false".equalsIgnoreCase(vApproval)) {
 				newStatus = "00";
-				
-				FADES = "FADES4"; 
-				  rejectSWRQ(vID,  vSTATUS,  vData,  vApproval, vApprover, vDepthead,  vRemark,Status,comcono,comdivi);
-			} else {switch (vSTATUS) {
-			case "00":
-				newStatus = "10";
-				
-				String querysetapprove = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
-						+ "SET  FAAPLI = '"+vDepthead+"' \n"
-						+ "WHERE FACODE = 'SWRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('10') AND FACONO = '"+comcono+"' ";
-				stmt.executeUpdate(querysetapprove);
-				break;
-				
-			case "10": 
-				newStatus = "20";
-				break;
-			case "20":
-				newStatus = "30";
-				break;
-			case "30":
-				newStatus = "40";
 
-				String querysetapprove2 = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
-						+ "SET  FAAPLI = '"+vDepthead+"' \n"
-						+ "WHERE FACODE = 'SWRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('10') AND FACONO = '"+comcono+"' ";
-				stmt.executeUpdate(querysetapprove2);
-				break;
-			case "40":
-				newStatus = "50";
-				break;
-			case "50":
-				
-				newStatus = "60";
-			case "60":
-				newStatus = "60";
-				String completeSQL = "UPDATE "+DBNAME+"."+SR_HEAD+" "
-						+ "SET FHHSTA = 3 WHERE FHCODE = 'SWRQ' AND FHSRNO = '" + vID + "'   AND FHCONO = '"+comcono+"' AND FHDIVI = '"+comdivi+"' ";
-				stmt.executeUpdate(completeSQL);
-				break;
-		
-			
-			default:
-				break;
-				
-		}
+				FADES = "FADES4";
+				rejectSWRQ(vID, vSTATUS, vData, vApproval, vApprover, vDepthead, vRemark, Status, comcono, comdivi);
+			} else {
+				switch (vSTATUS) {
+				case "00":
+					newStatus = "10";
+
+					String querysetapprove = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n" + "SET  FAAPLI = '"
+							+ vDepthead + "' \n" + "WHERE FACODE = 'SWRQ' AND FASRNO = '" + vID
+							+ "'  AND  FASTAT IN ('10') AND FACONO = '" + comcono + "' ";
+					stmt.executeUpdate(querysetapprove);
+					break;
+
+				case "10":
+					newStatus = "20";
+					break;
+				case "20":
+					newStatus = "30";
+					break;
+				case "30":
+					newStatus = "40";
+
+					String querysetapprove2 = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n" + "SET  FAAPLI = '"
+							+ vDepthead + "' \n" + "WHERE FACODE = 'SWRQ' AND FASRNO = '" + vID
+							+ "'  AND  FASTAT IN ('10') AND FACONO = '" + comcono + "' ";
+					stmt.executeUpdate(querysetapprove2);
+					break;
+				case "40":
+					newStatus = "50";
+					break;
+				case "50":
+
+					newStatus = "60";
+				case "60":
+					newStatus = "60";
+					String completeSQL = "UPDATE " + DBNAME + "." + SR_HEAD + " "
+							+ "SET FHHSTA = 3 WHERE FHCODE = 'SWRQ' AND FHSRNO = '" + vID + "'   AND FHCONO = '"
+							+ comcono + "' AND FHDIVI = '" + comdivi + "' ";
+					stmt.executeUpdate(completeSQL);
+					break;
+
+				default:
+					break;
+
+				}
 			}
 
 			// สร้าง timestamp และวันที่
@@ -356,117 +331,95 @@ public class UpdateData {
 			}
 
 			// เตรียม SQL
-		/*	String query1 = "UPDATE "+DBNAME+"."+SR_DETAIL+" \n"
-					+ "SET FDDATA = '" + vData + "', FDENDA = CURRENT DATE, FDENTI  = CURRENT TIME ,FDDSTA = '" + newStatus + "' \n"
-					+ "WHERE FDSRNO = '" + vID + "'   AND FDCONO = '"+comcono+"' AND FDDIVI = '"+comdivi+"' ";
-			*/
-			
-			
+			/*
+			 * String query1 = "UPDATE "+DBNAME+"."+SR_DETAIL+" \n" + "SET FDDATA = '" +
+			 * vData + "', FDENDA = CURRENT DATE, FDENTI  = CURRENT TIME ,FDDSTA = '" +
+			 * newStatus + "' \n" + "WHERE FDSRNO = '" + vID +
+			 * "'   AND FDCONO = '"+comcono+"' AND FDDIVI = '"+comdivi+"' ";
+			 */
 
-		
-		/////
+			/////
 
-			
 			if ("false".equalsIgnoreCase(vApproval)) {
-			    cStatus = "01";
+				cStatus = "01";
 			} else {
-			    if ("00".equals(vSTATUS)) {
-			        cStatus = "00";
-			    } else if ("60".equals(vSTATUS)) {
-			        cStatus = "60";
-			    }
-			    else {
-			    		 cStatus = "99";
-			    }
+				if ("00".equals(vSTATUS)) {
+					cStatus = "00";
+				} else if ("60".equals(vSTATUS)) {
+					cStatus = "60";
+				} else {
+					cStatus = "99";
+				}
 			}
 
-			
-			
-			String query222 = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n"
-	                + "SET FAENUS = '"+vApprover+"' ,FAAPBY = '" + vDepthead + "', FAAPDA = CURRENT DATE , FADES1 = 'Approved' \n"
-	                + "WHERE FACODE = 'SWRQ' AND FASRNO = '" + vID + "' AND FASTAT  = '"+cStatus+"' AND FACONO = '"+comcono+"'";
+			String query222 = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n" + "SET FAENUS = '" + vApprover
+					+ "' ,FAAPBY = '" + vDepthead + "', FAAPDA = CURRENT DATE , FADES1 = 'Approved' \n"
+					+ "WHERE FACODE = 'SWRQ' AND FASRNO = '" + vID + "' AND FASTAT  = '" + cStatus + "' AND FACONO = '"
+					+ comcono + "'";
 
+			String query2 = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n" + "SET   FAAPTI = CURRENT TIME ,  FAENUS = '"
+					+ vApprover + "' ,FADES1 = 'Approved',  FAAPDA = CURRENT DATE,FAENTI =  CURRENT TIME,FAAPBY = '"
+					+ vApprover + "' , " + FADES + " = '" + vRemark + "' , FAENDA = CURRENT DATE"
+					+ " WHERE FACODE = 'SWRQ' AND FASRNO = '" + vID + "' AND FASTAT = '" + Status + "' AND FACONO = '"
+					+ comcono + "' ";
 
+			String query3 = "UPDATE " + DBNAME + "." + SR_HEAD + " " + "SET   FHDSTA = '" + newStatus
+					+ "' , FHENDA = CURRENT DATE ,FHENTI = CURRENT TIME WHERE FHCODE = 'SWRQ' AND FHSRNO = '" + vID
+					+ "'  AND FHCONO = '" + comcono + "' AND FHDIVI = '" + comdivi + "'  ";
 
-			String query2 = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
-					+ "SET   FAAPTI = CURRENT TIME ,  FAENUS = '"+vApprover+"' ,FADES1 = 'Approved',  FAAPDA = CURRENT DATE,FAENTI =  CURRENT TIME,FAAPBY = '"+vApprover+"' , "+FADES+" = '"+vRemark+"' , FAENDA = CURRENT DATE" +
-					" WHERE FACODE = 'SWRQ' AND FASRNO = '" + vID + "' AND FASTAT = '" + Status + "' AND FACONO = '"+comcono+"' ";
+			String query = "UPDATE " + DBNAME + "." + SR_DETAIL + " "
+					+ "SET FDDATA = ?, FDENDA = CURRENT DATE, FDENTI = CURRENT TIME, FDDSTA = ? "
+					+ "WHERE FDSRNO = ? AND FDCONO = ? AND FDDIVI = ?";
 
-			String query3 = "UPDATE "+DBNAME+"."+SR_HEAD+" "
-					+ "SET   FHDSTA = '" + newStatus +
-					"' , FHENDA = CURRENT DATE ,FHENTI = CURRENT TIME WHERE FHCODE = 'SWRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '"+comcono+"' AND FHDIVI = '"+comdivi+"'  ";
+			try (PreparedStatement ps = conn.prepareStatement(query)) {
 
-			
-			String query = "UPDATE " + DBNAME + "." + SR_DETAIL + " " +
-		               "SET FDDATA = ?, FDENDA = CURRENT DATE, FDENTI = CURRENT TIME, FDDSTA = ? " +
-		               "WHERE FDSRNO = ? AND FDCONO = ? AND FDDIVI = ?";
+				// ใช้ StringReader สำหรับ JSON ยาว ๆ
+				ps.setCharacterStream(1, new StringReader(vData), vData.length());
+				ps.setString(2, newStatus);
+				ps.setString(3, vID);
+				ps.setString(4, comcono);
+				ps.setString(5, comdivi);
 
-		try (PreparedStatement ps = conn.prepareStatement(query)) {
+				int updated = ps.executeUpdate();
+				System.out.println("Rows updated: " + updated);
+				System.out.println("Check vData: " + vData);
+			}
 
-		    // ใช้ StringReader สำหรับ JSON ยาว ๆ
-		    ps.setCharacterStream(1, new StringReader(vData), vData.length());
-		    ps.setString(2, newStatus);
-		    ps.setString(3, vID);
-		    ps.setString(4, comcono);
-		    ps.setString(5, comdivi);
-
-		    int updated = ps.executeUpdate();
-		    System.out.println("Rows updated: " + updated);
-		    System.out.println("Check vData: " + vData);
-		}
-
-			
-			
-			//tt = query1 + " ; " + query2; // Debug
-			//logger.debug(query1);
+			// tt = query1 + " ; " + query2; // Debug
+			// logger.debug(query1);
 			logger.debug(query222);
 			logger.debug(query2);
 			logger.debug(query3);
 
-			//stmt.executeUpdate(query1);
+			// stmt.executeUpdate(query1);
 			logger.debug("xxxxxxxxxxxxxxxxxx");
-			//logger.debug(query1);
-			//stmt.executeUpdate(query1);
-			//ps.close();
+			// logger.debug(query1);
+			// stmt.executeUpdate(query1);
+			// ps.close();
 			logger.debug("xxxxxxxxxxxxxxxxxx");
-			
-			
-			
+
 			stmt.executeUpdate(query222);
-			
-			
+
 			stmt.executeUpdate(query2);
 			stmt.executeUpdate(query3);
-			
+
 			if ("false".equalsIgnoreCase(vApproval)) {
 				newStatus = "00";
-				
-				rejectreverseSWRQ( vID,  vSTATUS,  vData,  vApproval, vApprover, vDepthead,  vRemark, Status,FADES, comcono, comdivi);
 
-				
-				
+				rejectreverseSWRQ(vID, vSTATUS, vData, vApproval, vApprover, vDepthead, vRemark, Status, FADES, comcono,
+						comdivi);
+
 			}
-			
-			String data = SelectData.getSTATUSIDSWRQ(vID.toString(),comcono,comdivi);
-			String url = "https://workflow.br-bangkokranch.com/webhook/savesoftware_req"; 
-			
 
-			String response = HttpConnection.sendRequest(
-					"POST",
-					url,
-					Collections.singletonMap("x-access-token",
-							"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMCA6IDEwMSA6IOC4muC4o-C4tOC4qeC4seC4lyDguJrguLLguIfguIHguK3guIHguYHguKPguYnguJnguIrguYwg4LiI4Liz4LiB4Lix4LiUICjguKHguKvguLLguIrguJkpIiwiaXNzIjoiYXV0aGVuLXNlcnZpY2UiLCJhdWQiOiIwMTAyOTA2Iiwicm9sZSI6Ik1QTV8xQTEgOiBBUFBST1ZFIDogU0FMRU1BTiA6IDAiLCJleHAiOjE3NTAxNzY1NzF9.cAMs1gdcg3cxfYNTJi_WTHpBCKDxaw-MjwrDpmFPPSo"), // headers
-					data,
-					null // form-data
+			String data = SelectData.getSTATUSIDSWRQ(vID.toString(), comcono, comdivi);
+			String url = "https://workflow.br-bangkokranch.com/webhook/savesoftware_req";
+
+			String response = HttpConnection.sendRequest("POST", url, Collections.singletonMap("x-access-token",
+					"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMCA6IDEwMSA6IOC4muC4o-C4tOC4qeC4seC4lyDguJrguLLguIfguIHguK3guIHguYHguKPguYnguJnguIrguYwg4LiI4Liz4LiB4Lix4LiUICjguKHguKvguLLguIrguJkpIiwiaXNzIjoiYXV0aGVuLXNlcnZpY2UiLCJhdWQiOiIwMTAyOTA2Iiwicm9sZSI6Ik1QTV8xQTEgOiBBUFBST1ZFIDogU0FMRU1BTiA6IDAiLCJleHAiOjE3NTAxNzY1NzF9.cAMs1gdcg3cxfYNTJi_WTHpBCKDxaw-MjwrDpmFPPSo"), // headers
+					data, null // form-data
 			);
-			
-			logger.debug("response: " + response);
 
-			
-			
-			
-			
-			
+			logger.debug("response: " + response);
 
 			mJsonObj.put("result", "ok");
 			mJsonObj.put("message", "Update complete.");
@@ -497,38 +450,50 @@ public class UpdateData {
 
 		return mJsonObj.toString();
 	}
-	public static void UpdateSRMUserforinsert(String username,String MaxNo,String cono,String divi,String vDepthead)
+
+	public static void UpdateSRMUserforinsert(String username, String MaxNo, String cono, String divi, String vDepthead)
 			throws Exception {
 		logger.info("UpdateSRMUserforstep40");
-		
 
 		JSONObject mJsonObj = new JSONObject();
 		Connection conn = null;
 		Statement stmt = null;
-		
-		
+		String FADES = "FADES3";
+
 		String tt = "OK";
 		try {
 			conn = ConnectDB2.doConnect();
-			stmt = conn.createStatement();	
-			
-			String querysetapprove1 = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
-					+ "SET  FAAPLI = '"+username+"' \n"
-					+ "WHERE FACODE = 'SWRQ' AND FASRNO = '" + MaxNo + "'  AND  FASTAT IN ('00') AND FACONO = '"+cono+"' AND FADIVI = '"+divi+"'";
+			stmt = conn.createStatement();
+
+			String querysetapprove1 = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n" + "SET  FAAPLI = '" + username
+					+ "' \n" + "WHERE FACODE = 'SWRQ' AND FASRNO = '" + MaxNo
+					+ "'  AND  FASTAT IN ('00') AND FACONO = '" + cono + "' AND FADIVI = '" + divi + "'";
 			stmt.executeUpdate(querysetapprove1);
 
-			String querysetapprove2 = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
-					+ "SET  FAAPLI = '"+vDepthead+"' \n"
-					+ "WHERE FACODE = 'SWRQ' AND FASRNO = '" + MaxNo + "'  AND  FASTAT IN ('10') AND FACONO = '"+cono+"' AND FADIVI = '"+divi+"'";
+			String querysetapprove2 = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n" + "SET  FAAPLI = '" + vDepthead
+					+ "' \n" + "WHERE FACODE = 'SWRQ' AND FASRNO = '" + MaxNo
+					+ "'  AND  FASTAT IN ('10') AND FACONO = '" + cono + "' AND FADIVI = '" + divi + "'";
 			stmt.executeUpdate(querysetapprove2);
-			
-			String querysetapprove3 = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
-					+ "SET  FAAPLI = '"+username+"' \n"
-					+ "WHERE FACODE = 'SWRQ' AND FASRNO = '" + MaxNo + "' \n "
-					+ "AND  FASTAT IN ('40') \n"
-					+ "AND FACONO = '"+cono+"'\n "
-					+ "AND FADIVI = '"+divi+"'";
+
+			String querysetapprove3 = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n" + "SET  FAAPLI = '" + username
+					+ "' \n" + "WHERE FACODE = 'SWRQ' AND FASRNO = '" + MaxNo + "' \n " + "AND  FASTAT IN ('40') \n"
+					+ "AND FACONO = '" + cono + "'\n " + "AND FADIVI = '" + divi + "'";
 			stmt.executeUpdate(querysetapprove3);
+
+			String query222 = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n" + "SET FAENUS = '" + username
+					+ "' ,FAAPBY = '" + vDepthead + "', FAAPDA = CURRENT DATE , FADES1 = 'Approved' \n"
+					+ "WHERE FACODE = 'SWRQ' AND FASRNO = '" + MaxNo + "' AND FASTAT  = '00' AND FACONO = '" + cono
+					+ "'";
+
+			String query2 = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n" + "SET   FAAPTI = CURRENT TIME ,  FAENUS = '"
+					+ username + "' ,FADES1 = 'Approved',  FAAPDA = CURRENT DATE,FAENTI =  CURRENT TIME,FAAPBY = '"
+					+ username + "' , " + FADES + " = '' , FAENDA = CURRENT DATE"
+					+ " WHERE FACODE = 'SWRQ' AND FASRNO = '" + MaxNo + "' AND FASTAT = '00' AND FACONO = '" + cono
+					+ "' ";
+
+			stmt.executeUpdate(query222);
+			stmt.executeUpdate(query2);
+
 			mJsonObj.put("result", "ok");
 			mJsonObj.put("message", "Update complete.");
 
@@ -555,54 +520,53 @@ public class UpdateData {
 			}
 		}
 	}
-	
-	public static void rejectreverseSWRQ(String vID, String vSTATUS, String vData, String vApproval,String vApprover,String vDepthead, String vRemark,String Status,String FADES,String comcono,String comdivi) throws Exception {
+
+	public static void rejectreverseSWRQ(String vID, String vSTATUS, String vData, String vApproval, String vApprover,
+			String vDepthead, String vRemark, String Status, String FADES, String comcono, String comdivi)
+			throws Exception {
 
 		JSONObject mJsonObj = new JSONObject();
 		Connection conn = null;
 		Statement stmt = null;
-		
+
 		ResultSet vcrs = null;
 		ResultSet vcrs20 = null;
 		Statement stmtvcrs = null;
-		Boolean  isVacant = false; 
-		Boolean  isVacant20 = false; 
+		Boolean isVacant = false;
+		Boolean isVacant20 = false;
 		conn = ConnectDB2.doConnect();
 		stmt = conn.createStatement();
-		
 
-		String query2e = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
+		String query2e = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n"
 				+ "SET  FADES1 = 'Wait for approve', FAAPTI = null,FAAPBY = ' ', FAAPDA = NULL  ,FAENDA  = CURRENT DATE , FAENTI  = CURRENT TIME \n"
-				+ "WHERE FACODE = 'SWRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('10','15','20','30','40','50','60','70','80') AND FACONO = '"+comcono+"'";
+				+ "WHERE FACODE = 'SWRQ' AND FASRNO = '" + vID
+				+ "'  AND  FASTAT IN ('10','15','20','30','40','50','60','70','80') AND FACONO = '" + comcono + "'";
 
-		String query3e = "UPDATE "+DBNAME+"."+SR_HEAD+" "
-				+ "SET FHDEPH = '-' WHERE FHCODE = 'SWRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '"+comcono+"' AND FHDIVI = '"+comdivi+"'  ";
-		
-		
-		String query4re = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
-				+ "SET  "+FADES+" = '"+vRemark+"' \n"
-				+ "WHERE FACODE = 'SWRQ' AND FASRNO = '" + vID + "'  AND  FASTAT = '"+Status+"' AND FACONO = '"+comcono+"' ";
+		String query3e = "UPDATE " + DBNAME + "." + SR_HEAD + " "
+				+ "SET FHDEPH = '-' WHERE FHCODE = 'SWRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '" + comcono
+				+ "' AND FHDIVI = '" + comdivi + "'  ";
+
+		String query4re = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n" + "SET  " + FADES + " = '" + vRemark + "' \n"
+				+ "WHERE FACODE = 'SWRQ' AND FASRNO = '" + vID + "'  AND  FASTAT = '" + Status + "' AND FACONO = '"
+				+ comcono + "' ";
 
 		logger.debug(query2e);
 		logger.debug(query3e);
 		logger.debug(query4re);
 
-		
 		stmt.executeUpdate(query2e);
 		stmt.executeUpdate(query3e);
 		stmt.executeUpdate(query4re);
 
-		
-
-		
 	}
-	
-	public static void rejectSWRQ(String vID, String vSTATUS, String vData, String vApproval,String vApprover,String vDepthead, String vRemark,String Status,String comcono,String comdivi) throws Exception {
+
+	public static void rejectSWRQ(String vID, String vSTATUS, String vData, String vApproval, String vApprover,
+			String vDepthead, String vRemark, String Status, String comcono, String comdivi) throws Exception {
 
 		JSONObject mJsonObj = new JSONObject();
 		Connection conn = null;
 		Statement stmt = null;
-		
+
 		ResultSet vcrs = null;
 		ResultSet vcrs20 = null;
 		Statement stmtvcrs = null;
@@ -610,62 +574,52 @@ public class UpdateData {
 		stmt = conn.createStatement();
 //		conn = ConnectDB2.doConnect();
 		/*
-		String query1e = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
-				+ "SET  FAAPLI = '' \n"
-				+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('10') ";
-				*/
+		 * String query1e = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n" +
+		 * "SET  FAAPLI = '' \n" + "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID +
+		 * "'  AND  FASTAT IN ('10') ";
+		 */
 
-
-		String query2e = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
+		String query2e = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n"
 				+ "SET  FADES1 = 'Wait for approve', FAAPTI = null,FAAPBY = ' ', FAAPDA = NULL  ,FAENDA  = CURRENT DATE , FAENTI  = CURRENT TIME ,FADES3 = '' \n"
-				+ "WHERE FACODE = 'SWRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('00','10','20','30','40','50','60','70','80') AND  FACONO = '"+comcono+"' AND FADIVI = '"+comdivi+"' ";
+				+ "WHERE FACODE = 'SWRQ' AND FASRNO = '" + vID
+				+ "'  AND  FASTAT IN ('00','10','20','30','40','50','60','70','80') AND  FACONO = '" + comcono
+				+ "' AND FADIVI = '" + comdivi + "' ";
 
-		String query3e = "UPDATE "+DBNAME+"."+SR_HEAD+" "
-				+ "SET FHDEPH = '-' WHERE FHCODE = 'SWRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '"+comcono+"'  ";
-	 
-		
-		String query4e ="UPDATE "+DBNAME+"."+SR_APPROVE+" \r\n"
-				+ "	SET  FARJDA  = CURRENT DATE , FARJTI  = CURRENT TIME , FARJBY = '"+vApprover+"' \r\n"
-				+ "	WHERE FACODE = 'SWRQ' AND FASRNO =  '"+vID+"'   AND  FASTAT = '"+Status+"' AND FACONO = '"+comcono+"'  ";
+		String query3e = "UPDATE " + DBNAME + "." + SR_HEAD + " "
+				+ "SET FHDEPH = '-' WHERE FHCODE = 'SWRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '" + comcono + "'  ";
 
-		//logger.debug(query1e);
+		String query4e = "UPDATE " + DBNAME + "." + SR_APPROVE + " \r\n"
+				+ "	SET  FARJDA  = CURRENT DATE , FARJTI  = CURRENT TIME , FARJBY = '" + vApprover + "' \r\n"
+				+ "	WHERE FACODE = 'SWRQ' AND FASRNO =  '" + vID + "'   AND  FASTAT = '" + Status + "' AND FACONO = '"
+				+ comcono + "'  ";
+
+		// logger.debug(query1e);
 		logger.debug(query2e);
 		logger.debug(query3e);
 		logger.debug(query4e);
 
-		//stmt.executeUpdate(query1e);
+		// stmt.executeUpdate(query1e);
 		stmt.executeUpdate(query2e);
 		stmt.executeUpdate(query3e);
 		stmt.executeUpdate(query4e);
 
-		
 	}
-	
-	
 
-	
-	
-
-	public static String updateITEMREQUEST(String vID, String vSTATUS, String vData, String vApproval,String vApprover,String vDepthead, String vRemark)
-			throws Exception {
+	public static String updateITEMREQUEST(String vID, String vSTATUS, String vData, String vApproval, String vApprover,
+			String vDepthead, String vRemark) throws Exception {
 		logger.info("UpdateITEMREQUEST");
-		
-		vRemark = ConvertString.convertApostrophe(vRemark); 
+
+		vRemark = ConvertString.convertApostrophe(vRemark);
 
 		JSONObject mJsonObj = new JSONObject();
 		Connection conn = null;
 		Statement stmt = null;
-		
+
 		ResultSet vcrs = null;
 		ResultSet vcrs20 = null;
 		Statement stmtvcrs = null;
-		Boolean  isVacant = false; 
-		Boolean  isVacant20 = false; 
-		
-		
-		
-		
-		
+		Boolean isVacant = false;
+		Boolean isVacant20 = false;
 
 		String tt = "OK";
 		try {
@@ -676,32 +630,30 @@ public class UpdateData {
 			String newStatus = vSTATUS;
 			String Status = vSTATUS;
 			String cStatus = "10";
-			
-			
+
 			JSONObject obj = new JSONObject(vData);
 
 			String company = obj.optString("company");
 			String warehouse2 = obj.optString("warehouse2");
-			
+
 			String title = obj.optString("serviceTitle");
-			
+
 			String version = obj.optString("vVersion");
-			
+
 			logger.debug("vVersion: " + version);
-			
+
 			String checkVersion = SelectData.checkVersion("SRQ");
-			   if (version == null || version.isEmpty() || !Objects.equals(checkVersion, version)) {
-			    mJsonObj.put("result", "nok");
-			    mJsonObj.put("message", "Can't create Service number, Please update your version to " + checkVersion + " :  "+version+" (Click F5 button).");
-			    return mJsonObj.toString();
+			if (version == null || version.isEmpty() || !Objects.equals(checkVersion, version)) {
+				mJsonObj.put("result", "nok");
+				mJsonObj.put("message", "Can't create Service number, Please update your version to " + checkVersion
+						+ " :  " + version + " (Click F5 button).");
+				return mJsonObj.toString();
 
-			   }
-
-			
+			}
 
 			logger.debug("company: " + company);
 			logger.debug("warehouse2: " + warehouse2);
-			
+
 			Map<String, String[]> companyMapping = new HashMap<>();
 			companyMapping.put("10", new String[] { "10", "101" });
 			companyMapping.put("600", new String[] { "600", "600" });
@@ -715,262 +667,200 @@ public class UpdateData {
 
 			logger.debug("cono: " + comcono);
 			logger.debug("divi: " + comdivi);
-			
-			String FADES = "FADES3"; 
-			
-			
-			
-			
+
+			String FADES = "FADES3";
+
 			// เพิ่มก่อนเริ่ม update ใดๆ
-			String checkSQL = "SELECT FAAPBY " +
-			                  "FROM "+DBNAME+"."+SR_APPROVE+" " +
-			                  "WHERE FACODE = 'ITRQ' " +
-			                  "AND FASRNO = '" + vID + "' " +
-			                  "AND FASTAT = '" + vSTATUS + "'  AND FACONO = '"+comcono+"'" +
-			                  "FETCH FIRST 1 ROWS ONLY";
+			String checkSQL = "SELECT FAAPBY " + "FROM " + DBNAME + "." + SR_APPROVE + " " + "WHERE FACODE = 'ITRQ' "
+					+ "AND FASRNO = '" + vID + "' " + "AND FASTAT = '" + vSTATUS + "'  AND FACONO = '" + comcono + "'"
+					+ "FETCH FIRST 1 ROWS ONLY";
 
 			logger.debug("checkSQL: " + checkSQL);
 
 			try (ResultSet rs = stmt.executeQuery(checkSQL)) {
-			    if (rs.next()) {
-			        String faapby = rs.getString("FAAPBY");
-			        if (faapby != null && !faapby.trim().isEmpty()) {
-			            logger.info("FAAPBY already has value: " + faapby);
-			            mJsonObj.put("result", "nok");
-			            mJsonObj.put("message", "Approver already set. No update performed.");
-			            return mJsonObj.toString(); // ออกจาก method ทันที
-			        }
-			    }
+				if (rs.next()) {
+					String faapby = rs.getString("FAAPBY");
+					if (faapby != null && !faapby.trim().isEmpty()) {
+						logger.info("FAAPBY already has value: " + faapby);
+						mJsonObj.put("result", "nok");
+						mJsonObj.put("message", "Approver already set. No update performed.");
+						return mJsonObj.toString(); // ออกจาก method ทันที
+					}
+				}
 			}
-			
-			
 
 			if ("false".equalsIgnoreCase(vApproval)) {
 				newStatus = "00";
-				
-				FADES = "FADES4"; 
-				
-			
+
+				FADES = "FADES4";
+
 				/*
-				String query1e = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
-						+ "SET  FAAPLI = '' \n"
-						+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('10') ";
-						*/
+				 * String query1e = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n" +
+				 * "SET  FAAPLI = '' \n" + "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID +
+				 * "'  AND  FASTAT IN ('10') ";
+				 */
 
-
-				String query2e = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
+				String query2e = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n"
 						+ "SET  FADES1 = 'Wait for approve', FAAPTI = null,FAAPBY = ' ', FAAPDA = NULL  ,FAENDA  = CURRENT DATE , FAENTI  = CURRENT TIME ,FADES3 = '' \n"
-						+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('00','10','20','30','40','50','60','70','80') AND  FACONO = '"+comcono+"' AND FADIVI = '"+comdivi+"' ";
+						+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID
+						+ "'  AND  FASTAT IN ('00','10','20','30','40','50','60','70','80') AND  FACONO = '" + comcono
+						+ "' AND FADIVI = '" + comdivi + "' ";
 
-				String query3e = "UPDATE "+DBNAME+"."+SR_HEAD+" "
-						+ "SET FHDEPH = '-' WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '"+comcono+"'  ";
-			 
-				
-				String query4e ="UPDATE "+DBNAME+"."+SR_APPROVE+" \r\n"
-						+ "	SET  FARJDA  = CURRENT DATE , FARJTI  = CURRENT TIME , FARJBY = '"+vApprover+"' \r\n"
-						+ "	WHERE FACODE = 'ITRQ' AND FASRNO =  '"+vID+"'   AND  FASTAT = '"+Status+"' AND FACONO = '"+comcono+"'  ";
+				String query3e = "UPDATE " + DBNAME + "." + SR_HEAD + " "
+						+ "SET FHDEPH = '-' WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '" + comcono
+						+ "'  ";
 
-				//logger.debug(query1e);
+				String query4e = "UPDATE " + DBNAME + "." + SR_APPROVE + " \r\n"
+						+ "	SET  FARJDA  = CURRENT DATE , FARJTI  = CURRENT TIME , FARJBY = '" + vApprover + "' \r\n"
+						+ "	WHERE FACODE = 'ITRQ' AND FASRNO =  '" + vID + "'   AND  FASTAT = '" + Status
+						+ "' AND FACONO = '" + comcono + "'  ";
+
+				// logger.debug(query1e);
 				logger.debug(query2e);
 				logger.debug(query3e);
 				logger.debug(query4e);
 
-				//stmt.executeUpdate(query1e);
+				// stmt.executeUpdate(query1e);
 				stmt.executeUpdate(query2e);
 				stmt.executeUpdate(query3e);
 				stmt.executeUpdate(query4e);
 
-				
-				
-				
 			} else {
 				switch (vSTATUS) {
-					case "00":
-						newStatus = "10";
-						
-						String querysetapprove = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
-								+ "SET  FAAPLI = '"+vDepthead+"' \n"
-								+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('10') AND FACONO = '"+comcono+"' ";
-						stmt.executeUpdate(querysetapprove);
-						break;
-						
-					case "10": 
-												
-						String querycheckapprovestatus = 
-							    "SELECT CASE " +
-							    "        WHEN COUNT(*) > 0 THEN 'TRUE' " +
-							    "        ELSE 'FALSE' " +
-							    "    END AS result " +
-							    "FROM "+DBNAME+"."+SR_APPROVE+" sf " +
-							    "WHERE FACONO = '"+comcono+"' " +
-							    "  AND FACODE = 'ITRQ' " +
-							    "  AND FASRNO = '"+vID+"' " +
-							    "  AND FASTAT = '15'";
+				case "00":
+					newStatus = "10";
 
-							ResultSet rs = stmt.executeQuery(querycheckapprovestatus);
+					String querysetapprove = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n" + "SET  FAAPLI = '"
+							+ vDepthead + "' \n" + "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID
+							+ "'  AND  FASTAT IN ('10') AND FACONO = '" + comcono + "' ";
+					stmt.executeUpdate(querysetapprove);
+					break;
 
-							if (rs.next()) {
-							    String result = rs.getString("RESULT");
-							    if ("TRUE".equalsIgnoreCase(result)) {
-							        newStatus = "15";
-							    } else {
-							        newStatus = "20";
-							    }
-							}
-							
-							
-							
-							String querysetisVacant = "SELECT \r\n"
-									+ "  CASE \r\n"
-									+ "    WHEN COUNT(*) > 0 THEN 'TRUE'\r\n"
-									+ "    ELSE 'FALSE'\r\n"
-									+ "  END AS result\r\n"
-									+ "  FROM "+DBNAME+".SR_FLOWAPPROVE sf\r\n"
-									+ "	 WHERE FASRNO = '"+vID+"'\r\n"
-									+ "  AND FASTAT = '"+newStatus+"'\r\n"
-									+ "  AND TRIM(FAAPLI) = 'VACANT'\r\n"
-									+ "  AND FACONO  = '"+comcono+"'";
+				case "10":
 
-			
-							logger.debug("ID Query: " + querysetisVacant);
+					String querycheckapprovestatus = "SELECT CASE " + "        WHEN COUNT(*) > 0 THEN 'TRUE' "
+							+ "        ELSE 'FALSE' " + "    END AS result " + "FROM " + DBNAME + "." + SR_APPROVE
+							+ " sf " + "WHERE FACONO = '" + comcono + "' " + "  AND FACODE = 'ITRQ' "
+							+ "  AND FASRNO = '" + vID + "' " + "  AND FASTAT = '15'";
 
-							vcrs = stmt.executeQuery(querysetisVacant);
-							if (vcrs.next()) {
-								isVacant = vcrs.getBoolean("RESULT");
-							}
-							
-							
-							
+					ResultSet rs = stmt.executeQuery(querycheckapprovestatus);
 
-							String querysetisVacant20 = "SELECT \r\n"
-									+ "  CASE \r\n"
-									+ "    WHEN COUNT(*) > 0 THEN 'TRUE'\r\n"
-									+ "    ELSE 'FALSE'\r\n"
-									+ "  END AS result\r\n"
-									+ "  FROM "+DBNAME+".SR_FLOWAPPROVE sf\r\n"
-									+ "	 WHERE FASRNO = '"+vID+"'\r\n"
-									+ "  AND FASTAT = '20'\r\n"
-									+ "  AND TRIM(FAAPLI) = 'VACANT'\r\n"
-									+ "  AND FACONO  = '"+comcono+"'";
-
-			
-							logger.debug("ID Query: " + querysetisVacant20);
-
-							vcrs20 = stmt.executeQuery(querysetisVacant20);
-							if (vcrs20.next()) {
-								isVacant20 = vcrs20.getBoolean("RESULT");
-							}
-							
-							
-						/*	
-							if(isVacant && newStatus  == "15" && isVacant20 ) {
-								newStatus = "30";
-								
-							}
-							else if 
-							(isVacant && newStatus == "20" && isVacant20) {
-								newStatus = "30";
-							}
-							
-							else if 
-							(isVacant && newStatus == "15" && !isVacant) {
-								newStatus = "15";
-							}
-							else 
-							{
-								newStatus = "20";
-							}	
-							
-							*/ 
-							
-							if (isVacant && newStatus.equals("15") && isVacant20) {
-							    newStatus = "30";
-							}
-							else if (isVacant && newStatus.equals("20") && isVacant20) {
-							    newStatus = "30";
-							}
-							else if (newStatus.equals("15") && !isVacant20 && !isVacant) {
-							    newStatus = "15";   // คงค่าเดิมไว้
-							}
-							else if (newStatus.equals("15") && !isVacant20 && isVacant) {
-							    newStatus = "20";
-							}
-							else {
-							    newStatus = "20";
-							}
-
-							
-
-							System.out.println("newStatus = " + newStatus);
-
-						
-						break; 
-						
-					case "15":
-						
-						newStatus = "20";
-						
-						String querysetisVacant2 = "SELECT \r\n"
-								+ "  CASE \r\n"
-								+ "    WHEN COUNT(*) > 0 THEN 'TRUE'\r\n"
-								+ "    ELSE 'FALSE'\r\n"
-								+ "  END AS result\r\n"
-								+ "  FROM "+DBNAME+".SR_FLOWAPPROVE sf\r\n"
-								+ "	 WHERE FASRNO = '"+vID+"'\r\n"
-								+ "  AND FASTAT = '"+newStatus+"'\r\n"
-								+ "  AND TRIM(FAAPLI) = 'VACANT'\r\n"
-								+ "  AND FACONO  = '"+comcono+"'";
-
-		
-						logger.debug("ID Query: " + querysetisVacant2);
-
-						vcrs = stmt.executeQuery(querysetisVacant2);
-						if (vcrs.next()) {
-							isVacant = vcrs.getBoolean("RESULT");
+					if (rs.next()) {
+						String result = rs.getString("RESULT");
+						if ("TRUE".equalsIgnoreCase(result)) {
+							newStatus = "15";
+						} else {
+							newStatus = "20";
 						}
-						
-						
-						
-						if(isVacant) {
-							newStatus = "30";
-							
-						}
-						
-						
-						
-						
-						break;
-					case "20":
+					}
+
+					String querysetisVacant = "SELECT \r\n" + "  CASE \r\n" + "    WHEN COUNT(*) > 0 THEN 'TRUE'\r\n"
+							+ "    ELSE 'FALSE'\r\n" + "  END AS result\r\n" + "  FROM " + DBNAME
+							+ ".SR_FLOWAPPROVE sf\r\n" + "	 WHERE FASRNO = '" + vID + "'\r\n" + "  AND FASTAT = '"
+							+ newStatus + "'\r\n" + "  AND TRIM(FAAPLI) = 'VACANT'\r\n" + "  AND FACONO  = '" + comcono
+							+ "'";
+
+					logger.debug("ID Query: " + querysetisVacant);
+
+					vcrs = stmt.executeQuery(querysetisVacant);
+					if (vcrs.next()) {
+						isVacant = vcrs.getBoolean("RESULT");
+					}
+
+					String querysetisVacant20 = "SELECT \r\n" + "  CASE \r\n" + "    WHEN COUNT(*) > 0 THEN 'TRUE'\r\n"
+							+ "    ELSE 'FALSE'\r\n" + "  END AS result\r\n" + "  FROM " + DBNAME
+							+ ".SR_FLOWAPPROVE sf\r\n" + "	 WHERE FASRNO = '" + vID + "'\r\n"
+							+ "  AND FASTAT = '20'\r\n" + "  AND TRIM(FAAPLI) = 'VACANT'\r\n" + "  AND FACONO  = '"
+							+ comcono + "'";
+
+					logger.debug("ID Query: " + querysetisVacant20);
+
+					vcrs20 = stmt.executeQuery(querysetisVacant20);
+					if (vcrs20.next()) {
+						isVacant20 = vcrs20.getBoolean("RESULT");
+					}
+
+					/*
+					 * if(isVacant && newStatus == "15" && isVacant20 ) { newStatus = "30";
+					 * 
+					 * } else if (isVacant && newStatus == "20" && isVacant20) { newStatus = "30"; }
+					 * 
+					 * else if (isVacant && newStatus == "15" && !isVacant) { newStatus = "15"; }
+					 * else { newStatus = "20"; }
+					 * 
+					 */
+
+					if (isVacant && newStatus.equals("15") && isVacant20) {
 						newStatus = "30";
-						break;
-					case "30":
-						newStatus = "40";
-						break;
-					case "40":
-						newStatus = "50";
-						break;
-					case "50":
-						newStatus = "60";
-						break;
-					case "60":
-						newStatus = "70";
-						break;
-					case "70":
-						newStatus = "70";
-						String completeSQL = "UPDATE "+DBNAME+"."+SR_HEAD+" "
-								+ "SET FHHSTA = 3 WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'   AND FHCONO = '"+comcono+"' AND FHDIVI = '"+comdivi+"' ";
-						stmt.executeUpdate(completeSQL);
-						break;
-					case "80":
-						newStatus = "22";
-						String completeSQL2 = "UPDATE "+DBNAME+"."+SR_HEAD+" "
-								+ "SET FHHSTA = 3 WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '"+comcono+"' AND FHDIVI = '"+comdivi+"'  ";
-						stmt.executeUpdate(completeSQL2);
+					} else if (isVacant && newStatus.equals("20") && isVacant20) {
+						newStatus = "30";
+					} else if (newStatus.equals("15") && !isVacant20 && !isVacant) {
+						newStatus = "15"; // คงค่าเดิมไว้
+					} else if (newStatus.equals("15") && !isVacant20 && isVacant) {
+						newStatus = "20";
+					} else {
+						newStatus = "20";
+					}
 
-					
-						break;
-					default:
-						break;
+					System.out.println("newStatus = " + newStatus);
+
+					break;
+
+				case "15":
+
+					newStatus = "20";
+
+					String querysetisVacant2 = "SELECT \r\n" + "  CASE \r\n" + "    WHEN COUNT(*) > 0 THEN 'TRUE'\r\n"
+							+ "    ELSE 'FALSE'\r\n" + "  END AS result\r\n" + "  FROM " + DBNAME
+							+ ".SR_FLOWAPPROVE sf\r\n" + "	 WHERE FASRNO = '" + vID + "'\r\n" + "  AND FASTAT = '"
+							+ newStatus + "'\r\n" + "  AND TRIM(FAAPLI) = 'VACANT'\r\n" + "  AND FACONO  = '" + comcono
+							+ "'";
+
+					logger.debug("ID Query: " + querysetisVacant2);
+
+					vcrs = stmt.executeQuery(querysetisVacant2);
+					if (vcrs.next()) {
+						isVacant = vcrs.getBoolean("RESULT");
+					}
+
+					if (isVacant) {
+						newStatus = "30";
+
+					}
+
+					break;
+				case "20":
+					newStatus = "30";
+					break;
+				case "30":
+					newStatus = "40";
+					break;
+				case "40":
+					newStatus = "50";
+					break;
+				case "50":
+					newStatus = "60";
+					break;
+				case "60":
+					newStatus = "70";
+					break;
+				case "70":
+					newStatus = "70";
+					String completeSQL = "UPDATE " + DBNAME + "." + SR_HEAD + " "
+							+ "SET FHHSTA = 3 WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'   AND FHCONO = '"
+							+ comcono + "' AND FHDIVI = '" + comdivi + "' ";
+					stmt.executeUpdate(completeSQL);
+					break;
+				case "80":
+					newStatus = "22";
+					String completeSQL2 = "UPDATE " + DBNAME + "." + SR_HEAD + " "
+							+ "SET FHHSTA = 3 WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '"
+							+ comcono + "' AND FHDIVI = '" + comdivi + "'  ";
+					stmt.executeUpdate(completeSQL2);
+
+					break;
+				default:
+					break;
 				}
 			}
 
@@ -987,140 +877,113 @@ public class UpdateData {
 			}
 
 			// เตรียม SQL
-		/*	String query1 = "UPDATE "+DBNAME+"."+SR_DETAIL+" \n"
-					+ "SET FDDATA = '" + vData + "', FDENDA = CURRENT DATE, FDENTI  = CURRENT TIME ,FDDSTA = '" + newStatus + "' \n"
-					+ "WHERE FDSRNO = '" + vID + "'   AND FDCONO = '"+comcono+"' AND FDDIVI = '"+comdivi+"' ";
-			*/
-			
-			
+			/*
+			 * String query1 = "UPDATE "+DBNAME+"."+SR_DETAIL+" \n" + "SET FDDATA = '" +
+			 * vData + "', FDENDA = CURRENT DATE, FDENTI  = CURRENT TIME ,FDDSTA = '" +
+			 * newStatus + "' \n" + "WHERE FDSRNO = '" + vID +
+			 * "'   AND FDCONO = '"+comcono+"' AND FDDIVI = '"+comdivi+"' ";
+			 */
 
-		
-		/////
+			/////
 
-			
 			if ("false".equalsIgnoreCase(vApproval)) {
-			    cStatus = "01";
+				cStatus = "01";
 			} else {
-			    if ("00".equals(vSTATUS)) {
-			        cStatus = "00";
-			    } else if ("70".equals(vSTATUS)) {
-			        cStatus = "70";
-			    }
-			    else {
-			    		 cStatus = "99";
-			    }
+				if ("00".equals(vSTATUS)) {
+					cStatus = "00";
+				} else if ("70".equals(vSTATUS)) {
+					cStatus = "70";
+				} else {
+					cStatus = "99";
+				}
 			}
 
-			
-			
-			String query222 = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n"
-	                + "SET FAENUS = '"+vApprover+"' ,FAAPBY = '" + vDepthead + "', FAAPDA = CURRENT DATE , FADES1 = 'Approved' \n"
-	                + "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "' AND FASTAT  = '"+cStatus+"' AND FACONO = '"+comcono+"'";
+			String query222 = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n" + "SET FAENUS = '" + vApprover
+					+ "' ,FAAPBY = '" + vDepthead + "', FAAPDA = CURRENT DATE , FADES1 = 'Approved' \n"
+					+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "' AND FASTAT  = '" + cStatus + "' AND FACONO = '"
+					+ comcono + "'";
 
+			String query2 = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n" + "SET   FAAPTI = CURRENT TIME ,  FAENUS = '"
+					+ vApprover + "' ,FADES1 = 'Approved',  FAAPDA = CURRENT DATE,FAENTI =  CURRENT TIME,FAAPBY = '"
+					+ vApprover + "' , " + FADES + " = '" + vRemark + "' , FAENDA = CURRENT DATE"
+					+ " WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "' AND FASTAT = '" + Status + "' AND FACONO = '"
+					+ comcono + "' ";
 
+			String query3 = "UPDATE " + DBNAME + "." + SR_HEAD + " " + "SET   FHDSTA = '" + newStatus
+					+ "' , FHENDA = CURRENT DATE ,FHENTI = CURRENT TIME WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID
+					+ "'  AND FHCONO = '" + comcono + "' AND FHDIVI = '" + comdivi + "'  ";
 
-			String query2 = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
-					+ "SET   FAAPTI = CURRENT TIME ,  FAENUS = '"+vApprover+"' ,FADES1 = 'Approved',  FAAPDA = CURRENT DATE,FAENTI =  CURRENT TIME,FAAPBY = '"+vApprover+"' , "+FADES+" = '"+vRemark+"' , FAENDA = CURRENT DATE" +
-					" WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "' AND FASTAT = '" + Status + "' AND FACONO = '"+comcono+"' ";
+			String query = "UPDATE " + DBNAME + "." + SR_DETAIL + " "
+					+ "SET FDDATA = ?, FDENDA = CURRENT DATE, FDENTI = CURRENT TIME, FDDSTA = ? "
+					+ "WHERE FDSRNO = ? AND FDCONO = ? AND FDDIVI = ?";
 
-			String query3 = "UPDATE "+DBNAME+"."+SR_HEAD+" "
-					+ "SET   FHDSTA = '" + newStatus +
-					"' , FHENDA = CURRENT DATE ,FHENTI = CURRENT TIME WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '"+comcono+"' AND FHDIVI = '"+comdivi+"'  ";
+			try (PreparedStatement ps = conn.prepareStatement(query)) {
 
-			
-			String query = "UPDATE " + DBNAME + "." + SR_DETAIL + " " +
-		               "SET FDDATA = ?, FDENDA = CURRENT DATE, FDENTI = CURRENT TIME, FDDSTA = ? " +
-		               "WHERE FDSRNO = ? AND FDCONO = ? AND FDDIVI = ?";
+				// ใช้ StringReader สำหรับ JSON ยาว ๆ
+				ps.setCharacterStream(1, new StringReader(vData), vData.length());
+				ps.setString(2, newStatus);
+				ps.setString(3, vID);
+				ps.setString(4, comcono);
+				ps.setString(5, comdivi);
 
-		try (PreparedStatement ps = conn.prepareStatement(query)) {
+				int updated = ps.executeUpdate();
+				System.out.println("Rows updated: " + updated);
+			}
 
-		    // ใช้ StringReader สำหรับ JSON ยาว ๆ
-		    ps.setCharacterStream(1, new StringReader(vData), vData.length());
-		    ps.setString(2, newStatus);
-		    ps.setString(3, vID);
-		    ps.setString(4, comcono);
-		    ps.setString(5, comdivi);
-
-		    int updated = ps.executeUpdate();
-		    System.out.println("Rows updated: " + updated);
-		}
-
-			
-			
-			//tt = query1 + " ; " + query2; // Debug
-			//logger.debug(query1);
+			// tt = query1 + " ; " + query2; // Debug
+			// logger.debug(query1);
 			logger.debug(query222);
 			logger.debug(query2);
 			logger.debug(query3);
 
-			//stmt.executeUpdate(query1);
+			// stmt.executeUpdate(query1);
 			logger.debug("xxxxxxxxxxxxxxxxxx");
-			//logger.debug(query1);
-			//stmt.executeUpdate(query1);
-			//ps.close();
+			// logger.debug(query1);
+			// stmt.executeUpdate(query1);
+			// ps.close();
 			logger.debug("xxxxxxxxxxxxxxxxxx");
-			
-			
-			
+
 			stmt.executeUpdate(query222);
-			
-			
+
 			stmt.executeUpdate(query2);
 			stmt.executeUpdate(query3);
-			
+
 			if ("false".equalsIgnoreCase(vApproval)) {
 				newStatus = "00";
-				
-				
 
-
-				String query2e = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
+				String query2e = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n"
 						+ "SET  FADES1 = 'Wait for approve', FAAPTI = null,FAAPBY = ' ', FAAPDA = NULL  ,FAENDA  = CURRENT DATE , FAENTI  = CURRENT TIME \n"
-						+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT IN ('10','15','20','30','40','50','60','70','80') AND FACONO = '"+comcono+"'";
+						+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID
+						+ "'  AND  FASTAT IN ('10','15','20','30','40','50','60','70','80') AND FACONO = '" + comcono
+						+ "'";
 
-				String query3e = "UPDATE "+DBNAME+"."+SR_HEAD+" "
-						+ "SET FHDEPH = '-' WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '"+comcono+"' AND FHDIVI = '"+comdivi+"'  ";
-				
-				
-				String query4re = "UPDATE "+DBNAME+"."+SR_APPROVE+" \n"
-						+ "SET  "+FADES+" = '"+vRemark+"' \n"
-						+ "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT = '"+Status+"' AND FACONO = '"+comcono+"' ";
+				String query3e = "UPDATE " + DBNAME + "." + SR_HEAD + " "
+						+ "SET FHDEPH = '-' WHERE FHCODE = 'ITRQ' AND FHSRNO = '" + vID + "'  AND FHCONO = '" + comcono
+						+ "' AND FHDIVI = '" + comdivi + "'  ";
+
+				String query4re = "UPDATE " + DBNAME + "." + SR_APPROVE + " \n" + "SET  " + FADES + " = '" + vRemark
+						+ "' \n" + "WHERE FACODE = 'ITRQ' AND FASRNO = '" + vID + "'  AND  FASTAT = '" + Status
+						+ "' AND FACONO = '" + comcono + "' ";
 
 				logger.debug(query2e);
 				logger.debug(query3e);
 				logger.debug(query4re);
 
-				
 				stmt.executeUpdate(query2e);
 				stmt.executeUpdate(query3e);
 				stmt.executeUpdate(query4re);
 
-				
-				
-				
 			}
-			
-			
 
-			String data = SelectData.getSTATUSIDITEMRQ(vID.toString(),comcono,comdivi);
-			String url = "https://workflow.br-bangkokranch.com/webhook/saveitemrequest2"; 
+			String data = SelectData.getSTATUSIDITEMRQ(vID.toString(), comcono, comdivi);
+			String url = "https://workflow.br-bangkokranch.com/webhook/saveitemrequest2";
 
-			String response = HttpConnection.sendRequest(
-					"POST",
-					url,
-					Map.of("x-access-token",
-							"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMCA6IDEwMSA6IOC4muC4o-C4tOC4qeC4seC4lyDguJrguLLguIfguIHguK3guIHguYHguKPguYnguJnguIrguYwg4LiI4Liz4LiB4Lix4LiUICjguKHguKvguLLguIrguJkpIiwiaXNzIjoiYXV0aGVuLXNlcnZpY2UiLCJhdWQiOiIwMTAyOTA2Iiwicm9sZSI6Ik1QTV8xQTEgOiBBUFBST1ZFIDogU0FMRU1BTiA6IDAiLCJleHAiOjE3NTAxNzY1NzF9.cAMs1gdcg3cxfYNTJi_WTHpBCKDxaw-MjwrDpmFPPSo"), // headers
-					data,
-					null // form-data
+			String response = HttpConnection.sendRequest("POST", url, Map.of("x-access-token",
+					"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMCA6IDEwMSA6IOC4muC4o-C4tOC4qeC4seC4lyDguJrguLLguIfguIHguK3guIHguYHguKPguYnguJnguIrguYwg4LiI4Liz4LiB4Lix4LiUICjguKHguKvguLLguIrguJkpIiwiaXNzIjoiYXV0aGVuLXNlcnZpY2UiLCJhdWQiOiIwMTAyOTA2Iiwicm9sZSI6Ik1QTV8xQTEgOiBBUFBST1ZFIDogU0FMRU1BTiA6IDAiLCJleHAiOjE3NTAxNzY1NzF9.cAMs1gdcg3cxfYNTJi_WTHpBCKDxaw-MjwrDpmFPPSo"), // headers
+					data, null // form-data
 			);
-			
-			logger.debug("response: " + response);
 
-			
-			
-			
-			
-			
+			logger.debug("response: " + response);
 
 			mJsonObj.put("result", "ok");
 			mJsonObj.put("message", "Update complete.");
@@ -1155,56 +1018,26 @@ public class UpdateData {
 	/*
 	 * 
 	 * public static String updateITEMREQUEST(String vID, String vSTATUS, String
-	 * vData, String vApproval) throws Exception {
-	 * logger.info("UpdateITEMREQUEST");
+	 * vData, String vApproval) throws Exception { logger.info("UpdateITEMREQUEST");
 	 * 
-	 * JSONObject mJsonObj = new JSONObject();
-	 * Connection conn = null;
-	 * Statement stmt = null;
+	 * JSONObject mJsonObj = new JSONObject(); Connection conn = null; Statement
+	 * stmt = null;
 	 * 
 	 * 
-	 * String tt = "OK";
-	 * try {
+	 * String tt = "OK"; try {
 	 * 
-	 * conn = ConnectDB2.doConnect();
-	 * stmt = conn.createStatement();
+	 * conn = ConnectDB2.doConnect(); stmt = conn.createStatement();
 	 * 
-	 * // ตรวจสอบและกำหนดสถานะใหม่
-	 * String newStatus = vSTATUS;
+	 * // ตรวจสอบและกำหนดสถานะใหม่ String newStatus = vSTATUS;
 	 * 
-	 * if ("false".equalsIgnoreCase(vApproval)) {
-	 * newStatus = "00";
-	 * } else {
-	 * switch (vSTATUS) {
-	 * case "00":
-	 * newStatus = "10";
-	 * break;
-	 * case "10":
-	 * newStatus = "20";
-	 * break;
-	 * case "20":
-	 * newStatus = "30";
-	 * break;
-	 * case "30":
-	 * newStatus = "40";
-	 * break;
-	 * case "40":
-	 * newStatus = "50";
-	 * break;
-	 * case "50":
-	 * newStatus = "60";
-	 * break;
-	 * case "60":
-	 * newStatus = "22";
-	 * break;
-	 * default:
-	 * // ถ้าไม่ตรงเงื่อนไข ให้ใช้ vSTATUS เดิม
-	 * break;
-	 * }
-	 * }
+	 * if ("false".equalsIgnoreCase(vApproval)) { newStatus = "00"; } else { switch
+	 * (vSTATUS) { case "00": newStatus = "10"; break; case "10": newStatus = "20";
+	 * break; case "20": newStatus = "30"; break; case "30": newStatus = "40";
+	 * break; case "40": newStatus = "50"; break; case "50": newStatus = "60";
+	 * break; case "60": newStatus = "22"; break; default: // ถ้าไม่ตรงเงื่อนไข
+	 * ให้ใช้ vSTATUS เดิม break; } }
 	 * 
-	 * // เตรียม SQL update
-	 * String query =
+	 * // เตรียม SQL update String query =
 	 * "UPDATE BRLDTABK01.sjson_test SET JSON_DATA = '"+vData+"', STATUS = '"
 	 * +newStatus+"' WHERE SERVICE_ID = '"+vID+"'";
 	 * 
@@ -1217,35 +1050,18 @@ public class UpdateData {
 	 * 
 	 * tt= query;
 	 * 
-	 * logger.debug(query);
-	 * logger.debug(query2);
-	 * stmt.execute(query);
+	 * logger.debug(query); logger.debug(query2); stmt.execute(query);
 	 * stmt.execute(query2);
 	 * 
-	 * mJsonObj.put("result", "ok");
-	 * mJsonObj.put("message", "Update complete.");
+	 * mJsonObj.put("result", "ok"); mJsonObj.put("message", "Update complete.");
 	 * 
 	 * return mJsonObj.toString();
 	 * 
-	 * } catch (SQLException e) {
-	 * logger.error(e.getMessage());
-	 * } catch (Exception e) {
-	 * logger.error(e.getMessage());
-	 * } finally {
-	 * try {
-	 * if (stmt != null) {
-	 * stmt.close();
-	 * }
-	 * } catch (SQLException e) {
-	 * logger.error(e.getMessage());
-	 * }
-	 * try {
-	 * if (conn != null) {
-	 * conn.close();
-	 * }
-	 * } catch (SQLException e) {
-	 * logger.error(e.getMessage());
-	 * }
+	 * } catch (SQLException e) { logger.error(e.getMessage()); } catch (Exception
+	 * e) { logger.error(e.getMessage()); } finally { try { if (stmt != null) {
+	 * stmt.close(); } } catch (SQLException e) { logger.error(e.getMessage()); }
+	 * try { if (conn != null) { conn.close(); } } catch (SQLException e) {
+	 * logger.error(e.getMessage()); }
 	 * 
 	 * }
 	 * 
@@ -1268,11 +1084,9 @@ public class UpdateData {
 
 			System.out.print("xxxxxxxxxxxxxxxxxxx" + "UpdateRQ");
 
-			String query = "UPDATE  BRLDTABK01.VISITOR_HEAD   \n"
-					+ "SET   H_COMPANYNAME = '" + vCOM + "', H_LICENSE = '" + vWH
-					+ "', H_NAME = '" + vITM + "', H_REASON= '" + vAPV
-					+ "', H_TIMEIN = '2024-08-29 02:43:11', H_TEL = 'AP' \n"
-					+ "WHERE H_ID = '" + vID + "'";
+			String query = "UPDATE  BRLDTABK01.VISITOR_HEAD   \n" + "SET   H_COMPANYNAME = '" + vCOM
+					+ "', H_LICENSE = '" + vWH + "', H_NAME = '" + vITM + "', H_REASON= '" + vAPV
+					+ "', H_TIMEIN = '2024-08-29 02:43:11', H_TEL = 'AP' \n" + "WHERE H_ID = '" + vID + "'";
 			System.out.println("UpdateAP\n" + query);
 			logger.debug(query);
 			stmt.execute(query);
@@ -1330,10 +1144,8 @@ public class UpdateData {
 
 			System.out.print("xxxxxxxxxxxxxxxxxxx" + "UpdateAP");
 
-			String query = "UPDATE  BRLDTABK01.VISITOR_HEAD   \n"
-					+ "SET H_TIMEOUT = '" + vAPVD + "' , H_EMPLOYEE = '"
-					+ vCOMAPVD + "', H_TEL='" + STATUS + "' \n"
-					+ "WHERE H_ID = '" + vID + "'";
+			String query = "UPDATE  BRLDTABK01.VISITOR_HEAD   \n" + "SET H_TIMEOUT = '" + vAPVD + "' , H_EMPLOYEE = '"
+					+ vCOMAPVD + "', H_TEL='" + STATUS + "' \n" + "WHERE H_ID = '" + vID + "'";
 			System.out.println("UpdateAP\n" + query);
 			logger.debug(query);
 			stmt.execute(query);
@@ -1371,27 +1183,19 @@ public class UpdateData {
 
 	/*
 	 * public static String UpdateIT(String vID,String vITAPVD,String vCOMITAPVD)
-	 * throws Exception {
-	 * logger.info("UpdateIT");
+	 * throws Exception { logger.info("UpdateIT");
 	 * 
-	 * JSONObject mJsonObj = new JSONObject();
-	 * Connection conn = null;
-	 * Statement stmt = null;
+	 * JSONObject mJsonObj = new JSONObject(); Connection conn = null; Statement
+	 * stmt = null;
 	 * 
-	 * String CHKSTATUS = vITAPVD ;
-	 * String STATUS = "RQ" ;
+	 * String CHKSTATUS = vITAPVD ; String STATUS = "RQ" ;
 	 * 
-	 * if ("true".equalsIgnoreCase(CHKSTATUS.trim())) {
-	 * STATUS = "CP";
-	 * } else {
-	 * STATUS = "RQ";
-	 * }
+	 * if ("true".equalsIgnoreCase(CHKSTATUS.trim())) { STATUS = "CP"; } else {
+	 * STATUS = "RQ"; }
 	 * 
 	 * 
 	 * 
-	 * try {
-	 * conn = ConnectDB2.doConnect();
-	 * stmt = conn.createStatement();
+	 * try { conn = ConnectDB2.doConnect(); stmt = conn.createStatement();
 	 * 
 	 * System.out.print("xxxxxxxxxxxxxxxxxxx" + "UpdateAP");
 	 * 
@@ -1399,35 +1203,18 @@ public class UpdateData {
 	 * 
 	 * String query = "UPDATE  BRLDTABK01.VISITOR_HEAD   SET H_SURNAME = '"
 	 * +vITAPVD+"' , H_ROOMNO = '"+vCOMITAPVD+"', H_TEL='"+STATUS+"' WHERE H_ID = '"
-	 * +vID+"'";
-	 * System.out.println("UpdateAP\n" + query);
-	 * logger.debug(query);
+	 * +vID+"'"; System.out.println("UpdateAP\n" + query); logger.debug(query);
 	 * stmt.execute(query);
 	 * 
-	 * mJsonObj.put("result", "ok");
-	 * mJsonObj.put("message", "Update complete.");
+	 * mJsonObj.put("result", "ok"); mJsonObj.put("message", "Update complete.");
 	 * 
 	 * return mJsonObj.toString();
 	 * 
-	 * } catch (SQLException e) {
-	 * logger.error(e.getMessage());
-	 * } catch (Exception e) {
-	 * logger.error(e.getMessage());
-	 * } finally {
-	 * try {
-	 * if (stmt != null) {
-	 * stmt.close();
-	 * }
-	 * } catch (SQLException e) {
-	 * logger.error(e.getMessage());
-	 * }
-	 * try {
-	 * if (conn != null) {
-	 * conn.close();
-	 * }
-	 * } catch (SQLException e) {
-	 * logger.error(e.getMessage());
-	 * }
+	 * } catch (SQLException e) { logger.error(e.getMessage()); } catch (Exception
+	 * e) { logger.error(e.getMessage()); } finally { try { if (stmt != null) {
+	 * stmt.close(); } } catch (SQLException e) { logger.error(e.getMessage()); }
+	 * try { if (conn != null) { conn.close(); } } catch (SQLException e) {
+	 * logger.error(e.getMessage()); }
 	 * 
 	 * }
 	 * 
@@ -1457,12 +1244,9 @@ public class UpdateData {
 
 			System.out.println("xxxxxxxxxxxxxxxxxxx UpdateIT");
 
-			String query = "UPDATE BRLDTABK01.VISITOR_HEAD \n"
-					+ "SET " +
-					"H_SURNAME = '" + vITAPVD.replace("'", "''") + "', " +
-					"H_ROOMNO = '" + vCOMITAPVD.replace("'", "''") + "', " +
-					"H_TEL = '" + STATUS + "' " +
-					"WHERE H_ID = '" + vID.replace("'", "''") + "'";
+			String query = "UPDATE BRLDTABK01.VISITOR_HEAD \n" + "SET " + "H_SURNAME = '" + vITAPVD.replace("'", "''")
+					+ "', " + "H_ROOMNO = '" + vCOMITAPVD.replace("'", "''") + "', " + "H_TEL = '" + STATUS + "' "
+					+ "WHERE H_ID = '" + vID.replace("'", "''") + "'";
 
 			System.out.println("UpdateIT\n" + query);
 			logger.debug(query);
@@ -1529,11 +1313,10 @@ public class UpdateData {
 			}
 
 			String query = "　UPDATE  " + Constant.DBNAME + ".VISITOR_HEAD\r\n" + "　SET H_COMPANYNAME2 = '"
-					+ vEmployeedialog.trim()
-					+ "' ,H_STATUS ='" + checksts2 + "' , H_Email = '" + vEmail.trim() + "', H_REMARK1 = '"
-					+ vRemark.trim() + "' , H_CHECKIN ='" + vCheckin + "' , H_CHECKOUT = '" + vCheckout
-					+ "',H_CHECKINTIME = '" + vCheckintime + "',H_CHECKOUTTIME = '" + vCheckouttime + "' \r\n"
-					+ "　WHERE H_ID  =  '" + vID.trim() + "' AND H_LOCATION = '" + getLocation.trim() + "'";
+					+ vEmployeedialog.trim() + "' ,H_STATUS ='" + checksts2 + "' , H_Email = '" + vEmail.trim()
+					+ "', H_REMARK1 = '" + vRemark.trim() + "' , H_CHECKIN ='" + vCheckin + "' , H_CHECKOUT = '"
+					+ vCheckout + "',H_CHECKINTIME = '" + vCheckintime + "',H_CHECKOUTTIME = '" + vCheckouttime
+					+ "' \r\n" + "　WHERE H_ID  =  '" + vID.trim() + "' AND H_LOCATION = '" + getLocation.trim() + "'";
 			System.out.println("updateEmployee\n" + query);
 			logger.debug(query);
 			stmt.execute(query);
@@ -1580,8 +1363,7 @@ public class UpdateData {
 			stmt = conn.createStatement();
 
 			String query = "　UPDATE  " + Constant.DBNAME + ".VISITOR_HEAD\r\n" + "　SET H_STATUS = '20' \r\n"
-					+ "　WHERE H_ID  =  '"
-					+ ordno.trim() + "'";
+					+ "　WHERE H_ID  =  '" + ordno.trim() + "'";
 			System.out.println("updateEmail\n" + query);
 			logger.debug(query);
 			stmt.execute(query);
@@ -1628,8 +1410,7 @@ public class UpdateData {
 			stmt = conn.createStatement();
 
 			String query = "　UPDATE  " + Constant.DBNAME + ".VISITOR_HEAD\r\n" + "　SET H_STATUS = '80' \r\n"
-					+ "　WHERE H_ID  =  '"
-					+ ordno.trim() + "'";
+					+ "　WHERE H_ID  =  '" + ordno.trim() + "'";
 			System.out.println("updateEmail\n" + query);
 			logger.debug(query);
 			stmt.execute(query);
@@ -1725,8 +1506,7 @@ public class UpdateData {
 			stmt = conn.createStatement();
 
 			String query = "　UPDATE  " + Constant.DBNAME + ".FOLLOWER_HEAD\r\n" + "　SET H_SURNAME = '" + H_SURNAME
-					+ "' \r\n"
-					+ "　WHERE F_ID  =  '" + vID.trim() + "' AND H_SURNAME = '" + oldH_SURNAME.trim()
+					+ "' \r\n" + "　WHERE F_ID  =  '" + vID.trim() + "' AND H_SURNAME = '" + oldH_SURNAME.trim()
 					+ "' AND  H_CONO = '" + vCONO.trim() + "' AND H_DIVI = '" + vDIVI.trim() + "' AND H_LOCATION = '"
 					+ vLocaton.trim() + "' ";
 			System.out.println("updateSWRfile\n" + query);
@@ -1776,8 +1556,8 @@ public class UpdateData {
 			stmt = conn.createStatement();
 
 			String query = "　UPDATE  " + Constant.DBNAME + ".VISITOR_HEAD\r\n" + "　SET H_REMARK1 = '" + remark
-					+ "', H_STATUS = '"
-					+ sts + "',  H_Timeout = VARCHAR_FORMAT(CURRENT TIMESTAMP, 'YYYY-MM-DD HH24:MI:SS') \r\n"
+					+ "', H_STATUS = '" + sts
+					+ "',  H_Timeout = VARCHAR_FORMAT(CURRENT TIMESTAMP, 'YYYY-MM-DD HH24:MI:SS') \r\n"
 					+ "　WHERE H_ID  =  '" + vID + "' AND H_LOCATION = '" + getLocation.trim() + "'";
 			System.out.println("updateSWRfile\n" + query);
 
@@ -1840,8 +1620,7 @@ public class UpdateData {
 			stmt = conn.createStatement();
 
 			String query = "　UPDATE  " + Constant.DBNAME + ".VISITOR_HEAD\r\n" + "　SET H_REMARK1 = '" + remark
-					+ "', H_STATUS = '"
-					+ sts
+					+ "', H_STATUS = '" + sts
 					+ "',  H_Timeout = VARCHAR_FORMAT(CURRENT TIMESTAMP, 'YYYY-MM-DD HH24:MI:SS') , H_CHECKOUT = '"
 					+ vcheckout + "' , H_CHECKOUTTIME = '" + vcheckouttime + "' \r\n" + "　WHERE H_ID  =  '" + vID
 					+ "' AND H_LOCATION = '" + getLocation.trim() + "'";
@@ -1899,8 +1678,7 @@ public class UpdateData {
 			stmt = conn.createStatement();
 
 			String query = "　UPDATE  " + Constant.DBNAME + ".VISITOR_HEAD\r\n" + "　SET H_REMARK1 = '" + remark
-					+ "', H_STATUS = '"
-					+ sts
+					+ "', H_STATUS = '" + sts
 					+ "',  H_Timeout = VARCHAR_FORMAT(CURRENT TIMESTAMP, 'YYYY-MM-DD HH24:MI:SS') ,H_CHECKOUTTIME = SUBSTR(CAST(CURRENT TIME AS CHAR(8)), 1, 5) , H_CHECKOUT = CHAR(CURRENT DATE, ISO)  \r\n"
 					+ "　WHERE H_ID  =  '" + vID + "' AND H_LOCATION = '" + getLocation.trim() + "'";
 			System.out.println("updateSWRfile\n" + query);
@@ -1964,9 +1742,8 @@ public class UpdateData {
 			String setImageName = "visitor" + "_" + vID + ".png";
 
 			String query = "　UPDATE  " + Constant.DBNAME + ".VISITOR_HEAD\r\n" + "　SET H_LICENSE = '" + vLicense
-					+ "' , H_NAME = '"
-					+ vName + "', H_SURNAME = '" + vSurname + "' , H_TEL = '" + vTel + "', \r\n" + "　H_REASON = '"
-					+ vReason + "', H_COMPANYNAME2 = '" + vEmployee + "',H_STATUS = '" + vStatus
+					+ "' , H_NAME = '" + vName + "', H_SURNAME = '" + vSurname + "' , H_TEL = '" + vTel + "', \r\n"
+					+ "　H_REASON = '" + vReason + "', H_COMPANYNAME2 = '" + vEmployee + "',H_STATUS = '" + vStatus
 					+ "' ,H_REMARK1 = '-' , H_COMPANYNAME= '" + vCompany + "' , H_MEETDATE = '" + vMeetdate
 					+ "' , H_MEETTIME = '" + vMeettime + "', H_IMG ='" + setImageName + "', H_ROOMNO = '" + vRoom.trim()
 					+ "', H_MEETDATEOUT = '" + vMeetdateout + "',H_MEETTIMEOUT = '" + vMeettimeout + "', H_USER = '"
@@ -1977,8 +1754,7 @@ public class UpdateData {
 			stmt.execute(query);
 
 			String query2 = "　UPDATE  " + Constant.DBNAME + ".FOLLOWER_HEAD\r\n" + "　SET H_STATUS = '10' \r\n"
-					+ "　WHERE F_ID  =  '"
-					+ vID + "'";
+					+ "　WHERE F_ID  =  '" + vID + "'";
 			System.out.println("updateSWRfile\n" + query);
 			logger.debug(query2);
 			stmt.execute(query2);
@@ -2154,10 +1930,9 @@ public class UpdateData {
 			remark2 = ConvertString.convertApostrophe(remark2);
 
 			String query = "UPDATE " + Constant.DBNAME + ".M3_MARDETAIL \n" + "SET MLREM1 = '" + remark1 + "' \n"
-					+ ", MLREM2 = '"
-					+ remark2 + "' \n" + ", MLENDA = CURRENT DATE \n" + ", MLENTI = CURRENT TIME \n" + ", MLENUS = '"
-					+ username + "' \n" + "WHERE MLCONO = '" + cono + "' \n" + "AND MLDIVI = '" + divi + "' \n"
-					+ "AND MLLINE = '" + line + "' \n" + "AND MLITNO = '" + item + "' \n"
+					+ ", MLREM2 = '" + remark2 + "' \n" + ", MLENDA = CURRENT DATE \n" + ", MLENTI = CURRENT TIME \n"
+					+ ", MLENUS = '" + username + "' \n" + "WHERE MLCONO = '" + cono + "' \n" + "AND MLDIVI = '" + divi
+					+ "' \n" + "AND MLLINE = '" + line + "' \n" + "AND MLITNO = '" + item + "' \n"
 					+ "AND MLPREF || '-' || MLORNO = '" + marno + "'";
 			// System.out.println("updateMARDetail\n" + query);
 			logger.debug(query);
@@ -2210,9 +1985,8 @@ public class UpdateData {
 
 				Statement stmt = conn.createStatement();
 				String query = "UPDATE " + Constant.DBNAME + ".M3_ADRHEAD \n" + "SET ADTYPE = '" + type + "' \n"
-						+ ", ADBOI = '"
-						+ boi + "' \n" + ", ADBU = '" + bu + "' \n" + ", ADCOCE = '" + costcenter + "' \n"
-						+ ", ADACCT = '" + accountant + "' \n" + ", ADREM1 = '" + remark1 + "' \n"
+						+ ", ADBOI = '" + boi + "' \n" + ", ADBU = '" + bu + "' \n" + ", ADCOCE = '" + costcenter
+						+ "' \n" + ", ADACCT = '" + accountant + "' \n" + ", ADREM1 = '" + remark1 + "' \n"
 						+ ", ADENDA = CURRENT DATE \n" + ", ADENTI = CURRENT TIME \n" + ", ADENUS = '" + username
 						+ "' \n" + "WHERE ADCONO = '" + cono + "' \n" + "AND ADDIVI = '" + divi + "' \n"
 						+ "AND ADPREF || '-' || ADORNO = '" + adrno + "'";
@@ -2262,11 +2036,10 @@ public class UpdateData {
 
 				Statement stmt = conn.createStatement();
 				String query = "UPDATE " + Constant.DBNAME + ".M3_ADRDETAIL \n" + "SET ALQTY = '" + qty + "' \n"
-						+ ", ALPRIC = '"
-						+ price + "' \n" + ", ALREM1 = '" + remark + "' \n" + ", ALIMAG = '" + setImageName + "' \n"
-						+ ", ALENDA = CURRENT DATE \n" + ", ALENTI = CURRENT TIME \n" + ", ALENUS = '" + username
-						+ "' \n" + "WHERE ALCONO = '" + cono + "' \n" + "AND ALDIVI = '" + divi + "' \n"
-						+ "AND ALLINE = '" + line + "' \n" + "AND ALITNO = '" + itemno + "' \n"
+						+ ", ALPRIC = '" + price + "' \n" + ", ALREM1 = '" + remark + "' \n" + ", ALIMAG = '"
+						+ setImageName + "' \n" + ", ALENDA = CURRENT DATE \n" + ", ALENTI = CURRENT TIME \n"
+						+ ", ALENUS = '" + username + "' \n" + "WHERE ALCONO = '" + cono + "' \n" + "AND ALDIVI = '"
+						+ divi + "' \n" + "AND ALLINE = '" + line + "' \n" + "AND ALITNO = '" + itemno + "' \n"
 						+ "AND ALPREF || '-' || ALORNO = '" + adrno + "'";
 				// System.out.println("updateADRDetail\n" + query);
 				stmt.execute(query);
@@ -2459,10 +2232,9 @@ public class UpdateData {
 
 				Statement stmt = conn.createStatement();
 				String query = "UPDATE " + Constant.DBNAME + ".M3_ADRHEAD \n" + "SET ADSTAT = '" + setStatus + "' \n"
-						+ "" + setDate
-						+ "" + ", ADENDA = CURRENT DATE \n" + ", ADENTI = CURRENT TIME \n" + ", ADENUS = '" + username
-						+ "' \n" + "WHERE ADCONO = '" + cono + "' \n" + "AND ADDIVI = '" + divi + "' \n"
-						+ "AND ADPREF || '-' || ADORNO = '" + adrno + "'";
+						+ "" + setDate + "" + ", ADENDA = CURRENT DATE \n" + ", ADENTI = CURRENT TIME \n"
+						+ ", ADENUS = '" + username + "' \n" + "WHERE ADCONO = '" + cono + "' \n" + "AND ADDIVI = '"
+						+ divi + "' \n" + "AND ADPREF || '-' || ADORNO = '" + adrno + "'";
 				// System.out.println("updateStatusADRHead\n" + query);
 				stmt.execute(query);
 
@@ -2630,10 +2402,9 @@ public class UpdateData {
 			if (conn != null) {
 				Statement stmt = conn.createStatement();
 				String query = "UPDATE " + Constant.DBNAME + ".M3_ADRHEAD \n" + "SET ADSTAT = '" + setStatus + "' \n"
-						+ ""
-						+ setRemark + "" + ", ADENDA = CURRENT DATE \n" + ", ADENTI = CURRENT TIME \n" + ", ADENUS = '"
-						+ username + "' \n" + "WHERE ADCONO = '" + cono + "' \n" + "AND ADDIVI = '" + divi + "' \n"
-						+ "AND ADPREF || '-' || ADORNO = '" + adrno + "'";
+						+ "" + setRemark + "" + ", ADENDA = CURRENT DATE \n" + ", ADENTI = CURRENT TIME \n"
+						+ ", ADENUS = '" + username + "' \n" + "WHERE ADCONO = '" + cono + "' \n" + "AND ADDIVI = '"
+						+ divi + "' \n" + "AND ADPREF || '-' || ADORNO = '" + adrno + "'";
 				// System.out.println("updateRejectADRHead\n" + query);
 				stmt.execute(query);
 
@@ -2684,8 +2455,8 @@ public class UpdateData {
 
 				/*
 				 * String query = "UPDATE "+DBNAME+".BANK_MAPPING\r\n" +
-				 * "		 SET BM_FNNO = '-'\r\n"
-				 * + "	     WHERE BM_CONO  = '"+getCono+"' AND BM_ID = '" + ID +
+				 * "		 SET BM_FNNO = '-'\r\n" +
+				 * "	     WHERE BM_CONO  = '"+getCono+"' AND BM_ID = '" + ID +
 				 * "' AND BM_CUNO  ='-'";
 				 */
 
@@ -2720,8 +2491,7 @@ public class UpdateData {
 	}
 
 	public static String deleteid(String getCono, String getDivi, String ID, String BM_CONO, String BM_PARENT,
-			String GROUP_ID, String H_RNNO,
-			String CHECKTYPE) throws Exception {
+			String GROUP_ID, String H_RNNO, String CHECKTYPE) throws Exception {
 
 		JSONObject mJsonObj = new JSONObject();
 
@@ -2736,8 +2506,8 @@ public class UpdateData {
 				Statement stmt = conn.createStatement();
 
 				String query = "UPDATE " + DBNAME + ".BANK_MAPPING\r\n"
-						+ "		 SET BM_STATUS = '99' , BM_FNNO = NULL \r\n"
-						+ "	     WHERE BM_CONO  = '" + getCono + "' AND BM_ID = '" + ID + "' AND BM_PARENT_STS  ='77'";
+						+ "		 SET BM_STATUS = '99' , BM_FNNO = NULL \r\n" + "	     WHERE BM_CONO  = '" + getCono
+						+ "' AND BM_ID = '" + ID + "' AND BM_PARENT_STS  ='77'";
 				stmt.executeUpdate(query);
 
 				mJsonObj.put("result", "ok");
@@ -2787,8 +2557,8 @@ public class UpdateData {
 				System.out.println(query);
 
 				String query2 = "UPDATE " + DBNAMEPP + ".BANK_MAPPING\r\n"
-						+ "		 SET BM_PARENT_ID = NULL , BM_STATUS = '99' \r\n"
-						+ "	     WHERE BM_CONO  = '" + CONO + "' AND BM_PARENT_ID = '" + ID + "'";
+						+ "		 SET BM_PARENT_ID = NULL , BM_STATUS = '99' \r\n" + "	     WHERE BM_CONO  = '" + CONO
+						+ "' AND BM_PARENT_ID = '" + ID + "'";
 				stmt.executeUpdate(query2);
 
 				System.out.println(query);
@@ -2836,10 +2606,8 @@ public class UpdateData {
 
 				Statement stmt = conn.createStatement();
 
-				String query = " DELETE " + Constant.DBNAME + ".HEAD_RECIPT\r\n"
-						+ "	 WHERE  H_CONO  = '" + H_CONO + "'\r\n"
-						+ "	AND H_DIVI = '" + H_DIVI + "'\r\n"
-						+ "	 AND H_RCNO = '" + H_RCNO + "'";
+				String query = " DELETE " + Constant.DBNAME + ".HEAD_RECIPT\r\n" + "	 WHERE  H_CONO  = '" + H_CONO
+						+ "'\r\n" + "	AND H_DIVI = '" + H_DIVI + "'\r\n" + "	 AND H_RCNO = '" + H_RCNO + "'";
 
 				System.out.println(query);
 				stmt.executeUpdate(query);
@@ -2883,8 +2651,8 @@ public class UpdateData {
 
 				Statement stmt = conn.createStatement();
 
-				String query = " DELETE " + Constant.DBNAME + ".BANK_MAPPING\r\n"
-						+ "	 WHERE  BM_ID  = '" + BM_ID + "'";
+				String query = " DELETE " + Constant.DBNAME + ".BANK_MAPPING\r\n" + "	 WHERE  BM_ID  = '" + BM_ID
+						+ "'";
 
 				System.out.println(query);
 				stmt.executeUpdate(query);
@@ -2928,10 +2696,8 @@ public class UpdateData {
 
 				Statement stmt = conn.createStatement();
 
-				String query = "DELETE " + Constant.DBNAME + ".HR_RECEIPT\r\n"
-						+ "	 WHERE HR_CONO = '" + HR_CONO + "'\r\n"
-						+ "	 AND  HR_DIVI = '" + HR_DIVI + "'\r\n"
-						+ "	 AND  HC_RCNO = '" + HC_RCNO + "'";
+				String query = "DELETE " + Constant.DBNAME + ".HR_RECEIPT\r\n" + "	 WHERE HR_CONO = '" + HR_CONO
+						+ "'\r\n" + "	 AND  HR_DIVI = '" + HR_DIVI + "'\r\n" + "	 AND  HC_RCNO = '" + HC_RCNO + "'";
 
 				System.out.println(query);
 				stmt.executeUpdate(query);
@@ -2975,10 +2741,8 @@ public class UpdateData {
 
 				Statement stmt = conn.createStatement();
 
-				String query = "DELETE " + Constant.DBNAME + ".LR_LINERECEIPT\r\n"
-						+ "	 WHERE LR_CONO = '" + LR_CONO + "'\r\n"
-						+ "	 AND  LR_DIVI = '" + LR_DIVI + "'\r\n"
-						+ "	 AND  LR_RCNO = '" + LR_RCNO + "'";
+				String query = "DELETE " + Constant.DBNAME + ".LR_LINERECEIPT\r\n" + "	 WHERE LR_CONO = '" + LR_CONO
+						+ "'\r\n" + "	 AND  LR_DIVI = '" + LR_DIVI + "'\r\n" + "	 AND  LR_RCNO = '" + LR_RCNO + "'";
 
 				System.out.println(query);
 				stmt.executeUpdate(query);
@@ -3147,12 +2911,10 @@ public class UpdateData {
 
 				Statement stmt = conn.createStatement();
 
-				String query = " UPDATE  " + Constant.DBNAME + ".HEAD_RECIPT\r\n"
-						+ "  SET H_RNNO = '" + H_RNNO + "',H_CUNO = '" + H_CUNO + "',H_PYNO = '" + H_PYNO
-						+ "',H_STS = '" + H_STS + "',H_VCNO = '" + H_VCNO + "',H_LOCATION = '" + H_LOCATION
-						+ "',H_TYPE= '" + H_TYPE + "'\r\n"
-						+ "  WHERE H_CONO = '" + H_CONO + "'\r\n"
-						+ "  AND H_DIVI  = '" + H_DIVI + "'\r\n"
+				String query = " UPDATE  " + Constant.DBNAME + ".HEAD_RECIPT\r\n" + "  SET H_RNNO = '" + H_RNNO
+						+ "',H_CUNO = '" + H_CUNO + "',H_PYNO = '" + H_PYNO + "',H_STS = '" + H_STS + "',H_VCNO = '"
+						+ H_VCNO + "',H_LOCATION = '" + H_LOCATION + "',H_TYPE= '" + H_TYPE + "'\r\n"
+						+ "  WHERE H_CONO = '" + H_CONO + "'\r\n" + "  AND H_DIVI  = '" + H_DIVI + "'\r\n"
 						+ "  AND H_RCNO = '" + H_RCNO + "'";
 				stmt.executeUpdate(query);
 
@@ -3201,16 +2963,15 @@ public class UpdateData {
 
 				Statement stmt = conn.createStatement();
 
-				String query = "  UPDATE  " + Constant.DBNAME + ".BANK_MAPPING \r\n"
-						+ "  SET BM_CONO = '" + BM_CONO + "',BM_DIVI = '" + BM_DIVI + "',BM_BANK = '" + BM_BANK
-						+ "',BM_ACCODE = '" + BM_ACCODE + "',BM_DATE = '" + BM_DATE + "',BM_TIME = '" + BM_TIME
-						+ "',BM_CHQNO = '" + BM_CHQNO + "',BM_CUNO = '" + BM_CUNO + "',BM_AMOUNT = '" + BM_AMOUNT
-						+ "',BM_DESC = '" + BM_DESC + "',BM_RCNO = '" + BM_RCNO + "',\r\n"
-						+ "  BM_USER = '" + BM_USER + "',BM_BKCHARGE = '" + BM_BKCHARGE + "',BM_OVPAY = '" + BM_OVPAY
-						+ "',BM_CNDN = '" + BM_CNDN + "',BM_STATUS = '" + BM_STATUS + "',BM_FNNO = '" + BM_FNNO
-						+ "',BM_LCODE = '" + BM_LCODE + "',BM_PARENT_ID = '" + BM_PARENT_ID + "',BM_PARENT_STS = '"
-						+ BM_PARENT_STS + "'\r\n"
-						+ "  WHERE BM_ID = '" + BM_ID + "'";
+				String query = "  UPDATE  " + Constant.DBNAME + ".BANK_MAPPING \r\n" + "  SET BM_CONO = '" + BM_CONO
+						+ "',BM_DIVI = '" + BM_DIVI + "',BM_BANK = '" + BM_BANK + "',BM_ACCODE = '" + BM_ACCODE
+						+ "',BM_DATE = '" + BM_DATE + "',BM_TIME = '" + BM_TIME + "',BM_CHQNO = '" + BM_CHQNO
+						+ "',BM_CUNO = '" + BM_CUNO + "',BM_AMOUNT = '" + BM_AMOUNT + "',BM_DESC = '" + BM_DESC
+						+ "',BM_RCNO = '" + BM_RCNO + "',\r\n" + "  BM_USER = '" + BM_USER + "',BM_BKCHARGE = '"
+						+ BM_BKCHARGE + "',BM_OVPAY = '" + BM_OVPAY + "',BM_CNDN = '" + BM_CNDN + "',BM_STATUS = '"
+						+ BM_STATUS + "',BM_FNNO = '" + BM_FNNO + "',BM_LCODE = '" + BM_LCODE + "',BM_PARENT_ID = '"
+						+ BM_PARENT_ID + "',BM_PARENT_STS = '" + BM_PARENT_STS + "'\r\n" + "  WHERE BM_ID = '" + BM_ID
+						+ "'";
 				stmt.executeUpdate(query);
 
 				mJsonObj.put("result", "ok");
@@ -3258,16 +3019,13 @@ public class UpdateData {
 
 				Statement stmt = conn.createStatement();
 
-				String query = " UPDATE  " + Constant.DBNAME + ".HR_RECEIPT \r\n"
-						+ "  SET HC_TRDT = '" + HC_TRDT + "',HC_PYNO = '" + HC_PYNO + "',HC_REAMT = '" + HC_REAMT
-						+ "',HC_TYPE = '" + HC_TYPE + "',\r\n"
+				String query = " UPDATE  " + Constant.DBNAME + ".HR_RECEIPT \r\n" + "  SET HC_TRDT = '" + HC_TRDT
+						+ "',HC_PYNO = '" + HC_PYNO + "',HC_REAMT = '" + HC_REAMT + "',HC_TYPE = '" + HC_TYPE + "',\r\n"
 						+ "  HC_BANK = '" + HC_BANK + "',HC_ACCODE = '" + HC_ACCODE + "',HC_PYDT = '" + HC_PYDT
 						+ "',HC_CHKNO = '" + HC_CHKNO + "',HC_USER = '" + HC_USER + "',HC_VCNO = '" + HC_VCNO
-						+ "',HC_STS = '" + HC_STS + "',HR_BKCHG = '" + HR_BKCHG + "',\r\n"
-						+ "  HC_LOCATION = '" + HC_LOCATION + "',HC_FIXNO = '" + HC_FIXNO + "',HC_FNNO = '" + HC_FNNO
-						+ "'\r\n"
-						+ "  WHERE HR_CONO = '" + HR_CONO + "'\r\n"
-						+ "  AND HR_DIVI  = '" + HR_DIVI + "'\r\n"
+						+ "',HC_STS = '" + HC_STS + "',HR_BKCHG = '" + HR_BKCHG + "',\r\n" + "  HC_LOCATION = '"
+						+ HC_LOCATION + "',HC_FIXNO = '" + HC_FIXNO + "',HC_FNNO = '" + HC_FNNO + "'\r\n"
+						+ "  WHERE HR_CONO = '" + HR_CONO + "'\r\n" + "  AND HR_DIVI  = '" + HR_DIVI + "'\r\n"
 						+ "  AND HC_RCNO = '" + HC_RCNO + "'";
 				stmt.executeUpdate(query);
 
@@ -3300,8 +3058,7 @@ public class UpdateData {
 	//// LNRC
 
 	public static String savelnrc(String LR_CONO, String LR_DIVI, String LR_RCNO, String LR_INVNO, String LR_INVDT,
-			String LR_INVAMT, String LR_REAMT, String LR_STS)
-			throws Exception {
+			String LR_INVAMT, String LR_REAMT, String LR_STS) throws Exception {
 
 		JSONObject mJsonObj = new JSONObject();
 
@@ -3315,13 +3072,10 @@ public class UpdateData {
 
 				Statement stmt = conn.createStatement();
 
-				String query = "UPDATE  " + Constant.DBNAME + ".LR_LINERECEIPT  \r\n"
-						+ "  SET LR_INVNO = '" + LR_INVNO + "',LR_INVDT = '" + LR_INVDT + "',LR_INVAMT = '" + LR_INVAMT
-						+ "',LR_REAMT = '" + LR_REAMT + "',LR_STS = '" + LR_STS + "'\r\n"
-						+ "  WHERE LR_CONO = '" + LR_CONO + "'\r\n"
-						+ "  AND LR_DIVI  = '" + LR_DIVI + "'\r\n"
-						+ "  AND LR_RCNO = '" + LR_RCNO + "'\r\n"
-						+ "";
+				String query = "UPDATE  " + Constant.DBNAME + ".LR_LINERECEIPT  \r\n" + "  SET LR_INVNO = '" + LR_INVNO
+						+ "',LR_INVDT = '" + LR_INVDT + "',LR_INVAMT = '" + LR_INVAMT + "',LR_REAMT = '" + LR_REAMT
+						+ "',LR_STS = '" + LR_STS + "'\r\n" + "  WHERE LR_CONO = '" + LR_CONO + "'\r\n"
+						+ "  AND LR_DIVI  = '" + LR_DIVI + "'\r\n" + "  AND LR_RCNO = '" + LR_RCNO + "'\r\n" + "";
 				stmt.executeUpdate(query);
 
 				mJsonObj.put("result", "ok");
@@ -3363,8 +3117,7 @@ public class UpdateData {
 
 				Statement stmt = conn.createStatement();
 
-				String query0 = "DELETE  FROM M3FDBPRD.FCR040\r\n"
-						+ "WHERE ACCINO LIKE '%" + INV + "%'\r\n"
+				String query0 = "DELETE  FROM M3FDBPRD.FCR040\r\n" + "WHERE ACCINO LIKE '%" + INV + "%'\r\n"
 						+ "AND ACSTCF IN ( 9,0 )";
 				System.out.print(query0);
 
@@ -3469,10 +3222,8 @@ public class UpdateData {
 
 				Statement stmt = conn.createStatement();
 
-				String query0 = "UPDATE " + Constant.DBNAME + ".BANK_MAPPING\r\n"
-						+ "SET BM_LCODE = \r\n"
-						+ "  CASE \r\n"
-						+ "    WHEN BM_BANK = 'BBL' THEN '1AA2114'\r\n"
+				String query0 = "UPDATE " + Constant.DBNAME + ".BANK_MAPPING\r\n" + "SET BM_LCODE = \r\n"
+						+ "  CASE \r\n" + "    WHEN BM_BANK = 'BBL' THEN '1AA2114'\r\n"
 						+ "    WHEN BM_BANK = 'BBL_CUR' THEN '1AA2214'\r\n"
 						+ "    WHEN BM_BANK = 'BBL_QR' THEN '1AA2214'\r\n"
 						+ "    WHEN BM_BANK = 'KBANK' THEN '1AA2110'\r\n"
@@ -3481,11 +3232,8 @@ public class UpdateData {
 						+ "    WHEN BM_BANK = 'SCB' THEN '1AA2105'\r\n"
 						+ "    WHEN BM_BANK = 'SCB_BILL' THEN '1AA2283'\r\n"
 						+ "    WHEN BM_BANK = 'SCB_CUR' THEN '1AA2286'\r\n"
-						+ "    WHEN BM_BANK = 'SCB_MMN' THEN '1AA2286'\r\n"
-						+ "    ELSE BM_LCODE \r\n"
-						+ "  END\r\n"
-						+ "WHERE (BM_LCODE IS NULL OR BM_LCODE = '-') \r\n"
-						+ "  AND BM_CONO = '" + getCono + "'\r\n"
+						+ "    WHEN BM_BANK = 'SCB_MMN' THEN '1AA2286'\r\n" + "    ELSE BM_LCODE \r\n" + "  END\r\n"
+						+ "WHERE (BM_LCODE IS NULL OR BM_LCODE = '-') \r\n" + "  AND BM_CONO = '" + getCono + "'\r\n"
 						+ "  AND BM_DATE  LIKE  '" + MONTH.trim() + "%'";
 
 				System.out.print(query0);
@@ -3537,8 +3285,7 @@ public class UpdateData {
 
 				String query0 = "DELETE  " + Constant.DBNAME + ".LR_LINERECEIPT ll  \r\n"
 						+ "WHERE  LR_RCNO  IN (SELECT  H_RCNO FROM " + Constant.DBNAME + ".HEAD_RECIPT hr \r\n"
-						+ "WHERE  H_RNNO  = '" + ID + "')\r\n"
-						+ "AND LR_CONO  = '" + getCono + "'";
+						+ "WHERE  H_RNNO  = '" + ID + "')\r\n" + "AND LR_CONO  = '" + getCono + "'";
 
 				// ใช้ executeUpdate() สำหรับ UPDATE statement
 				int rowsAffected = stmt.executeUpdate(query0);
@@ -3585,15 +3332,10 @@ public class UpdateData {
 
 				Statement stmt = conn.createStatement();
 
-				String query0 = "UPDATE " + Constant.DBNAME + ".BANK_MAPPING "
-						+ "SET BM_RCNO = ( "
-						+ "    SELECT MAX(H_RCNO) "
-						+ "    FROM " + Constant.DBNAME + ".HEAD_RECIPT hr "
-						+ "    WHERE hr.H_RNNO = '" + ID + "' "
-						+ ") "
-						+ "WHERE BM_FNNO = '" + ID + "' "
-						+ "AND BM_CONO = '" + getCono + "' "
-						+ "AND BM_DIVI = '" + getDivi + "'";
+				String query0 = "UPDATE " + Constant.DBNAME + ".BANK_MAPPING " + "SET BM_RCNO = ( "
+						+ "    SELECT MAX(H_RCNO) " + "    FROM " + Constant.DBNAME + ".HEAD_RECIPT hr "
+						+ "    WHERE hr.H_RNNO = '" + ID + "' " + ") " + "WHERE BM_FNNO = '" + ID + "' "
+						+ "AND BM_CONO = '" + getCono + "' " + "AND BM_DIVI = '" + getDivi + "'";
 
 				// ใช้ executeUpdate() สำหรับ UPDATE statement
 				int rowsAffected = stmt.executeUpdate(query0);
@@ -3630,8 +3372,7 @@ public class UpdateData {
 	}
 
 	public static String saveid(String getCono, String getDivi, String ID, String PAYER, String BANKCHARGE,
-			String OVERPAY, String CNDN, String TYPE,
-			String GROUPID, String LOCATION) throws Exception {
+			String OVERPAY, String CNDN, String TYPE, String GROUPID, String LOCATION) throws Exception {
 
 		JSONObject mJsonObj = new JSONObject();
 
@@ -3647,10 +3388,8 @@ public class UpdateData {
 
 				String hcRcno = ""; // ตัวแปรสำหรับเก็บค่า HC_RCNO
 
-				String query0 = "SELECT  HC_RCNO \r\n"
-						+ "FROM " + Constant.DBNAME + ".HR_RECEIPT hr \r\n"
-						+ "WHERE  HR_CONO  = '" + getCono + "'\r\n"
-						+ "AND HC_FNNO  = '" + GROUPID + "'";
+				String query0 = "SELECT  HC_RCNO \r\n" + "FROM " + Constant.DBNAME + ".HR_RECEIPT hr \r\n"
+						+ "WHERE  HR_CONO  = '" + getCono + "'\r\n" + "AND HC_FNNO  = '" + GROUPID + "'";
 
 				ResultSet rs = stmt.executeQuery(query0);
 
@@ -3670,15 +3409,13 @@ public class UpdateData {
 
 				String query = "UPDATE " + DBNAMEPP + ".BANK_MAPPING\r\n" + "		 SET BM_FNNO = '" + GROUPID
 						+ "', BM_RCNO = '" + hcRcno + "'  , BM_BKCHARGE = '" + BANKCHARGE + "', BM_OVPAY = '" + OVERPAY
-						+ "' , BM_CNDN = '" + CNDN
-						+ "' \r\n" + "	     WHERE BM_CONO  = '" + getCono + "' AND BM_ID = '" + ID
-						+ "' AND BM_PARENT_STS  ='77'";
+						+ "' , BM_CNDN = '" + CNDN + "' \r\n" + "	     WHERE BM_CONO  = '" + getCono
+						+ "' AND BM_ID = '" + ID + "' AND BM_PARENT_STS  ='77'";
 				stmt.executeUpdate(query);
 
 				String query2 = "UPDATE " + DBNAMEPP + ".HEAD_RECIPT\r\n" + "		 SET H_LOCATION = '" + LOCATION
 						+ "', H_TYPE = '" + TYPE + "' \r\n" + "	     WHERE H_CONO  = '" + getCono + "' AND H_RNNO = '"
-						+ GROUPID
-						+ "'";
+						+ GROUPID + "'";
 				stmt.executeUpdate(query2);
 
 				System.out.println(query);
@@ -3725,8 +3462,8 @@ public class UpdateData {
 	}
 
 	public static String UPDATEID(String getCono, String getDivi, String BMDATE, String ID, String PAYER,
-			String BANKCHARGE, String OVERPAY,
-			String CNDN, String TYPE, String LOCATION, String GROUPID, String BMAMT) throws Exception {
+			String BANKCHARGE, String OVERPAY, String CNDN, String TYPE, String LOCATION, String GROUPID, String BMAMT)
+			throws Exception {
 
 		JSONObject mJsonObj = new JSONObject();
 
@@ -3743,9 +3480,8 @@ public class UpdateData {
 				String query = "UPDATE " + DBNAME + ".BANK_MAPPING\n" + "SET BM_CUNO = '" + PAYER.trim()
 						+ "' ,  BM_BKCHARGE = '" + BANKCHARGE.trim() + "', BM_OVPAY = '" + OVERPAY.trim()
 						+ "', BM_CNDN = '" + CNDN.trim() + "'\n" + "WHERE BM_CONO = '" + getCono + "' "
-						+ "AND BM_DIVI = '" + getDivi + "' "
-						+ "AND BM_DATE = '" + BMDATE.trim() + "' " + "AND BM_ID = '" + ID.trim() + "' "
-						+ "AND BM_FNNO = '" + GROUPID.trim() + "' ";
+						+ "AND BM_DIVI = '" + getDivi + "' " + "AND BM_DATE = '" + BMDATE.trim() + "' "
+						+ "AND BM_ID = '" + ID.trim() + "' " + "AND BM_FNNO = '" + GROUPID.trim() + "' ";
 
 				stmt.executeUpdate(query);
 
@@ -3788,8 +3524,8 @@ public class UpdateData {
 	}
 
 	public static String CREATEID(String getCono, String getDivi, String BMDATE, String ID, String PAYER,
-			String BANKCHARGE, String OVERPAY,
-			String CNDN, String TYPE, String LOCATION, String GROUPID, String BMAMT, String BANKTYPE) throws Exception {
+			String BANKCHARGE, String OVERPAY, String CNDN, String TYPE, String LOCATION, String GROUPID, String BMAMT,
+			String BANKTYPE) throws Exception {
 
 		JSONObject mJsonObj = new JSONObject();
 
@@ -3801,46 +3537,46 @@ public class UpdateData {
 		String lcode = "0";
 		switch (BANKTYPE) {
 
-			case "SCB":
-				lcode = "1AA2105";
-				break;
+		case "SCB":
+			lcode = "1AA2105";
+			break;
 
-			case "KBANK":
-				lcode = "1AA2110";
-				break;
+		case "KBANK":
+			lcode = "1AA2110";
+			break;
 
-			case "BBL":
-				lcode = "1AA2114";
-				break;
+		case "BBL":
+			lcode = "1AA2114";
+			break;
 
-			case "SCB_BILL":
-				lcode = "1AA2283";
-				break;
+		case "SCB_BILL":
+			lcode = "1AA2283";
+			break;
 
-			case "KBANK_BILL":
-				lcode = "1AA2250";
-				break;
+		case "KBANK_BILL":
+			lcode = "1AA2250";
+			break;
 
-			case "BBL_BILL":
-				lcode = "1AA2214";
-				break;
-			case "SCB_CUR":
-				lcode = "1AA2286";
-				break;
-			case "KBANK_CUR":
-				lcode = "1AA2250";
-				break;
-			case "BBL_CUR":
-				lcode = "1AA22140";
-				break;
+		case "BBL_BILL":
+			lcode = "1AA2214";
+			break;
+		case "SCB_CUR":
+			lcode = "1AA2286";
+			break;
+		case "KBANK_CUR":
+			lcode = "1AA2250";
+			break;
+		case "BBL_CUR":
+			lcode = "1AA22140";
+			break;
 
-			case "SCB_MMN":
-				lcode = "1AA2286";
-				break;
+		case "SCB_MMN":
+			lcode = "1AA2286";
+			break;
 
-			case "BBL_QR":
-				lcode = "1223098219";
-				break;
+		case "BBL_QR":
+			lcode = "1223098219";
+			break;
 
 		}
 
@@ -3859,10 +3595,9 @@ public class UpdateData {
 
 				String sqlFNNO = "SELECT CASE WHEN CAST(MAX(H_RNNO) AS DECIMAL(10,0)) > 0 THEN CAST(MAX(H_RNNO) AS DECIMAL(10,0)) + 1\r\n"
 						+ "                           ELSE CAST(('" + yearint
-						+ "' || '000001') AS DECIMAL(10,0)) END AS THORNO\r\n"
-						+ "                           FROM " + DBNAME + ".HEAD_RECIPT\r\n"
-						+ "                           WHERE H_CONO  = '" + getCono + "'\r\n"
-						+ "                           AND H_DIVI  = '" + getDivi + "'\r\n"
+						+ "' || '000001') AS DECIMAL(10,0)) END AS THORNO\r\n" + "                           FROM "
+						+ DBNAME + ".HEAD_RECIPT\r\n" + "                           WHERE H_CONO  = '" + getCono
+						+ "'\r\n" + "                           AND H_DIVI  = '" + getDivi + "'\r\n"
 						+ "                           AND SUBSTRING(H_RNNO,0,3) = '" + yearint + "'";
 				System.out.println(sqlFNNO);
 
@@ -3875,18 +3610,16 @@ public class UpdateData {
 
 				sqlhead = "INSERT INTO " + DBNAME + ".HEAD_RECIPT\n" + "(H_CONO, H_DIVI, H_CUNO, H_RCNO, \n"
 						+ " H_RNNO, H_PYNO , H_STS , H_LOCATION , H_TYPE)\n" + "VALUES('" + getCono + "', '" + getDivi
-						+ "','HEAD', 9 || "
-						+ BM_FNNO + " ,  \n" + " '" + BM_FNNO + "' ,'" + PAYER.trim().toUpperCase() + "' , '1' , '"
-						+ LOCATION + "' , '" + TYPE + "'\n" + " \n" + " )";
+						+ "','HEAD', 9 || " + BM_FNNO + " ,  \n" + " '" + BM_FNNO + "' ,'" + PAYER.trim().toUpperCase()
+						+ "' , '1' , '" + LOCATION + "' , '" + TYPE + "'\n" + " \n" + " )";
 				System.out.println(sqlhead);
 				stmt.execute(sqlhead);
 
-				String sql2 = "UPDATE " + DBNAME + ".BANK_MAPPING\n" + "SET   BM_CNDN = '"
-						+ CNDN.trim() + "' , BM_OVPAY = '" + OVERPAY.trim() + "' ,BM_BKCHARGE = '" + BANKCHARGE.trim()
+				String sql2 = "UPDATE " + DBNAME + ".BANK_MAPPING\n" + "SET   BM_CNDN = '" + CNDN.trim()
+						+ "' , BM_OVPAY = '" + OVERPAY.trim() + "' ,BM_BKCHARGE = '" + BANKCHARGE.trim()
 						+ "' ,BM_CUNO = UPPER('" + PAYER.trim() + "') ,BM_FNNO = '" + BM_FNNO.trim() + "' \n"
 						+ "WHERE BM_CONO = '" + getCono + "'\n" + "AND BM_DIVI  = '" + getDivi + "'\n"
-						+ "AND BM_DATE  = '" + BMDATE + "'\n"
-						+ "AND BM_ID = '" + ID.trim() + "' ";
+						+ "AND BM_DATE  = '" + BMDATE + "'\n" + "AND BM_ID = '" + ID.trim() + "' ";
 				System.out.println(sql2);
 
 				stmt.execute(sql2);
@@ -4532,8 +4265,7 @@ public class UpdateData {
 
 				Statement stmt = conn.createStatement();
 				String query = "UPDATE " + DBM3NAME + ".CMNUSR \n" + "SET JUFRF8 = '" + status + "' \n"
-						+ "WHERE JUUSID = '"
-						+ username + "' \n" + "AND JUFRF7 = 'SALESUP' ";
+						+ "WHERE JUUSID = '" + username + "' \n" + "AND JUFRF7 = 'SALESUP' ";
 				// System.out.println("updateOrderDatail\n" + query);
 				stmt.execute(query);
 				return mJsonObj.toString();
