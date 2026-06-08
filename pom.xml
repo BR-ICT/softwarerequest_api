@@ -252,15 +252,6 @@
 			<version>4.11.0</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>authen_api</groupId>
-			<artifactId>authen_api</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>itemreq_api</groupId>
-			<artifactId>itemreq_api</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+
 		</dependencies>
 </project>
