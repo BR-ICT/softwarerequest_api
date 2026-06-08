@@ -4,6 +4,24 @@
 	<artifactId>softwarerequest_api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<activation><activeByDefault>true</activeByDefault></activation>
+			<properties><build.profile.id>dev</build.profile.id></properties>
+		</profile>
+		<profile>
+			<id>uat</id>
+			<properties><build.profile.id>uat</build.profile.id></properties>
+		</profile>
+		<profile>
+			<id>prd</id>
+			<properties><build.profile.id>prd</build.profile.id></properties>
+		</profile>
+	</profiles>
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<plugins>
@@ -234,6 +252,15 @@
 			<version>4.11.0</version>
 			<scope>test</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>authen_api</groupId>
+			<artifactId>authen_api</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>itemreq_api</groupId>
+			<artifactId>itemreq_api</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 		</dependencies>
 </project>
