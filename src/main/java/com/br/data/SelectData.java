@@ -34,11 +34,11 @@ public class SelectData {
 	protected static String DBNAME = Constant.DBNAME;
 	protected static String DBM3NAME = Constant.DBM3NAME;
 	
-	  public static String SR_HEAD =  Constant.SR_HEAD;
-	  public static String SR_DETAIL = Constant.SR_DETAIL; 
-	  public static String SR_APPROVE = Constant.SR_APPROVE; 
-	  public static String SR_FLOW = Constant.SR_FLOW; 
-	  public static String SR_GROUP = Constant.SR_GROUP; 
+//	  public static String SR_HEAD =  Constant.SR_HEAD;
+//	  public static String SR_DETAIL = Constant.SR_DETAIL; 
+//	  public static String SR_APPROVE = Constant.SR_APPROVE; 
+//	  public static String SR_FLOW = Constant.SR_FLOW; 
+//	  public static String SR_GROUP = Constant.SR_GROUP; 
 	
 
 	// protected static String DBNAMEPP = ""+Constant.DBNAME+"";
@@ -189,8 +189,8 @@ public class SelectData {
 					+ "COALESCE(b.APPROVED_USER, '-') AS APPROVED_USER,\r\n"
 					+ "COALESCE(b.SR_COMMENT, '-') AS SR_COMMENT,\r\n"
 					+ "COALESCE(b.REMARK, '-') AS REMARK\r\n"
-					+ "FROM BRLDTABK01.SR_FLOWHEAD02 AS a\r\n"
-					+ "LEFT JOIN BRLDTABK01.SR_FLOWAPPROVE02 AS b\r\n"
+					+ "FROM " + Constant.DBNAME + ".SR_FLOWHEAD02 AS a\r\n"
+					+ "LEFT JOIN " + Constant.DBNAME + ".SR_FLOWAPPROVE02 AS b\r\n"
 					+ "ON b.DOC_NO = a.DOC_NO AND a.STATUS = b.STATUS\r\n"
 					+ "WHERE \r\n"
 					+ "(\r\n"
@@ -365,7 +365,7 @@ public class SelectData {
 					+ "  COALESCE(FARJBY, '') AS REJECT_BY,\r\n"
 					+ "  COALESCE(CHAR(FARJDA), '') ||' '||  COALESCE(CHAR(FARJTI), '') AS REJECT_DATE,\r\n"
 					+ "  COALESCE(FADES4, '') AS REJECT_REMARK\r\n"
-					+ "FROM "+DBNAME+"."+SR_APPROVE+"\r\n"
+					+ "FROM "+DBNAME+".SR_FLOWAPPROVE\r\n"
 					+ "WHERE FASRNO = '"+id+"' AND FACONO = '"+cono+"'\n"
 					+ "AND FACODE = 'SWRQ'"; 
 			/*
@@ -381,7 +381,7 @@ public class SelectData {
 					+ "COALESCE(STS_DESC, '') AS STS_DESC,\r\n"
 					+ "COALESCE(TIME_ST, '') AS TIME_ST,\r\n"
 					+ "COALESCE(SR_COMMENT, '') AS REMARK\r\n"
-					+ "FROM "+DBNAME+"."+SR_APPROVE+" WHERE DOC_NO = '" + id + "'\r\n"
+					+ "FROM "+DBNAME+".SR_FLOWAPPROVE WHERE DOC_NO = '" + id + "'\r\n"
 					+ "";
 					
 					*/   
@@ -752,11 +752,11 @@ public class SelectData {
 					+ "   rq.ST_EMAIL AS REQUESTER_EMAIL\r\n"
 					+ "FROM (\r\n"
 					+ "   SELECT FDDATA,FDDSTA,FDSRNO,FDCONO\r\n"
-					+ "   FROM  "+DBNAME+"."+SR_DETAIL+" sf \r\n"
+					+ "   FROM  "+DBNAME+".SR_FLOWDETAIL sf \r\n"
 					+ "   WHERE FDSRNO = '" + vID + "'\r\n"
 					+ "     AND FDCODE = 'SWRQ' AND FDCONO = '"+cono.trim()+"' AND FDDIVI = '"+divi.trim()+"' \r\n"
 					+ ") AS dt\r\n"
-					+ "LEFT JOIN "+DBNAME+"."+SR_HEAD+"  fh\r\n"
+					+ "LEFT JOIN "+DBNAME+".SR_FLOWHEAD  fh\r\n"
 					+ "  ON fh.FHSRNO = dt.FDSRNO\r\n"
 					+ "  AND fh.FHCONO = dt.FDCONO\r\n"
 					+ "  AND fh.FHCODE = 'SWRQ'\n"
@@ -874,7 +874,7 @@ public class SelectData {
 
 			/* 
 			 
-					+ "FROM  "+DBNAME+"."+SR_DETAIL+"\r\n"
+					+ "FROM  "+DBNAME+".SR_FLOWDETAIL\r\n"
 					+ "WHERE  SERVICE_ID = '" + vID + "' \n"
 					+ "AND PROMGRAM_CODE = 'ITMRQ'";
 					*/ 
@@ -889,11 +889,11 @@ public class SelectData {
 		    		+ "  s.ST_EMAIL AS DEPTHEAD_EMAIL\r\n"
 		    		+ "FROM (\r\n"
 		    		+ "  SELECT JSON_DATA, STATUS, SERVICE_ID\r\n"
-		    		+ "  FROM "+DBNAME+"."+SR_DETAIL+"\r\n"
+		    		+ "  FROM "+DBNAME+".SR_FLOWDETAIL\r\n"
 		    		+ "  WHERE SERVICE_ID = '" + vID + "'\r\n"
 		    		+ "    AND PROMGRAM_CODE = 'ITMRQ'\r\n"
 		    		+ ") AS dt\r\n"
-		    		+ "LEFT JOIN "+DBNAME+"."+SR_HEAD+" fh\r\n"
+		    		+ "LEFT JOIN "+DBNAME+".SR_FLOWHEAD fh\r\n"
 		    		+ "  ON fh.DOC_NO = dt.SERVICE_ID\r\n"
 		    		+ "LEFT JOIN BRLDTA0100.STAFFLIST s\r\n"
 		    		+ " ON s.ST_N6L3 = fh.DEPTHEAD\r\n"
@@ -910,11 +910,11 @@ public class SelectData {
 		    		+ "  rq.ST_EMAIL AS REQUESTER_EMAIL\r\n"
 		    		+ "FROM (\r\n"
 		    		+ "  SELECT JSON_DATA, STATUS, SERVICE_ID\r\n"
-		    		+ "   FROM "+DBNAME+"."+SR_DETAIL+"\r\n"
+		    		+ "   FROM "+DBNAME+".SR_FLOWDETAIL\r\n"
 		    		+ "  WHERE SERVICE_ID = '" + vID + "'\r\n"
 		    		+ "    AND PROMGRAM_CODE = 'ITMRQ'\r\n"
 		    		+ ") AS dt\r\n"
-		    		+ "LEFT JOIN "+DBNAME+"."+SR_HEAD+"  fh\r\n"
+		    		+ "LEFT JOIN "+DBNAME+".SR_FLOWHEAD  fh\r\n"
 		    		+ "  ON fh.DOC_NO = dt.SERVICE_ID\r\n"
 		    		+ "LEFT JOIN BRLDTA0100.STAFFLIST s\r\n"
 		    		+ "  ON s.ST_N6L3 = fh.DEPTHEAD\r\n"
@@ -934,11 +934,11 @@ public class SelectData {
 			    		+ "  rq.ST_EMAIL AS REQUESTER_EMAIL\r\n"
 			    		+ "FROM (\r\n"
 			    		+ "  SELECT JSON_DATA, STATUS, SERVICE_ID\r\n"
-			    		+ "   FROM "+DBNAME+"."+SR_DETAIL+"\r\n"
+			    		+ "   FROM "+DBNAME+".SR_FLOWDETAIL\r\n"
 			    		+ "  WHERE SERVICE_ID = '" + vID + "'\r\n"
 			    		+ "    AND PROMGRAM_CODE = 'ITMRQ'\r\n"
 			    		+ ") AS dt\r\n"
-			    		+ "LEFT JOIN "+DBNAME+"."+SR_HEAD+"  fh\r\n"
+			    		+ "LEFT JOIN "+DBNAME+".SR_FLOWHEAD  fh\r\n"
 			    		+ "  ON fh.DOC_NO = dt.SERVICE_ID\r\n"
 			    		+ "LEFT JOIN BRLDTA0100.STAFFLIST s\r\n"
 			    		+ "  ON s.ST_N6L3 = fh.DEPTHEAD\r\n"
@@ -958,11 +958,11 @@ public class SelectData {
 					+ "   rq.ST_EMAIL AS REQUESTER_EMAIL\r\n"
 					+ "FROM (\r\n"
 					+ "   SELECT FDDATA,FDDSTA,FDSRNO,FDCONO\r\n"
-					+ "   FROM  "+DBNAME+"."+SR_DETAIL+" sf \r\n"
+					+ "   FROM  "+DBNAME+".SR_FLOWDETAIL sf \r\n"
 					+ "   WHERE FDSRNO = '" + vID + "'\r\n"
 					+ "     AND FDCODE = 'ITRQ' AND FDCONO = '"+cono.trim()+"' AND FDDIVI = '"+divi.trim()+"' \r\n"
 					+ ") AS dt\r\n"
-					+ "LEFT JOIN "+DBNAME+"."+SR_HEAD+"  fh\r\n"
+					+ "LEFT JOIN "+DBNAME+".SR_FLOWHEAD  fh\r\n"
 					+ "  ON fh.FHSRNO = dt.FDSRNO\r\n"
 					+ "  AND fh.FHCONO = dt.FDCONO\r\n"
 					+ "LEFT JOIN BRLDTA0100.STAFFLIST s\r\n"
@@ -4012,7 +4012,7 @@ public class SelectData {
 					+ "CASE \r\n"
 					+ "WHEN (\r\n"
 					+ "SELECT COUNT(*) \r\n"
-					+ "FROM "+DBNAME+"."+SR_APPROVE+" \r\n"
+					+ "FROM "+DBNAME+".SR_FLOWAPPROVE \r\n"
 					+ "WHERE STATUS = '"+status+"' \r\n"
 					+ "AND DOC_CODE = 'ITRQ' \r\n"
 					+ "AND DOC_NO = '"+id+"' \r\n"
@@ -4098,7 +4098,7 @@ public class SelectData {
 					+ "DOC_NO,\r\n"
 					+ "SUBSTR(APPROVE, 1, LOCATE(',', APPROVE || ',') - 1),\r\n"
 					+ "SUBSTR(APPROVE || ',', LOCATE(',', APPROVE || ',') + 1)\r\n"
-					+ "FROM "+DBNAME+"."+SR_APPROVE+"\r\n"
+					+ "FROM "+DBNAME+".SR_FLOWAPPROVE\r\n"
 					+ "WHERE STATUS = '"+statusInt+"'\r\n"
 					+ "AND DOC_CODE = 'ITRQ'\r\n"
 					+ "AND DOC_NO = '"+id+"'\r\n"
@@ -4439,7 +4439,7 @@ public class SelectData {
 					+ "    FASRNO,\r\n"
 					+ "    SUBSTR(FAAPLI, 1, LOCATE(',', FAAPLI|| ',') - 1),\r\n"
 					+ "    SUBSTR(FAAPLI|| ',', LOCATE(',', FAAPLI|| ',') + 1)\r\n"
-					+ "  FROM "+DBNAME+"."+SR_APPROVE+"\r\n"
+					+ "  FROM "+DBNAME+".SR_FLOWAPPROVE\r\n"
 					+ "  WHERE FASTAT = '"+statusInt+"'  -- แทนด้วยค่าจริง\r\n"
 					+ "    AND FACODE = 'SWRQ'\r\n"
 					+ "    AND FASRNO = '"+id+"'  AND FACONO = '"+cono+"'        -- แทนด้วยค่าจริง\r\n"
@@ -4539,7 +4539,7 @@ public class SelectData {
 					+ "    DOC_NO,\r\n"
 					+ "    SUBSTR(APPROVE, 1, LOCATE(',', APPROVE || ',') - 1),\r\n"
 					+ "    SUBSTR(APPROVE || ',', LOCATE(',', APPROVE || ',') + 1)\r\n"
-					+ "  FROM "+DBNAME+"."+SR_APPROVE+"\r\n"
+					+ "  FROM "+DBNAME+".SR_FLOWAPPROVE\r\n"
 					+ "  WHERE STATUS = '"+statusInt+"'\r\n"
 					+ "    AND DOC_CODE = 'ITRQ'\r\n"
 					+ "    AND DOC_NO = '"+id+"'\r\n"
@@ -4556,7 +4556,7 @@ public class SelectData {
 					+ "    TRIM(s.ST_EMAIL) AS ST_EMAIL,\r\n"
 					+ "    ROW_NUMBER() OVER () AS rn\r\n"
 					+ "  FROM SplitNames sn\r\n"
-					+ "  JOIN BRLDTABK01.STAFFLIST s ON s.ST_N6L3 = sn.APPROVER\r\n"
+					+ "  JOIN " + Constant.DBNAME + ".STAFFLIST s ON s.ST_N6L3 = sn.APPROVER\r\n"
 					+ ")\r\n"
 					+ "SELECT \r\n"
 					+ "  ST_EMAIL \r\n"
@@ -4942,7 +4942,7 @@ public class SelectData {
 			conn = ConnectDB2.doConnect();
 			stmt = conn.createStatement();
 
-			String query = " SELECT H_ID ,H_TIMEIN FROM BRLDTABK01.VISITOR_HEAD vh \r\n"
+			String query = " SELECT H_ID ,H_TIMEIN FROM " + Constant.DBNAME + ".VISITOR_HEAD vh \r\n"
 					+ " WHERE  H_ID  = '23000001'";
 			System.out.println("SelectCompany\n" + query);
 			logger.debug(query);
@@ -10072,6 +10072,312 @@ public class SelectData {
 			ResultSet mRes = stmt.executeQuery(query);
 
 			return ConvertResultSet.convertResultSetToJson(mRes);
+
+		} catch (SQLException e) {
+			logger.error(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		} finally {
+			try {
+				if (stmt != null) {
+					stmt.close();
+				}
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+			try {
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+
+		}
+
+		return null;
+
+	}
+	
+	public static String getStatusNewFlowApprove(String cono, String divi, String servicename, String status)
+			throws Exception {
+		logger.info("getStatusNewFlowApprove");
+
+		Connection conn = null;
+		Statement stmt = null;
+		try {
+			conn = ConnectDB2.doConnect();
+			stmt = conn.createStatement();
+
+			String query = "SELECT RQNAME, RQSTAT, RQGROUP, NEXT_STAT, NEXT_APPROVE, NEXT_GROUP \n"
+					+ "FROM \n"
+					+ "(SELECT NAME_SERIAL AS RQNAME, PMSTAT AS RQSTAT, PMGROU AS RQGROUP, NEXT_STAT \n"
+					+ "FROM "+Constant.DBNAME+".VI_PROCESSMASTER \n"
+					+ "WHERE PMCONO = '" + cono + "' \n"
+					+ "AND PMDIVI = '" + divi + "' \n"
+					+ "AND PMCODE = '" + servicename + "' \n"
+					+ "AND PMSTAT = '" + status + "') a \n"
+					+ "LEFT JOIN \n"
+					+ "(SELECT PMSTAT, NAME_SERIAL AS NEXT_APPROVE, PMGROU AS NEXT_GROUP \n"
+					+ "FROM "+Constant.DBNAME+".VI_PROCESSMASTER \n"
+					+ "WHERE PMCONO = '" + cono + "' \n"
+					+ "AND PMDIVI = '" + divi + "' \n"
+					+ "AND PMCODE = '" + servicename + "') b \n"
+					+ "ON b.PMSTAT = a.NEXT_STAT";
+			// System.out.println("getMARAccountant\n" + query);
+			logger.debug(query);
+			ResultSet mRes = stmt.executeQuery(query);
+			// RQNAME, RQSTAT, RQGROUP, NEXT_STAT, NEXT_APPROVE, NEXT_GROUP
+			while (mRes.next()) {
+				return mRes.getString("RQNAME").trim()
+						+ " ; " + mRes.getString("RQSTAT").trim()
+						+ " ; " + mRes.getString("RQGROUP").trim()
+						+ " ; " + mRes.getString("NEXT_STAT").trim()
+						+ " ; " + mRes.getString("NEXT_APPROVE").trim()
+						+ " ; " + mRes.getString("NEXT_GROUP").trim();
+
+			}
+
+		} catch (SQLException e) {
+			logger.error(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		} finally {
+			try {
+				if (stmt != null) {
+					stmt.close();
+				}
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+			try {
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+
+		}
+
+		return null;
+
+	}
+	
+	
+	   public static String getStatusFlowApprove(String cono, String divi, String servicename, String serviceno,
+           String status)
+           throws Exception {
+       logger.info("getStatusFlowApprove");
+
+       Connection conn = null;
+       Statement stmt = null;
+       try {
+           conn = ConnectDB2.doConnect();
+           stmt = conn.createStatement();
+
+           String query = "SELECT FAAPLI, PMSTAT, NEXT_STAT, COALESCE(NEXT_APPROVE,'') AS NEXT_APPROVE, NEXT_GROUP, PREVIOUS_STAT, COALESCE(PREVIOUS_APPROVE,'') AS PREVIOUS_APPROVE \n"
+                   + "FROM \n"
+                   + "(SELECT FAAPLI, PMSTAT, NEXT_STAT, PREVIOUS_STAT \n"
+                   + "FROM "+Constant.DBNAME+".SR_FLOWAPPROVE a, " + Constant.DBNAME + ".VI_PROCESSMASTER b \n"
+                   + "WHERE FACONO = '" + cono + "' \n"
+                   + "AND FADIVI = '" + divi + "' \n"
+                   + "AND FACODE = '" + servicename + "' \n"
+                   + "AND FASRNO = '" + serviceno + "' \n"
+                   + "AND FASTAT = '" + status + "' \n"
+                   + "AND b.PMCONO = a.FACONO   \n"
+                   + "AND b.PMDIVI = a.FADIVI   \n"
+                   + "AND b.PMCODE = a.FACODE  \n"
+                   + "AND b.PMSTAT = a.FASTAT) a \n"
+                   + "LEFT JOIN \n"
+                   + "(SELECT FASTAT,FAAPLI AS NEXT_APPROVE, PMGROU AS NEXT_GROUP \n"
+                   + "FROM "+Constant.DBNAME+".SR_FLOWAPPROVE a, " + Constant.DBNAME + ".VI_PROCESSMASTER b \n"
+                   + "WHERE FACONO = '" + cono + "' \n"
+                   + "AND FADIVI = '" + divi + "' \n"
+                   + "AND FACODE = '" + servicename + "' \n"
+                   + "AND FASRNO = '" + serviceno + "' \n"
+                   + "AND b.PMCONO = a.FACONO \n"
+                   + "AND b.PMDIVI = a.FADIVI \n"
+                   + "AND b.PMCODE = a.FACODE \n"
+                   + "AND b.PMSTAT = a.FASTAT) b \n"
+                   + "ON b.FASTAT = a.NEXT_STAT \n"
+                   + "LEFT JOIN \n"
+                   + "(SELECT FASTAT,FAAPLI AS PREVIOUS_APPROVE \n"
+                   + "FROM "+Constant.DBNAME+".SR_FLOWAPPROVE \n"
+                   + "WHERE FACONO = '" + cono + "' \n"
+                   + "AND FADIVI = '" + divi + "' \n"
+                   + "AND FACODE = '" + servicename + "' \n"
+                   + "AND FASRNO = '" + serviceno + "') c \n"
+                   + "ON c.FASTAT = a.PREVIOUS_STAT";
+           // System.out.println("getMARAccountant\n" + query);
+           logger.debug(query);
+           ResultSet mRes = stmt.executeQuery(query);
+
+           while (mRes.next()) {
+               return mRes.getString("FAAPLI").trim()
+                       + " ; " + mRes.getString("PMSTAT").trim()
+                       + " ; " + mRes.getString("NEXT_STAT").trim()
+                       + " ; " + mRes.getString("NEXT_APPROVE").trim()
+                       + " ; " + mRes.getString("NEXT_GROUP").trim()
+                       + " ; " + mRes.getString("PREVIOUS_STAT").trim()
+                       + " ; " + mRes.getString("PREVIOUS_APPROVE").trim();
+
+           }
+
+       } catch (SQLException e) {
+           logger.error(e.getMessage());
+       } catch (Exception e) {
+           logger.error(e.getMessage());
+       } finally {
+           try {
+               if (stmt != null) {
+                   stmt.close();
+               }
+           } catch (SQLException e) {
+               logger.error(e.getMessage());
+           }
+           try {
+               if (conn != null) {
+                   conn.close();
+               }
+           } catch (SQLException e) {
+               logger.error(e.getMessage());
+           }
+
+       }
+
+       return null;
+
+   }
+	   
+	   
+	   public static String checkApproveBy(String cono, String divi, String servicename, String serviceno,
+           String status)
+           throws Exception {
+       logger.info("getApproveBy");
+
+       Connection conn = null;
+       Statement stmt = null;
+       try {
+           conn = ConnectDB2.doConnect();
+           stmt = conn.createStatement();
+
+           String query = "SELECT FAAPBY \n"
+                   + "FROM " + DBNAME + ".SR_FLOWAPPROVE \n"
+                   + "WHERE FACONO = '" + cono + "' \n"
+                   + "AND FADIVI = '" + divi + "' \n"
+                   + "AND FACODE = '" + servicename + "' \n"
+                   + "AND FASRNO = '" + serviceno + "' \n"
+                   + "AND FASTAT = '" + status + "'";
+           // System.out.println("getBU\n" + query);
+           logger.debug(query);
+           ResultSet mRes = stmt.executeQuery(query);
+
+           while (mRes.next()) {
+               return mRes.getString("FAAPBY");
+
+           }
+
+       } catch (SQLException e) {
+           logger.error(e.getMessage());
+       } catch (Exception e) {
+           logger.error(e.getMessage());
+       } finally {
+           try {
+               if (stmt != null) {
+                   stmt.close();
+               }
+           } catch (SQLException e) {
+               logger.error(e.getMessage());
+           }
+           try {
+               if (conn != null) {
+                   conn.close();
+               }
+           } catch (SQLException e) {
+               logger.error(e.getMessage());
+           }
+
+       }
+
+       return null;
+
+   }
+	   public static String getSurveyFile(String cono, String divi, String servicename, String serviceno)
+           throws Exception {
+       logger.info("getSurveyFile");
+
+       Connection conn = null;
+       Statement stmt = null;
+       try {
+           conn = ConnectDB2.doConnect();
+           stmt = conn.createStatement();
+
+           String query = "SELECT FILINE,FISNAM,FIFNAM,FITYPE,FIREM1 \n"
+                   + "FROM " + DBNAME + ".SR_FILE \n"
+                   + "WHERE FICONO = '" + cono + "' \n"
+                   + "AND FIDIVI  = '" + divi + "' \n"
+                   + "AND FICODE = '" + servicename + "' \n"
+                   + "AND FISRNO  = '" + serviceno + "' \n"
+                   + "ORDER BY FILINE";
+           // System.out.println("getBU\n" + query);
+           logger.debug(query);
+           ResultSet mRes = stmt.executeQuery(query);
+
+           return ConvertResultSet.convertResultSetToJson(mRes);
+
+       } catch (SQLException e) {
+           logger.error(e.getMessage());
+       } catch (Exception e) {
+           logger.error(e.getMessage());
+       } finally {
+           try {
+               if (stmt != null) {
+                   stmt.close();
+               }
+           } catch (SQLException e) {
+               logger.error(e.getMessage());
+           }
+           try {
+               if (conn != null) {
+                   conn.close();
+               }
+           } catch (SQLException e) {
+               logger.error(e.getMessage());
+           }
+
+       }
+
+       return null;
+
+   }
+	   
+	   
+	   
+	public static String getMaxServiceNumber(String cono, String divi, String servicename, String year, String username)
+			throws Exception {
+		logger.info("getMaxDodNumber");
+
+		Connection conn = null;
+		Statement stmt = null;
+		try {
+			conn = ConnectDB2.doConnect();
+			stmt = conn.createStatement();
+
+			String query = "SELECT COALESCE(MAX(FHSRNO),0) AS SERVICENUMBER \n"
+					+ "FROM " + DBNAME + ".SR_FLOWHEAD \n"
+					+ "WHERE FHCONO = '" + cono + "' \n"
+					+ "AND FHDIVI = '" + divi + "' \n"
+					+ "AND FHCODE = '" + servicename + "' \n"
+					+ "AND SUBSTRING(CHAR(FHREDA,ISO),0,5) = '" + year + "' \n"
+					+ "AND FHREQU = '" + username + "'";
+			// System.out.println("getMaxMARNumber\n" + query);
+			logger.debug(query);
+			ResultSet mRes = stmt.executeQuery(query);
+
+			while (mRes.next()) {
+				return mRes.getString("SERVICENUMBER").trim();
+			}
 
 		} catch (SQLException e) {
 			logger.error(e.getMessage());

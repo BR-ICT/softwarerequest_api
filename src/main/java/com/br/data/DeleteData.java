@@ -126,6 +126,50 @@ public class DeleteData {
 		return null;
 
 	}
+	
+	
+	public static void deleteSurveyFile(String cono, String divi, String servicename, String serviceno,
+        String fieldname) throws Exception {
+    logger.info("deleteSurveyFile");
+
+    Connection conn = null;
+    Statement stmt = null;
+    try {
+        conn = ConnectDB2.doConnect();
+        stmt = conn.createStatement();
+
+        String query = "DELETE " + DBNAME + ".SR_FILE \n"
+                + "WHERE FICONO = '" + cono + "' \n"
+                + "AND FIDIVI = '" + divi + "' \n"
+                + "AND FICODE = '" + servicename + "' \n"
+                + "AND FISRNO = '" + serviceno + "' \n"
+                + "AND FISNAM = '" + fieldname + "'";
+        logger.debug(query);
+        stmt.execute(query);
+
+        logger.info("deleteSurveyFile complete fieldName {}", fieldname);
+
+    } catch (SQLException e) {
+        logger.error(e.getMessage());
+        throw new Exception(e.getMessage());
+    } catch (Exception e) {
+        logger.error(e.getMessage());
+        throw e;
+    } finally {
+        try {
+            if (stmt != null)
+                stmt.close();
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+        }
+        try {
+            if (conn != null)
+                conn.close();
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+        }
+    }
+}
 
 	public static String deleteMARFile(HttpServletRequest httpServletRequest,String cono, String divi, String marno, String line, String name)
 			throws Exception {
