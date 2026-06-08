@@ -11,13 +11,11 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import java.sql.Timestamp;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
+import org.codehaus.jettison.json.JSONObject;
 import java.sql.PreparedStatement;
 
 import java.sql.Connection;
@@ -34,7 +32,6 @@ import javax.ws.rs.core.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import org.json.JSONArray;
 
 import com.br.connection.ConnectDB2;
 import com.br.utility.Constant;
