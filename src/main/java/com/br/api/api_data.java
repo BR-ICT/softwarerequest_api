@@ -2530,22 +2530,13 @@ public class api_data {
         String getToken = headers.getRequestHeaders().getFirst("x-access-token");
         String getTokenData = HttpConnection.httpConnectionCheckToken(getToken);
         // System.out.println("getTokenData: " + getTokenData);
-
-        JSONObject dataObject = new JSONObject(getTokenData);
-//        boolean checkToken = Boolean.parseBoolean(dataObject.getString("message"));
         JSONObject mJsonObj = new JSONObject();
-        JSONObject getDataObject = new JSONObject(dataObject.getString("body"));
-        String[] getSubject = getDataObject.getString("sub").split(" : ");
-        String getCono = getSubject[0];
-        String getDivi = getSubject[1];
-        String getCompanyName = getSubject[2];
-        String getUsername = getDataObject.getString("aud");
-        String getAuth = getDataObject.getString("role");
+
         try {
 
             return Response.ok(
                 
-                    UpdateData.prepareUpdateSoftwareForm(getCono, getDivi, vServiceName, vServiceNo, vRequestType, vStatus,
+                    UpdateData.prepareUpdateSoftwareForm(vCono, vDivi, vServiceName, vServiceNo, vRequestType, vStatus,
                             vData, vFile, vFileName, vFieldName),
                     MediaType.APPLICATION_JSON + ";charset=utf8").build();
 
