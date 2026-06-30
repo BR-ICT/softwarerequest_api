@@ -4508,7 +4508,8 @@ public class UpdateData {
           + "' \n" + ", FAENDA = CURRENT DATE \n" + ", FAENTI = CURRENT TIME \n" + ", FAENUS = '"
           + username + "' \n" + "WHERE FACONO = '" + cono + "' \n" + "AND FADIVI = '" + divi
           + "' \n" + "AND FACODE = '" + servicename + "' \n" + "AND FASRNO = '" + serviceno + "'\n"
-          + "AND FASTAT = '" + status + "'";
+          + "AND (FASTAT = '"+status+"'\n"
+          + "OR FASTAT = '40')";
       // System.out.println("updateMARDetail\n" + query);
       logger.debug(query);
       stmt.execute(query);
