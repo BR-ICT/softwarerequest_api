@@ -1731,7 +1731,7 @@ public class InsertData {
       
       String getSoftwareName = dataObject.getString("softwareName");
       logger.debug("getApproval {}, getDepthead {}, getApproveBy {}, getVersion {}", getApproval, getDepthead, getApproveBy, getVersion);
-      String checkVersion = SelectData.checkVersion("SWRQ");
+      String checkVersion = SelectData.checkVersion("SRQ");
       if (getVersion == null || getVersion.isEmpty() || !Objects.equals(checkVersion, getVersion)) {
           mJsonObj.put("result", "nok");
           mJsonObj.put("message", "Can't Create service number, Please update your version to " + checkVersion
