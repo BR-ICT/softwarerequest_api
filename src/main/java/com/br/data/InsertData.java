@@ -1767,7 +1767,7 @@ public class InsertData {
 
       if (getRequestGroup.equals("REQUESTER")) {
         // Update Requester Name
-        UpdateData.updateSurveyUserFlowApprove(cono, divi, servicename, serviceNumber,
+        UpdateData.updateSurveyUserFlowApproveRequester(cono, divi, servicename, serviceNumber,
             setDefaultStatus, usernameMain, usernameMain);
 
         // Submit first

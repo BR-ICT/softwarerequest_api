@@ -4493,6 +4493,59 @@ public class UpdateData {
 
   }
 
+  public static String updateSurveyUserFlowApproveRequester(String cono, String divi, String servicename,
+      String serviceno, String status, String username, String requester) throws Exception {
+    logger.info("updateSurveyUserFlowApprove");
+
+    JSONObject mJsonObj = new JSONObject();
+    Connection conn = null;
+    Statement stmt = null;
+    try {
+      conn = ConnectDB2.doConnect();
+      stmt = conn.createStatement();
+
+      String query = "UPDATE " + DBNAME + ".SR_FLOWAPPROVE \n" + "SET FAAPLI = '" + requester
+          + "' \n" + ", FAENDA = CURRENT DATE \n" + ", FAENTI = CURRENT TIME \n" + ", FAENUS = '"
+          + username + "' \n" + "WHERE FACONO = '" + cono + "' \n" + "AND FADIVI = '" + divi
+          + "' \n" + "AND FACODE = '" + servicename + "' \n" + "AND FASRNO = '" + serviceno + "'\n"
+          + "AND (FASTAT = '"+status+"'\n"
+              + "OR FASTAT = '40')";
+      // System.out.println("updateMARDetail\n" + query);
+      logger.debug(query);
+      stmt.execute(query);
+
+      mJsonObj.put("result", "ok");
+      mJsonObj.put("message", "Update complete.");
+      logger.info("Update complete.");
+      return mJsonObj.toString();
+
+    } catch (SQLException e) {
+      logger.error(e.getMessage());
+      throw new Exception(e.getMessage());
+    } catch (Exception e) {
+      logger.error(e.getMessage());
+      throw e;
+    } finally {
+      try {
+        if (stmt != null) {
+          stmt.close();
+        }
+      } catch (SQLException e) {
+        logger.error(e.getMessage());
+      }
+      try {
+        if (conn != null) {
+          conn.close();
+        }
+      } catch (SQLException e) {
+        logger.error(e.getMessage());
+      }
+
+    }
+
+  }
+  
+  
   public static String updateSurveyUserFlowApprove(String cono, String divi, String servicename,
       String serviceno, String status, String username, String depthead) throws Exception {
     logger.info("updateSurveyUserFlowApprove");
@@ -4508,8 +4561,7 @@ public class UpdateData {
           + "' \n" + ", FAENDA = CURRENT DATE \n" + ", FAENTI = CURRENT TIME \n" + ", FAENUS = '"
           + username + "' \n" + "WHERE FACONO = '" + cono + "' \n" + "AND FADIVI = '" + divi
           + "' \n" + "AND FACODE = '" + servicename + "' \n" + "AND FASRNO = '" + serviceno + "'\n"
-          + "AND (FASTAT = '"+status+"'\n"
-          + "OR FASTAT = '40')";
+          + "AND FASTAT = '"+status+"'";
       // System.out.println("updateMARDetail\n" + query);
       logger.debug(query);
       stmt.execute(query);
