@@ -4668,7 +4668,7 @@ public class UpdateData {
           "getApproval {}, getRequester {}, getDepthead {}, getApproveBy {}, getRemark {}, getVersion {}",
           getApproval, getRequester, getDepthead, getApproveBy, getRemark, getVersion);
       logger.debug("serviceno {}", serviceno);
-      String checkVersion = SelectData.checkVersion("SWRQ");
+      String checkVersion = SelectData.checkVersion("SRQ");
       if (getVersion == null || getVersion.isEmpty() || !Objects.equals(checkVersion, getVersion)) {
         mJsonObj.put("result", "nok");
         mJsonObj.put("message", "Can't Create service number, Please update your version to "
