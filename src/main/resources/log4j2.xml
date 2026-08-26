@@ -11,12 +11,12 @@
 	</Properties>
 	<Appenders>
 		<Console name="console" target="SYSTEM_OUT">
-			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%X{requestUuid}] %-5level %logger{36} (%F:%L) - %msg%n" />
+			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [requestUuid=%X{requestUuid},trace_id=%X{trace_id},span_id=%X{span_id}] %-5level %logger{36} (%F:%L) - %msg%n" />
 		</Console>
 		<RollingFile name="file"
 			fileName="${logDir}/softwarerequest_api.log"
 			filePattern="${logDir}/softwarerequest_api-%d{yyyy-MM-dd}-%i.log">
-			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%X{requestUuid}] %-5level %logger{36} (%F:%L) - %msg%n" />
+			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [requestUuid=%X{requestUuid},trace_id=%X{trace_id},span_id=%X{span_id}] %-5level %logger{36} (%F:%L) - %msg%n" />
 			<Policies>
 				<TimeBasedTriggeringPolicy />
 				<SizeBasedTriggeringPolicy size="100MB" />
