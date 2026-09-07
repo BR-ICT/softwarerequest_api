@@ -255,6 +255,18 @@
 			<artifactId>eureka-client</artifactId>
 			<version>1.10.13</version>
 		</dependency>
+		<!-- Micrometer + Prometheus registry for custom /metrics resource (D5) -->
+		<!-- Pinned to 1.9.x: last line confirmed compatible with Java 8 (189 runs 8u161) -->
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-core</artifactId>
+			<version>1.9.17</version>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+			<version>1.9.17</version>
+		</dependency>
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy</artifactId>
