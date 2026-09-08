@@ -42,11 +42,34 @@ public class MetricsFilter implements Filter {
 			sample.stop(Timer.builder("http_server_requests_seconds")
 					.publishPercentileHistogram(true)
 					.tag("method", httpRequest.getMethod())
-					.tag("uri", httpRequest.getRequestURI())
+					.tag("uri", normalizeUri(httpRequest.getRequestURI()))
 					.tag("status", String.valueOf(status))
 					.tag("outcome", outcomeOf(status))
 					.register(MetricsRegistry.REGISTRY));
 		}
+	}
+
+	/**
+	 * Collapses the raw request path down to its first 3 segments
+	 * (context/resource/action) so path params (service no., dates, codes)
+	 * never end up as label values — see CLAUDE.md D5 postmortem: tagging
+	 * the raw URI made http_server_requests_seconds_bucket alone responsible
+	 * for 300k+ series on Prometheus (94) within about an hour of traffic.
+	 */
+	private String normalizeUri(String uri) {
+		String[] parts = uri.split("/");
+		StringBuilder sb = new StringBuilder();
+		int kept = 0;
+		for (String part : parts) {
+			if (part.isEmpty()) {
+				continue;
+			}
+			sb.append("/").append(part);
+			if (++kept == 3) {
+				break;
+			}
+		}
+		return sb.length() == 0 ? "/" : sb.toString();
 	}
 
 	private String outcomeOf(int status) {
