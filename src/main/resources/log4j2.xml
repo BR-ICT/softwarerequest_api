@@ -16,7 +16,8 @@
 		<RollingFile name="file"
 			fileName="${logDir}/softwarerequest_api.log"
 			filePattern="${logDir}/softwarerequest_api-%d{yyyy-MM-dd}-%i.log">
-			<JsonLayout complete="false" compact="true" eventEol="true" properties="true" />
+			<!-- <JsonLayout complete="false" compact="true" eventEol="true" properties="true" /> -->
+   			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [uuid=%X{UUID},trace_id=%X{trace_id},span_id=%X{span_id}] %-5level %logger{36} (%F:%L) - %msg%n" />compact="true" eventEol="true" properties="true" />
 			<Policies>
 				<TimeBasedTriggeringPolicy />
 				<SizeBasedTriggeringPolicy size="100MB" />
