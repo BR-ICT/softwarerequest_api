@@ -499,28 +499,4 @@ public class api_report {
 		.header("Content-Disposition", "attachment; filename=\"" + fileName + "\"").build();
     }
     
-    @GET
-    @Path("/viewadr/{cono}/{divi}/{adrno}")
-    public Response viewADReportWithOutToken(@Context HttpServletRequest httpServletRequest,
-	    @PathParam("cono") String cono, @PathParam("divi") String divi, @PathParam("adrno") String adrno,
-	    @PathParam("reportName") String reportName) throws SQLException {
-
-	ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	reportName = "ADR_Report";
-	String filePath = "D:\\files\\api_project\\adr_images\\";
-
-	Map params = new HashMap();
-	params.put("cono", cono);
-	params.put("divi", divi);
-	params.put("adrno", adrno);
-	params.put("imagesDir", filePath);
-
-	GenReport grp = new GenReport();
-	byte[] bytes = grp.genReportPdf(httpServletRequest, reportName, outputStream, params);
-
-	String fileName = reportName + ".pdf";
-	return Response.ok(bytes).type("application/pdf").header("Content-Disposition", "filename=\"" + fileName + "\"")
-		.build();
-    }
-
 }

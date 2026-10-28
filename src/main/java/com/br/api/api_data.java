@@ -28,6 +28,11 @@ import com.br.data.DeleteData;
 import com.br.data.InsertData;
 import com.br.data.SelectData;
 import com.br.data.UpdateData;
+import com.br.engine.FlowQuery;
+import com.br.engine.MultiApproveData;
+import com.br.engine.ServiceFile;
+import com.br.engine.ServiceFormEngine;
+import com.br.utility.ApproveLinkToken;
 import com.br.utility.ConvertStringtoObject;
 import com.br.utility.FileUtillity;
 import com.br.utility.HttpConnection;
@@ -2844,5 +2849,294 @@ public class api_data {
 	/////////////
 
 	////////////////
+
+	// Service form through the engine (com.br.engine, copied from servicerequest_api, see md/ENGINE.md):
+	// same paths as servicerequest_api, the frontend picks this API for SWRQ (SERVICE_FORM_API)
+	@GET
+	@Path("/serviceform/{cono}/{divi}/{servicename}/{serviceno}")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	// @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getServiceForm(@Context HttpHeaders headers, @PathParam("cono") String cono,
+			@PathParam("divi") String divi,
+			@PathParam("servicename") String servicename, @PathParam("serviceno") String serviceno)
+			throws JSONException {
+		logger.info("/serviceform/{cono}/{divi}/{servicename}/{serviceno}");
+
+		JSONObject mJsonObj = new JSONObject();
+		try {
+			return Response.ok(FlowQuery.getServiceForm(cono, divi, servicename, serviceno),
+					MediaType.APPLICATION_JSON + ";charset=utf8").build();
+
+		} catch (Exception e) {
+			mJsonObj.put("result", "nok");
+			mJsonObj.put("message", e.getMessage());
+			logger.error(e.getMessage());
+		}
+
+		return Response.status(Response.Status.BAD_REQUEST).entity(mJsonObj).build();
+
+	}
+
+	@GET
+	@Path("/serviceformhistory/{cono}/{divi}/{servicename}/{serviceno}")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	// @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getServiceFormHistory(@Context HttpHeaders headers, @PathParam("cono") String cono,
+			@PathParam("divi") String divi,
+			@PathParam("servicename") String servicename, @PathParam("serviceno") String serviceno)
+			throws JSONException {
+		logger.info("/serviceformhistory/{cono}/{divi}/{servicename}/{serviceno}");
+
+		JSONObject mJsonObj = new JSONObject();
+		try {
+			return Response.ok(FlowQuery.getServiceFormHistory(cono, divi, servicename, serviceno),
+					MediaType.APPLICATION_JSON + ";charset=utf8").build();
+
+		} catch (Exception e) {
+			mJsonObj.put("result", "nok");
+			mJsonObj.put("message", e.getMessage());
+			logger.error(e.getMessage());
+		}
+
+		return Response.status(Response.Status.BAD_REQUEST).entity(mJsonObj).build();
+
+	}
+
+	// Approve mode ALL: flags of the sub groups the user can still approve (lines whose reply the form opens)
+	@GET
+	@Path("/serviceformflags/{cono}/{divi}/{servicename}/{serviceno}/{requesttype}/{status}/{username}")
+	public Response getServiceFormFlags(@Context HttpHeaders headers, @PathParam("cono") String cono,
+			@PathParam("divi") String divi, @PathParam("servicename") String servicename,
+			@PathParam("serviceno") String serviceno, @PathParam("requesttype") String requesttype,
+			@PathParam("status") String status, @PathParam("username") String username)
+			throws JSONException {
+		logger.info("/serviceformflags/{cono}/{divi}/{servicename}/{serviceno}/{requesttype}/{status}/{username}");
+
+		JSONObject mJsonObj = new JSONObject();
+		try {
+			return Response.ok(MultiApproveData.approverFlags(cono, divi, servicename, serviceno, requesttype, status,
+					username), MediaType.APPLICATION_JSON + ";charset=utf8").build();
+
+		} catch (Exception e) {
+			mJsonObj.put("result", "nok");
+			mJsonObj.put("message", e.getMessage());
+			logger.error(e.getMessage());
+		}
+
+		return Response.status(Response.Status.BAD_REQUEST).entity(mJsonObj).build();
+
+	}
+
+	@GET
+	@Path("/serviceformfile/{cono}/{divi}/{servicename}/{serviceno}")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	// @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getServiceFormFile(@Context HttpHeaders headers, @PathParam("cono") String cono,
+			@PathParam("divi") String divi,
+			@PathParam("servicename") String servicename, @PathParam("serviceno") String serviceno)
+			throws JSONException {
+		logger.info("/serviceformfile/{cono}/{divi}/{servicename}/{serviceno}");
+
+		JSONObject mJsonObj = new JSONObject();
+		try {
+			return Response.ok(ServiceFile.prepareGetToFileServer(cono, divi, servicename, serviceno),
+					MediaType.APPLICATION_JSON + ";charset=utf8").build();
+
+		} catch (Exception e) {
+			mJsonObj.put("result", "nok");
+			mJsonObj.put("message", e.getMessage());
+			logger.error(e.getMessage());
+		}
+
+		return Response.status(Response.Status.BAD_REQUEST).entity(mJsonObj).build();
+
+	}
+	
+	@POST
+	@Path("/serviceform")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	// @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response addServiceForm(@Context HttpHeaders headers, @FormDataParam("vCono") String vCono,
+			@FormDataParam("vDivi") String vDivi, @FormDataParam("vServiceName") String vServiceName,
+			@FormDataParam("vServiceNo") String vServiceNo, @FormDataParam("vRequestType") String vRequestType,
+			@FormDataParam("vStatus") String vStatus, @FormDataParam("vData") String vData,
+			@FormDataParam("vFile") List<FormDataBodyPart> vFile,
+			@FormDataParam("vFileName") List<FormDataBodyPart> vFileName,
+			@FormDataParam("vFieldName") List<FormDataBodyPart> vFieldName)
+			throws JSONException {
+		logger.info("POST /serviceform");
+		logger.info("vData {}", vData);
+		logger.info("vFile {}, vFileName {}, vFieldName {}", vFile, vFileName, vFieldName);
+
+		JSONObject mJsonObj = new JSONObject();
+		String getToken = headers.getRequestHeaders().getFirst("x-access-token");
+		// System.out.println("getToken: " + getToken);
+
+		if (getToken != null && !getToken.isEmpty()) {
+			String getTokenData = HttpConnection.httpConnectionCheckToken(getToken);
+			// System.out.println("getTokenData: " + getTokenData);
+
+			JSONObject dataObject = new JSONObject(getTokenData);
+			boolean checkToken = Boolean.parseBoolean(dataObject.getString("message"));
+
+			if (checkToken) {
+				JSONObject getDataObject = new JSONObject(dataObject.getString("body"));
+				String[] getSubject = getDataObject.getString("sub").split(" : ");
+				String getCono = getSubject[0];
+				String getDivi = getSubject[1];
+				String getCompanyName = getSubject[2];
+				String getUsername = getDataObject.getString("aud");
+				String getAuth = getDataObject.getString("role");
+
+				try {
+
+					return Response.ok(
+							ServiceFormEngine.prepareAddServiceForm(vCono, vDivi, vServiceName, vRequestType, vStatus,
+									vData, vFile, vFileName, vFieldName, getToken, getUsername),
+							MediaType.APPLICATION_JSON + ";charset=utf8").build();
+
+				} catch (Exception e) {
+					mJsonObj.put("result", "nok");
+					mJsonObj.put("message", e.getMessage());
+					logger.error(e.getMessage());
+				}
+
+			} else {
+				mJsonObj.put("result", "nok");
+				mJsonObj.put("message", "Token expired.");
+				logger.error("Token expired.");
+			}
+
+		} else {
+			mJsonObj.put("result", "nok");
+			mJsonObj.put("message", "No token provided.");
+			logger.error("No token provided.");
+		}
+
+		return Response.status(Response.Status.BAD_REQUEST).entity(mJsonObj).build();
+
+	}
+
+	@PUT
+	@Path("/serviceform")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	// @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response updateServiceForm(@Context HttpHeaders headers, @FormDataParam("vCono") String vCono,
+			@FormDataParam("vDivi") String vDivi, @FormDataParam("vServiceName") String vServiceName,
+			@FormDataParam("vServiceNo") String vServiceNo, @FormDataParam("vRequestType") String vRequestType,
+			@FormDataParam("vStatus") String vStatus, @FormDataParam("vData") String vData,
+			@FormDataParam("vFile") List<FormDataBodyPart> vFile,
+			@FormDataParam("vFileName") List<FormDataBodyPart> vFileName,
+			@FormDataParam("vFieldName") List<FormDataBodyPart> vFieldName)
+			throws JSONException {
+		logger.info("PUT /serviceform");
+		logger.info("vData {}", vData);
+		logger.info("vFile {}, vFileName {}, vFieldName {}", vFile, vFileName, vFieldName);
+
+		JSONObject mJsonObj = new JSONObject();
+		try {
+			String token = headers.getRequestHeaders().getFirst("x-access-token");
+			String linkToken = headers.getRequestHeaders().getFirst("x-approve-token");
+			String caller = approveCaller(token, linkToken, vServiceNo, vStatus);
+			if (caller.isEmpty()) {
+				mJsonObj.put("result", "nok");
+				mJsonObj.put("message", "Can't approve, please log in again (token expired or approve link not valid).");
+				return Response.status(Response.Status.BAD_REQUEST).entity(mJsonObj).build();
+			}
+
+			return Response.ok(
+					ServiceFormEngine.prepareUpdateServiceForm(vCono, vDivi, vServiceName, vServiceNo, vRequestType, vStatus,
+							vData, vFile, vFileName, vFieldName, token, linkToken, caller),
+					MediaType.APPLICATION_JSON + ";charset=utf8").build();
+
+		} catch (Exception e) {
+			mJsonObj.put("result", "nok");
+			mJsonObj.put("message", e.getMessage());
+			logger.error(e.getMessage());
+		}
+
+		return Response.status(Response.Status.BAD_REQUEST).entity(mJsonObj).build();
+
+	}
+
+	/**
+	 * The user who approves / rejects: the approver of the approve link from email (x-approve-token, wins when
+	 * present, must be for this request and status), else the user of the login token. "" = neither is valid.
+	 */
+	static String approveCaller(String token, String linkToken, String serviceno, String status) throws Exception {
+		if (linkToken != null && !linkToken.isEmpty()) {
+			ApproveLinkToken link = ApproveLinkToken.decode(linkToken);
+			if (link == null || !link.isFor(serviceno, status)) {
+				logger.error("Approve link token refused: link {}", link == null
+						? "not decodable (" + linkToken.length() + " chars)"
+						: link.serviceno + " / " + link.status + " / " + link.approver);
+				return "";
+			}
+			return link.approver;
+		}
+		if (token == null || token.isEmpty()) {
+			return "";
+		}
+		JSONObject dataObject = new JSONObject(HttpConnection.httpConnectionCheckToken(token));
+		if (!Boolean.parseBoolean(dataObject.optString("message"))) {
+			return "";
+		}
+		return new JSONObject(dataObject.getString("body")).optString("aud", "").trim();
+	}
+
+
+	@DELETE
+	@Path("/serviceform/{cono}/{divi}/{servicename}/{serviceno}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response cancelServiceForm(@Context HttpHeaders headers, @PathParam("cono") String cono, @PathParam("divi") String divi
+			, @PathParam("servicename") String servicename, @PathParam("serviceno") String serviceno, String req)
+			throws JSONException {
+		logger.info("DELETE /serviceform/{cono}/{divi}/{servicename}/{serviceno}");
+
+		JSONObject mJsonObj = new JSONObject();
+		String getToken = headers.getRequestHeaders().getFirst("x-access-token");
+		// System.out.println("getToken: " + getToken);
+
+		if (getToken != null && !getToken.isEmpty()) {
+			String getTokenData = HttpConnection.httpConnectionCheckToken(getToken);
+			// System.out.println("getTokenData: " + getTokenData);
+
+			JSONObject dataObject = new JSONObject(getTokenData);
+			boolean checkToken = Boolean.parseBoolean(dataObject.getString("message"));
+
+			if (checkToken) {
+				JSONObject getDataObject = new JSONObject(dataObject.getString("body"));
+				String[] getSubject = getDataObject.getString("sub").split(" : ");
+				String getCono = getSubject[0];
+				String getDivi = getSubject[1];
+				String getCompanyName = getSubject[2];
+				String getUsername = getDataObject.getString("aud");
+				String getAuth = getDataObject.getString("role");
+
+				try {
+					return Response.ok(ServiceFormEngine.cancelServiceForm(getCono, getDivi, servicename, serviceno, getUsername),
+							MediaType.APPLICATION_JSON + ";charset=utf8").build();
+
+				} catch (Exception e) {
+					mJsonObj.put("result", "nok");
+					mJsonObj.put("message", e.getMessage());
+					logger.error(e.getMessage());
+				}
+
+			} else {
+				mJsonObj.put("result", "nok");
+				mJsonObj.put("message", "Token expired.");
+				logger.error("Token expired.");
+			}
+
+		} else {
+			mJsonObj.put("result", "nok");
+			mJsonObj.put("message", "No token provided.");
+			logger.error("No token provided.");
+		}
+
+		return Response.status(Response.Status.BAD_REQUEST).entity(mJsonObj).build();
+
+	}
 
 }

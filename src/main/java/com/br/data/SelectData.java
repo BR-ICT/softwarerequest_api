@@ -3290,52 +3290,6 @@ public class SelectData {
 
 	}
 
-	public static String showvisitor(String vID, String location) throws Exception {
-		logger.info("getCompany");
-
-		Connection conn = null;
-		Statement stmt = null;
-		try {
-			conn = ConnectDB2.doConnect();
-			stmt = conn.createStatement();
-
-			String query = "\r\n"
-					+ "SELECT * FROM " + Constant.DBNAME + ".VISITOR_HEAD WHERE  H_ID  = '" + vID.trim()
-					+ "' AND H_LOCATION = '" + location.trim() + "'"
-					+ "";
-			System.out.println("showvisitor\n" + query);
-			logger.debug(query);
-			ResultSet mRes = stmt.executeQuery(query);
-
-			return ConvertResultSet.convertResultSetToJsonVPP2(mRes);
-			// return ConvertResultSet.convertResultSetToJson(mRes);
-
-		} catch (SQLException e) {
-			logger.error(e.getMessage());
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-		} finally {
-			try {
-				if (stmt != null) {
-					stmt.close();
-				}
-			} catch (SQLException e) {
-				logger.error(e.getMessage());
-			}
-			try {
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException e) {
-				logger.error(e.getMessage());
-			}
-
-		}
-
-		return null;
-
-	}
-
 	public static String getID1() throws Exception {
 		logger.info("getCompany");
 
@@ -6058,50 +6012,6 @@ public class SelectData {
 
 	}
 
-	public static String getADRHead(@Context HttpServletRequest httpServletRequest, String cono, String divi,
-			String adrno, String fromstatus, String tostatus) throws Exception {
-
-		Connection conn = ConnectDB2.doConnect();
-		try {
-			if (conn != null) {
-
-				Statement stmt = conn.createStatement();
-				String query = "SELECT ADCONO, ADDIVI, ADPREF || '-' || ADORNO AS ADRNUMBER, ADORNO, CHAR(ADDATE, ISO) AS ADDATE, ADMONT, ADTYPE, ADPREF, ADBOI, ADBU, ADCOCE, TRIM(S2AITM) || ' : ' || TRIM(S2TX15) || ' : ' || SUBSTR(EATX40,38,3) AS COSTCENTER, ADVAT, ADACCT, ADREQU, ADREM1, ADREM2 \n"
-						+ ", ADIMAG, ADAPP1, ADAPDA1, ADAPP2, ADAPDA2, ADAPP3, ADAPDA3, ADAPP4, ADAPDA4, ADACRE1, ADAPRE1, ADAPRE2, ADAPRE3, ADAPRE4, ADENDA, ADENTI, ADSTAT, ADENUS \n"
-						+ "FROM " + Constant.DBNAME + ".M3_ADRHEAD a, " + DBM3NAME + ".FSTLIN b, " + DBM3NAME
-						+ ".FCHACC c \n" + "WHERE ADCONO = '"
-						+ cono + "' \n" + "AND ADDIVI = '" + divi + "' \n" + "AND ADPREF || '-' || ADORNO = '" + adrno
-						+ "' \n" + "AND b.S2CONO = a.ADCONO \n" + "AND b.S2DIVI = a.ADDIVI \n"
-						+ "AND b.S2AITM = a.ADCOCE\n" + "AND c.EACONO = a.ADCONO \n" + "AND c.EADIVI = a.ADDIVI \n"
-						+ "AND c.EAAITP = '2' \n" + "AND c.EAAITM = a.ADCOCE ";
-				// System.out.println("getADRHead\n" + query);
-				ResultSet mRes = stmt.executeQuery(query);
-
-				// return ConvertResultSet.convertResultSetToJson(mRes);
-				return ConvertResultSet.convertResultSetToJsonV2(httpServletRequest, mRes);
-
-			} else {
-				System.err.println("Server can't connect.");
-			}
-
-		} catch (SQLException e) {
-			throw e;
-		} catch (Exception e) {
-			e.printStackTrace();
-			if (conn != null) {
-				conn.close();
-			}
-			throw e;
-		} finally {
-			if (conn != null) {
-				conn.close();
-			}
-		}
-
-		return null;
-
-	}
-
 	public static String getADRHeadMonitoring(String cono, String divi, String fromstatus, String tostatus)
 			throws Exception {
 
@@ -6123,50 +6033,6 @@ public class SelectData {
 				ResultSet mRes = stmt.executeQuery(query);
 
 				return ConvertResultSet.convertResultSetToJson(mRes);
-
-			} else {
-				System.err.println("Server can't connect.");
-			}
-
-		} catch (SQLException e) {
-			throw e;
-		} catch (Exception e) {
-			e.printStackTrace();
-			if (conn != null) {
-				conn.close();
-			}
-			throw e;
-		} finally {
-			if (conn != null) {
-				conn.close();
-			}
-		}
-
-		return null;
-
-	}
-
-	public static String getADRDetail(@Context HttpServletRequest httpServletRequest, String cono, String divi,
-			String adrno, String fromstatus, String tostatus) throws Exception {
-
-		Connection conn = ConnectDB2.doConnect();
-		try {
-			if (conn != null) {
-
-				Statement stmt = conn.createStatement();
-				String query = "SELECT ALCONO, ALDIVI, ALPREF || '-' || ALORNO AS ADRNUMBER, ALORNO, ALVHNO, ALIVNO, ALPREF, ALLINE, ALITNO, TRIM(b.FMTXT1) AS ALITDE, TRIM(FMASID) || ' : ' || FMSBNO || ' : ' || TRIM(FMTXT1) AS ITEM, ALSBNO, ALCOST, CHAR(ALDATE, ISO) AS ALDATE \n"
-						+ ", CAST(ALACOS AS DECIMAL(15,2)) AS ALACOS, CAST(ALNETV AS DECIMAL(15,2)) AS ALNETV, CAST(ALQTY AS DECIMAL(15,2)) AS ALQTY, ALPRIC, ALREM1, ALREM2, ALIMAG, ALENDA, ALENTI, ALSTAT, ALENUS \n"
-						+ "FROM " + Constant.DBNAME + ".M3_ADRDETAIL a, " + DBM3NAME + ".FFASMA b  \n"
-						+ "WHERE ALCONO = '" + cono + "' \n"
-						+ "AND ALDIVI = '" + divi + "' \n" + "AND ALSTAT BETWEEN '" + fromstatus + "' AND '" + tostatus
-						+ "' \n" + "AND b.FMCONO = a.ALCONO \n" + "AND b.FMDIVI = a.ALDIVI \n"
-						+ "AND b.FMASID = a.ALITNO  \n" + "AND b.FMSBNO = a.ALSBNO \n"
-						+ "AND ALPREF || '-' || ALORNO = '" + adrno + "' \n" + "ORDER BY ALORNO, ALLINE";
-				// System.out.println("getADRDetail\n" + query);
-				ResultSet mRes = stmt.executeQuery(query);
-
-				// return ConvertResultSet.convertResultSetToJson(mRes);
-				return ConvertResultSet.convertResultSetToJsonV2(httpServletRequest, mRes);
 
 			} else {
 				System.err.println("Server can't connect.");

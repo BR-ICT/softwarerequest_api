@@ -59,57 +59,6 @@ public class GenReportBM {
 		return outputStream.toByteArray();
 	}
 
-	public static File genReportFilePdf(@Context HttpServletRequest httpServletRequest, String jasperReportName, String cono, String divi, String adrno)
-			throws SQLException {
-
-		String reportLocation = httpServletRequest.getRealPath("/") + "WEB-INF\\report\\" + jasperReportName + ".jrxml";
-		System.out.println("reportLocation: " + reportLocation);
-		Connection conn = null;
-		try {
-
-			String filePath = "D:\\files\\api_project\\adr_images\\";
-			conn = ConnectDB2.doConnect();
-			Map params = new HashMap();
-		/*	params.put("cono", cono);
-			params.put("divi", divi);
-			params.put("marno", adrno);
-			
-			*/ 
-			params.put("com", "10");
-			params.put("mono", "10");
-			params.put("to", "20240925");
-			params.put("from", "20240901");
-			params.put("Type", "");
-			params.put("Location", "11");
-			params.put("parameterA", "TRANSFER");
-			params.put("parameterB", "TRANSFER");
-			params.put("FGLOACATION", "L/S");
-			params.put("RV", "RVA_TRN");
-//			params.put("imagesDir", filePath);
-			
-			JasperReport report = JasperCompileManager.compileReport(reportLocation);
-			JasperPrint print = JasperFillManager.fillReport(report, params, conn);
-			
-			String getCompany[] = SelectData.getCompanyWithConoDivi(cono, divi).split(";");
-			String companyName = getCompany[0].trim();
-			String companyFull = getCompany[1].trim();
-			
-			File pdf = File.createTempFile(jasperReportName + "_" + adrno + "_" + companyName, ".pdf");
-			JasperExportManager.exportReportToPdfStream(print, new FileOutputStream(pdf));
-			
-			System.out.println("Gen report successfully.");
-			return pdf;
-
-		} catch (Exception e) {
-			System.out.println(e);
-			return null;
-		} finally {
-			if (conn != null) {
-				conn.close();
-			}
-		}
-	}
-	
 	public byte[] genReportExcel(@Context HttpServletRequest httpServletRequest, String jasperReportName, ByteArrayOutputStream outputStream, Map parameter)
 		throws SQLException {
 	JRXlsxExporter exporterXls = new JRXlsxExporter();
