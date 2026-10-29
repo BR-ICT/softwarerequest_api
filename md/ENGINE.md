@@ -80,5 +80,10 @@ engine พึ่งของที่ทุก API มีอยู่แล้�
 1. branch ใหม่ใน API นั้น, copy engine + test, เพิ่ม config, เขียน `FormInterfaceImpl` (ย้าย block PostM3 เดิม)
 2. api_data ชี้ endpoint form ไปที่ engine, ลบ prepareAdd / prepareUpdate เดิม
 3. ตั้ง Process Flow ของ form บน TST: group type 1/2 + GMDES1, PMM3IF ตาม status ที่ M3 ทำงาน, condition
-4. frontend ของ form ส่ง `vTitle` (ถ้า title ไม่ใช่ reasonMain) และ `vRequester` = user ที่ login
+   (แถว default = ไม่ตรงแล้วข้าม status, sub group อื่นของ status = lane: ตรงแล้วอนุมัติแทน default,
+   หลาย lane ตรง = รวมทุกคน เช่น CMRQ COLLECTION 30 LOCAL `saleTypeMain <> 2`, EXPORT `saleTypeMain = 2`,
+   ITRQ WHS 20 `warehouseMain = A41`)
+4. frontend ของ form ส่ง `vTitle` (FHDES1, ถ้า title ไม่ใช่ reasonMain), `vReference` (FHDES2 = code ที่ฟอร์ม
+   ตัดสิน เช่น code preview ของ ICT panel, staff code; ไม่มี = เว้นว่าง) และ `vRequester` = user ที่ login
+   engine เขียน FHDES1 / FHDES2 ใหม่ทุก submit / resubmit / approve (ค่าว่าง = คงค่าเดิม)
 5. ทดสอบ submit / approve / reject / resubmit / ลิงก์ email / ไฟล์ / M3 ครบทุก request type

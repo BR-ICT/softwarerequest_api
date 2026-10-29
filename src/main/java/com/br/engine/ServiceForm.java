@@ -44,6 +44,20 @@ class ServiceForm {
 		return title.isEmpty() ? json.getString("reasonMain") : title;
 	}
 
+	// title() for an approve: "" when the form sends neither (the title written at submit stays)
+	String titleOrEmpty() {
+		String title = json.optString("vTitle", "").trim();
+		return title.isEmpty() ? json.optString("reasonMain", "").trim() : title;
+	}
+
+	/**
+	 * vReference (FHDES2): the code the form decides, typed or auto running before the interface, e.g. CMRQ
+	 * the customer code preview of the ICT panel, USRQ the staff code. "" = none yet (FHDES2 is kept).
+	 */
+	String reference() {
+		return json.optString("vReference", "").trim();
+	}
+
 	/**
 	 * null when vVersion matches APPCTL3 'SRQ', else the message for the user: an old frontend in the browser
 	 * cache must reload (F5) before it can send.
