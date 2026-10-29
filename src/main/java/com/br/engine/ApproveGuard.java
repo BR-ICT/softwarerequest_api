@@ -59,7 +59,7 @@ class ApproveGuard {
 		return null;
 	}
 
-	private static boolean isApprover(String approvers, String user) {
+	static boolean isApprover(String approvers, String user) {
 		return approvers != null && Arrays.stream(approvers.split(","))
 				.anyMatch(approver -> approver.trim().equalsIgnoreCase(user));
 	}
