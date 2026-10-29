@@ -415,67 +415,43 @@ public class FlowQuery {
 
 	}
 
+	/**
+	 * Cancel (menus Approve / Monitoring): the request is still open (FHHSTA not 3 / 9) and the user is its
+	 * requester (FHREQU) or one of the approvers of the status it is at (FAAPLI "USER1,USER2"), whole names
+	 * only, any letter case.
+	 */
 	public static Boolean checkCancelService(String cono, String divi, String servicename, String serviceno,
 			String username) throws Exception {
 		logger.info("checkCancelService");
-
-		Connection conn = null;
-		Statement stmt = null;
-		try {
-			conn = ConnectDB2.doConnect();
-			stmt = conn.createStatement();
-
-			String query = "SELECT FHCONO, FHDIVI, FHCODE, FHSRNO, FHHSTA, c.FAAPLI, CASE WHEN FHHSTA NOT IN ('3', '9') THEN 'true' ELSE 'false' END AS CHECKSTATUS, CASE WHEN (FHREQU LIKE '%"
-					+ username + "%' OR c.FAAPLI LIKE '%" + username + "%') THEN 'true' ELSE 'false' END CHECKAUTHEN \n"
-					+ "FROM " + DBNAME + ".SR_FLOWHEAD AS a \n"
-					+ "LEFT JOIN " + DBNAME + ".SR_FLOWAPPROVE AS c  \n"
-					+ "ON c.FACONO = a.FHCONO \n"
-					+ "AND c.FADIVI = a.FHDIVI  \n"
-					+ "AND c.FACODE = a.FHCODE  \n"
-					+ "AND c.FASRNO = a.FHSRNO  \n"
-					+ "AND c.FASTAT = a.FHDSTA \n"
-					+ "WHERE a.FHCONO = '" + cono + "' \n"
-					+ "AND a.FHDIVI = '" + divi + "' \n"
-					+ "AND a.FHCODE = '" + servicename + "' \n"
-					+ "AND a.FHSRNO = '" + serviceno + "' \n"
-					+ "AND (FHREQU LIKE '%" + username + "%' OR c.FAAPLI LIKE '%" + username + "%')";
-
-			// System.out.println("getUserM3\n" + query);
-			logger.debug(query);
-			ResultSet mRes = stmt.executeQuery(query);
-
-			logger.debug(query);
-
-			while (mRes.next()) {
-				if (Boolean.valueOf(mRes.getString("CHECKSTATUS")) == true
-						&& Boolean.valueOf(mRes.getString("CHECKAUTHEN")) == true)
-					return true;
-			}
-
-		} catch (SQLException e) {
-			logger.error(e.getMessage());
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-		} finally {
-			try {
-				if (stmt != null) {
-					stmt.close();
+		String query = "SELECT a.FHHSTA, a.FHREQU, COALESCE(c.FAAPLI, '') AS FAAPLI \n"
+				+ "FROM " + DBNAME + ".SR_FLOWHEAD AS a \n"
+				+ "LEFT JOIN " + DBNAME + ".SR_FLOWAPPROVE AS c \n"
+				+ "ON c.FACONO = a.FHCONO AND c.FADIVI = a.FHDIVI AND c.FACODE = a.FHCODE AND c.FASRNO = a.FHSRNO \n"
+				+ "AND c.FASTAT = a.FHDSTA \n"
+				+ "WHERE a.FHCONO = ? AND a.FHDIVI = ? AND a.FHCODE = ? AND a.FHSRNO = ?";
+		try (Connection conn = ConnectDB2.doConnect(); PreparedStatement ps = SqlLog.prepare(conn, query)) {
+			ps.setString(1, cono);
+			ps.setString(2, divi);
+			ps.setString(3, servicename);
+			ps.setString(4, serviceno);
+			try (ResultSet rs = ps.executeQuery()) {
+				while (rs.next()) {
+					if (mayCancel(rs.getString("FHHSTA"), rs.getString("FHREQU"), rs.getString("FAAPLI"), username)) {
+						return true;
+					}
 				}
-			} catch (SQLException e) {
-				logger.error(e.getMessage());
 			}
-			try {
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException e) {
-				logger.error(e.getMessage());
-			}
-
 		}
-
 		return false;
+	}
 
+	static boolean mayCancel(String headStatus, String requester, String approvers, String username) {
+		String status = headStatus == null ? "" : headStatus.trim();
+		String user = username == null ? "" : username.trim();
+		if (status.equals("3") || status.equals("9") || user.isEmpty()) {
+			return false;
+		}
+		return (requester != null && requester.trim().equalsIgnoreCase(user)) || ApproveGuard.isApprover(approvers, user);
 	}
 
 	public static String getServiceFile(String cono, String divi, String servicename, String serviceno)
