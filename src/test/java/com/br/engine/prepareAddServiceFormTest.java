@@ -179,8 +179,9 @@ public class prepareAddServiceFormTest {
 		verify(mockPrepared, Mockito.atLeastOnce()).setString(2, SERVICENAME + "-" + SERVICE_NO + "-CREATE-Photoshop");
 	}
 
+	// a create is submitted: the code is a preview only, FHDES2 waits for the approve that completes it
 	@Test
-	public void testprepareAddServiceForm_vReferenceWrittenToFhdes2() throws Exception {
+	public void testprepareAddServiceForm_createSubmit_fhdes2NotWritten() throws Exception {
 		flowStartsAt00();
 		String data = buildData(VERSION).replace("}", ",\"vReference\":\"C0001\"}");
 
@@ -188,7 +189,7 @@ public class prepareAddServiceFormTest {
 				null, null, "token", REQUESTER);
 
 		assertEquals("ok", new JSONObject(result).getString("result"));
-		verify(mockPrepared, Mockito.atLeastOnce()).setString(4, "C0001");
+		verify(mockPrepared, Mockito.never()).setString(4, "C0001");
 	}
 
 	@Test
@@ -235,7 +236,8 @@ public class prepareAddServiceFormTest {
 		assertEquals("ok", new JSONObject(result).getString("result"));
 		assertTrue(executedQueries().stream()
 				.anyMatch(sql -> sql.contains("SR_FLOWDETAIL") && sql.contains("\"checked\":\"Y\"")));
-		verify(ps).setString(4, "REF01");
+		// create: the reference is not written on submit
+		verify(ps, Mockito.never()).setString(4, "REF01");
 		verify(ps).executeUpdate();
 	}
 

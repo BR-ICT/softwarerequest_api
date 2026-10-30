@@ -88,4 +88,20 @@ public class FlowStepAndServiceFormTest {
 		assertEquals("Can't Submit service number, Please update your version to 1.0.1 :  1.0.0 (Click F5 button).",
 				ServiceForm.read(form("")).outdatedMessage("Can't Submit service number"));
 	}
+
+	@Test
+	public void referenceToWrite_createOnlyWhenComplete() throws Exception {
+		ServiceForm f = ServiceForm.read(form(",\"vReference\":\"C0001\""));
+		FormInterface.Answer none = new FormInterface.Answer("{}", "");
+		FormInterface.Answer erp = new FormInterface.Answer("{}", "M3-01");
+
+		assertEquals("", ServiceFormEngine.referenceToWrite("create", none, f, false));
+		assertEquals("", ServiceFormEngine.referenceToWrite("create", erp, f, false));
+		assertEquals("C0001", ServiceFormEngine.referenceToWrite("create", none, f, true));
+		assertEquals("M3-01", ServiceFormEngine.referenceToWrite("create", erp, f, true));
+		for (String type : new String[] { "update", "enable", "disable" }) {
+			assertEquals(type, "C0001", ServiceFormEngine.referenceToWrite(type, none, f, false));
+			assertEquals(type, "M3-01", ServiceFormEngine.referenceToWrite(type, erp, f, false));
+		}
+	}
 }

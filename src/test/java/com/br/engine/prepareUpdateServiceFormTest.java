@@ -174,11 +174,12 @@ public class prepareUpdateServiceFormTest {
 		assertEquals("ok", json.getString("result"));
 	}
 
+	// a create gets FHDES2 only on the approve that completes it (next = this status: last step)
 	@Test
 	public void testprepareUpdateServiceForm_interfaceReference_writtenToFhdes2() throws Exception {
 		selectData.when(() -> FlowQuery.checkVersion("SRQ")).thenReturn(VERSION);
 		selectData.when(() -> FlowQuery.getStatusFlowApprove(CONO, DIVI, SERVICENAME, SERVICE_NO, REQUESTTYPE, STATUS))
-				.thenReturn(APPROVE_BY + " ; " + STATUS + " ; " + NEXT_STATUS + " ; mgr01 ; MANAGER ; " + PREV_STATUS
+				.thenReturn(APPROVE_BY + " ; " + STATUS + " ; " + STATUS + " ; mgr01 ; MANAGER ; " + PREV_STATUS
 						+ " ; prevApprover01");
 		selectData.when(() -> FlowQuery.checkApproveBy(CONO, DIVI, SERVICENAME, SERVICE_NO, STATUS)).thenReturn("");
 		serviceInterface.when(() -> FormInterfaceCall.beforeApprove(any(), any(), any(), any(), any(), any(), any(),
@@ -195,10 +196,28 @@ public class prepareUpdateServiceFormTest {
 	}
 
 	@Test
-	public void testprepareUpdateServiceForm_vReferenceWrittenToFhdes2_whenTheInterfaceGivesNone() throws Exception {
+	public void testprepareUpdateServiceForm_createMidFlow_fhdes2Kept() throws Exception {
 		selectData.when(() -> FlowQuery.checkVersion("SRQ")).thenReturn(VERSION);
 		selectData.when(() -> FlowQuery.getStatusFlowApprove(CONO, DIVI, SERVICENAME, SERVICE_NO, REQUESTTYPE, STATUS))
 				.thenReturn(APPROVE_BY + " ; " + STATUS + " ; " + NEXT_STATUS + " ; mgr01 ; MANAGER ; " + PREV_STATUS
+						+ " ; prevApprover01");
+		selectData.when(() -> FlowQuery.checkApproveBy(CONO, DIVI, SERVICENAME, SERVICE_NO, STATUS)).thenReturn("");
+		serviceInterface.when(() -> FormInterfaceCall.beforeApprove(any(), any(), any(), any(), any(), any(), any(),
+				any(), any(), any())).thenAnswer(call -> new FormInterface.Answer(call.getArgument(9), "ITEM-0001"));
+
+		String result = ServiceFormEngine.prepareUpdateServiceForm(CONO, DIVI, SERVICENAME, SERVICE_NO, REQUESTTYPE, STATUS,
+				buildData(VERSION, true), null, null, null, "", "", APPROVE_BY);
+
+		assertEquals("ok", new JSONObject(result).getString("result"));
+		// the head's FHDES2 is kept (no preview code before the create completes)
+		verify(mockPrepared, Mockito.never()).setString(4, "ITEM-0001");
+	}
+
+	@Test
+	public void testprepareUpdateServiceForm_vReferenceWrittenToFhdes2_whenTheInterfaceGivesNone() throws Exception {
+		selectData.when(() -> FlowQuery.checkVersion("SRQ")).thenReturn(VERSION);
+		selectData.when(() -> FlowQuery.getStatusFlowApprove(CONO, DIVI, SERVICENAME, SERVICE_NO, REQUESTTYPE, STATUS))
+				.thenReturn(APPROVE_BY + " ; " + STATUS + " ; " + STATUS + " ; mgr01 ; MANAGER ; " + PREV_STATUS
 						+ " ; prevApprover01");
 		selectData.when(() -> FlowQuery.checkApproveBy(CONO, DIVI, SERVICENAME, SERVICE_NO, STATUS)).thenReturn("");
 		String data = buildData(VERSION, true).replace("}", ",\"vReference\":\"C0001\",\"vTitle\":\"ACME\"}");
