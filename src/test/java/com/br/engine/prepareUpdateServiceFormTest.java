@@ -190,7 +190,7 @@ public class prepareUpdateServiceFormTest {
 		assertEquals("ok", new JSONObject(result).getString("result"));
 		ArgumentCaptor<String> sqlCaptor = ArgumentCaptor.forClass(String.class);
 		verify(mockConnection, Mockito.atLeastOnce()).prepareStatement(sqlCaptor.capture());
-		assertTrue(sqlCaptor.getAllValues().stream().anyMatch(sql -> sql.contains("FHDES2 = CASE WHEN ? = ''")));
+		assertTrue(sqlCaptor.getAllValues().stream().anyMatch(sql -> sql.contains("FHDES2 = CASE WHEN CAST(? AS VARCHAR(255) CCSID 838) = ''")));
 		verify(mockPrepared).setString(4, "ITEM-0001");
 	}
 
