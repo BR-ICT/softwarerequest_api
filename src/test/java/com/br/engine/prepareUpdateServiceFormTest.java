@@ -190,8 +190,25 @@ public class prepareUpdateServiceFormTest {
 		assertEquals("ok", new JSONObject(result).getString("result"));
 		ArgumentCaptor<String> sqlCaptor = ArgumentCaptor.forClass(String.class);
 		verify(mockConnection, Mockito.atLeastOnce()).prepareStatement(sqlCaptor.capture());
-		assertTrue(sqlCaptor.getAllValues().stream().anyMatch(sql -> sql.contains("SET FHDES2 = ?")));
-		verify(mockPrepared).setString(1, "ITEM-0001");
+		assertTrue(sqlCaptor.getAllValues().stream().anyMatch(sql -> sql.contains("FHDES2 = CASE WHEN CAST(? AS VARCHAR(255) CCSID 838) = ''")));
+		verify(mockPrepared).setString(4, "ITEM-0001");
+	}
+
+	@Test
+	public void testprepareUpdateServiceForm_vReferenceWrittenToFhdes2_whenTheInterfaceGivesNone() throws Exception {
+		selectData.when(() -> FlowQuery.checkVersion("SRQ")).thenReturn(VERSION);
+		selectData.when(() -> FlowQuery.getStatusFlowApprove(CONO, DIVI, SERVICENAME, SERVICE_NO, REQUESTTYPE, STATUS))
+				.thenReturn(APPROVE_BY + " ; " + STATUS + " ; " + NEXT_STATUS + " ; mgr01 ; MANAGER ; " + PREV_STATUS
+						+ " ; prevApprover01");
+		selectData.when(() -> FlowQuery.checkApproveBy(CONO, DIVI, SERVICENAME, SERVICE_NO, STATUS)).thenReturn("");
+		String data = buildData(VERSION, true).replace("}", ",\"vReference\":\"C0001\",\"vTitle\":\"ACME\"}");
+
+		String result = ServiceFormEngine.prepareUpdateServiceForm(CONO, DIVI, SERVICENAME, SERVICE_NO, REQUESTTYPE, STATUS,
+				data, null, null, null, "", "", APPROVE_BY);
+
+		assertEquals("ok", new JSONObject(result).getString("result"));
+		verify(mockPrepared).setString(4, "C0001");
+		verify(mockPrepared).setString(2, SERVICENAME + "-" + SERVICE_NO + "-" + REQUESTTYPE.toUpperCase() + "-ACME");
 	}
 
 	@Test

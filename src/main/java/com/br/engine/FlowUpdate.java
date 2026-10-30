@@ -210,6 +210,42 @@ public class FlowUpdate {
 		}
 	}
 
+	// SR_FLOWHEAD.FHDES1 / FHDES2 are VARCHAR(255): a longer name must not make the approve fail
+	static final int HEAD_TEXT_LENGTH = 255;
+	private static final String HEAD_TEXT = "CAST(? AS VARCHAR(" + HEAD_TEXT_LENGTH + ") CCSID 838)";
+
+	/** FHDES1 (title) and FHDES2 (reference) of the head; an empty one is left as it is, both empty = nothing. */
+	static void updateServiceHeadTexts(String cono, String divi, String servicename, String serviceno, String title,
+			String reference, String username) throws Exception {
+		if (title.isEmpty() && reference.isEmpty()) {
+			return;
+		}
+		// the markers need a CAST: "? = ''" types the marker like '' (length 0), so jt400 refuses any text
+		// with Data truncation
+		String query = "UPDATE " + DBNAME + ".SR_FLOWHEAD \n"
+				+ "SET FHDES1 = CASE WHEN " + HEAD_TEXT + " = '' THEN FHDES1 ELSE " + HEAD_TEXT + " END \n"
+				+ ", FHDES2 = CASE WHEN " + HEAD_TEXT + " = '' THEN FHDES2 ELSE " + HEAD_TEXT + " END \n"
+				+ ", FHENDA = CURRENT DATE, FHENTI = CURRENT TIME, FHENUS = ? \n"
+				+ "WHERE FHCONO = ? AND FHDIVI = ? AND FHCODE = ? AND FHSRNO = ?";
+		String shortTitle = cut(title), shortReference = cut(reference);
+		try (Connection conn = ConnectDB2.doConnect(); PreparedStatement ps = SqlLog.prepare(conn, query)) {
+			ps.setString(1, shortTitle);
+			ps.setString(2, shortTitle);
+			ps.setString(3, shortReference);
+			ps.setString(4, shortReference);
+			ps.setString(5, username);
+			ps.setString(6, cono);
+			ps.setString(7, divi);
+			ps.setString(8, servicename);
+			ps.setString(9, serviceno);
+			ps.executeUpdate();
+		}
+	}
+
+	private static String cut(String text) {
+		return text.length() > HEAD_TEXT_LENGTH ? text.substring(0, HEAD_TEXT_LENGTH) : text;
+	}
+
 	public static String updateServiceHeadTitle(String cono, String divi, String servicename, String serviceno,
 			String status, String title, String username)
 			throws Exception {

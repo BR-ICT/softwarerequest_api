@@ -175,6 +175,44 @@ public class FlowQuery {
 		return statuses;
 	}
 
+	/**
+	 * Sub groups of the Process Flow of a request type, in approve mode ANY (PMAPMD not '1') and not of a
+	 * System / Selector group (their names come from the form): { PMSTAT, PMSGRO, PMDES2 ('1' = default),
+	 * GMUSER ("" = sub group without users), PMCFLD, PMCOPR, PMCVAL }, one row per user, ordered by status,
+	 * sub group, user. Read by ServiceFormEngine.chooseSubGroupApprovers (lanes).
+	 */
+	public static List<String[]> getProcessSubGroupUsers(String cono, String divi, String servicename,
+			String requesttype) throws Exception {
+		logger.info("getProcessSubGroupUsers");
+
+		String query = "SELECT p.PMSTAT, p.PMSGRO, COALESCE(p.PMDES2, '') AS PMDES2, COALESCE(g.GMUSER, '') AS GMUSER \n"
+				+ ", COALESCE(p.PMCFLD, '') AS PMCFLD, COALESCE(p.PMCOPR, '') AS PMCOPR, COALESCE(p.PMCVAL, '') AS PMCVAL \n"
+				+ "FROM " + DBNAME + ".SR_PROCESS p \n"
+				+ "LEFT JOIN " + DBNAME + ".SR_GROUP g \n"
+				+ "ON g.GMCONO = p.PMCONO AND g.GMDIVI = p.PMDIVI AND g.GMGROU = p.PMGROU AND g.GMSGRO = p.PMSGRO \n"
+				+ "WHERE p.PMCONO = ? AND p.PMDIVI = ? AND p.PMCODE = ? AND p.PMRQTY = ? \n"
+				+ "AND COALESCE(p.PMAPMD, '') <> '1' \n"
+				+ "AND p.PMGROU NOT IN (SELECT n.GMGROU FROM " + DBNAME + ".SR_GROUP n \n"
+				+ "WHERE n.GMCONO = p.PMCONO AND n.GMDIVI = p.PMDIVI AND n.GMDES2 IN ('1', '2')) \n"
+				+ "ORDER BY INT(p.PMSTAT), p.PMSGRO, g.GMUSER";
+
+		List<String[]> rows = new ArrayList<>();
+		try (Connection conn = ConnectDB2.doConnect(); PreparedStatement ps = SqlLog.prepare(conn, query)) {
+			ps.setString(1, cono);
+			ps.setString(2, divi);
+			ps.setString(3, servicename);
+			ps.setString(4, requesttype);
+			try (ResultSet rs = ps.executeQuery()) {
+				while (rs.next()) {
+					rows.add(new String[] { rs.getString("PMSTAT").trim(), rs.getString("PMSGRO").trim(),
+							rs.getString("PMDES2").trim(), rs.getString("GMUSER").trim(), rs.getString("PMCFLD").trim(),
+							rs.getString("PMCOPR").trim(), rs.getString("PMCVAL").trim() });
+				}
+			}
+		}
+		return rows;
+	}
+
 	public static String getStatusNewFlowApproveV2(String cono, String divi, String servicename, String requesttype,
 			String status)
 			throws Exception {

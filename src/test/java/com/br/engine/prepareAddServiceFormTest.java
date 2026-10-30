@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Map;
@@ -52,6 +53,7 @@ public class prepareAddServiceFormTest {
 	private static final String TITLE = "Fix laptop";
 
 	private Statement mockStatement;
+	private PreparedStatement mockPrepared;
 	private MockedStatic<ConnectDB2> connectDB2;
 	private MockedStatic<FlowQuery> selectData;
 	private MockedStatic<Workflow> workflow;
@@ -78,6 +80,9 @@ public class prepareAddServiceFormTest {
 		connectDB2 = Mockito.mockStatic(ConnectDB2.class);
 		connectDB2.when(ConnectDB2::doConnect).thenReturn(mockConnection);
 		when(mockConnection.createStatement()).thenReturn(mockStatement);
+		// head title / reference (FlowUpdate.updateServiceHeadTexts)
+		mockPrepared = mock(PreparedStatement.class);
+		when(mockConnection.prepareStatement(Mockito.anyString())).thenReturn(mockPrepared);
 
 		// Only addServiceHead looks this up after its INSERT.
 		selectData = Mockito.mockStatic(FlowQuery.class);
@@ -171,8 +176,19 @@ public class prepareAddServiceFormTest {
 				null, null, "token", REQUESTER);
 
 		assertEquals("ok", new JSONObject(result).getString("result"));
-		assertTrue(executedQueries().stream().anyMatch(
-				sql -> sql.contains("SET FHDES1 = '" + SERVICENAME + "-" + SERVICE_NO + "-CREATE-Photoshop'")));
+		verify(mockPrepared, Mockito.atLeastOnce()).setString(2, SERVICENAME + "-" + SERVICE_NO + "-CREATE-Photoshop");
+	}
+
+	@Test
+	public void testprepareAddServiceForm_vReferenceWrittenToFhdes2() throws Exception {
+		flowStartsAt00();
+		String data = buildData(VERSION).replace("}", ",\"vReference\":\"C0001\"}");
+
+		String result = ServiceFormEngine.prepareAddServiceForm(CONO, DIVI, SERVICENAME, REQUESTTYPE, STATUS, data, null,
+				null, null, "token", REQUESTER);
+
+		assertEquals("ok", new JSONObject(result).getString("result"));
+		verify(mockPrepared, Mockito.atLeastOnce()).setString(4, "C0001");
 	}
 
 	@Test
@@ -219,7 +235,7 @@ public class prepareAddServiceFormTest {
 		assertEquals("ok", new JSONObject(result).getString("result"));
 		assertTrue(executedQueries().stream()
 				.anyMatch(sql -> sql.contains("SR_FLOWDETAIL") && sql.contains("\"checked\":\"Y\"")));
-		verify(ps).setString(1, "REF01");
+		verify(ps).setString(4, "REF01");
 		verify(ps).executeUpdate();
 	}
 

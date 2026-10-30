@@ -4,9 +4,13 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -75,11 +79,14 @@ public class ServiceFormEngine {
 			// approve mode ALL: a condition that cannot be checked throws here
 			List<MultiApproveData.SubGroup> subGroups = MultiApproveData.buildSubGroups(cono, divi, servicename,
 					requesttype, json);
+			// lanes (sub group conditions of approve mode ANY): a condition that cannot be checked throws here
+			List<String[]> subGroupApprovers = subGroupApprovers(cono, divi, servicename, requesttype, json);
 
 			// --- writes ---
 			String serviceNumber = createRequest(cono, divi, servicename, requesttype, nextStatus, requestDate, title,
-					data, answer.reference, form);
+					data, referenceOf(answer, form), form);
 			assignApprovers(cono, divi, servicename, serviceNumber, requesttype, json, subGroups, form.requester);
+			saveSubGroupApprovers(cono, divi, servicename, serviceNumber, subGroupApprovers, form.requester);
 			nextStatus = skipToFirstNeededStatus(cono, divi, servicename, serviceNumber, requesttype, status,
 					nextStatus, data, json, form);
 
@@ -110,8 +117,8 @@ public class ServiceFormEngine {
 	}
 
 	/**
-	 * Head (new service number, title SERVICE-NUMBER-REQUESTTYPE-title, the reference the Interface gave),
-	 * detail (the form data) and one flow approve row per status of the Process Flow. Answers the new number.
+	 * Head (new service number, title SERVICE-NUMBER-REQUESTTYPE-title, reference = referenceOf), detail (the
+	 * form data) and one flow approve row per status of the Process Flow. Answers the new number.
 	 */
 	private static String createRequest(String cono, String divi, String servicename, String requesttype,
 			String nextStatus, String requestDate, String title, String data, String reference, ServiceForm form)
@@ -122,11 +129,8 @@ public class ServiceFormEngine {
 				form.depthead);
 
 		String fullTitle = servicename + "-" + serviceNumber + "-" + requesttype.toUpperCase() + "-" + title;
-		FlowUpdate.updateServiceHeadTitle(cono, divi, servicename, serviceNumber, nextStatus, fullTitle,
+		FlowUpdate.updateServiceHeadTexts(cono, divi, servicename, serviceNumber, fullTitle, reference,
 				form.requester);
-		if (!reference.isEmpty()) {
-			FlowUpdate.updateServiceHeadReference(cono, divi, servicename, serviceNumber, reference, form.requester);
-		}
 
 		FlowInsert.addServiceFlowApprove(cono, divi, servicename, serviceNumber, requesttype);
 		return serviceNumber;
@@ -251,10 +255,6 @@ public class ServiceFormEngine {
 		if (multiApprove.kind == MultiApproveData.Outcome.Kind.REFUSE) {
 			return Result.nok("Can't approve, " + multiApprove.message);
 		}
-		// e.g. the code M3 gave the new item / supplier: shown with the title (FHDES2)
-		if (!answer.reference.isEmpty()) {
-			FlowUpdate.updateServiceHeadReference(cono, divi, servicename, serviceno, answer.reference, form.approveBy);
-		}
 		// approve mode ALL: only this user's replies per line are taken (authorizeLines.ict*), the rest comes
 		// from the DB, so parallel sub groups keep each other's replies
 		String saveData = MultiApproveData.mergeApproverReplies(cono, divi, servicename, serviceno, requesttype,
@@ -262,6 +262,7 @@ public class ServiceFormEngine {
 		if (multiApprove.kind == MultiApproveData.Outcome.Kind.WAIT) {
 			// other sub groups still have to approve: the status stays, no workflow email
 			FlowUpdate.updateServiceDetail(cono, divi, servicename, serviceno, status, status, saveData, form.approveBy);
+			writeHeadTexts(cono, divi, servicename, serviceno, requesttype, answer, form);
 			return Result.ok(multiApprove.message
 					+ saveFiles(cono, divi, servicename, serviceno, file, fieldname, form.approveBy));
 		}
@@ -273,6 +274,7 @@ public class ServiceFormEngine {
 		// --- write the approve (ApproveGuard checked it is still open, one call at a time per request) ---
 		FlowUpdate.updateServiceHead(cono, divi, servicename, serviceno, status, nextStatus, form.approveBy, form.depthead);
 		FlowUpdate.updateServiceDetail(cono, divi, servicename, serviceno, status, nextStatus, saveData, form.approveBy);
+		writeHeadTexts(cono, divi, servicename, serviceno, requesttype, answer, form);
 		FlowUpdate.updateServiceFlowApproveBy(cono, divi, servicename, serviceno, status, form.remark, form.approveBy);
 		MultiApproveData.finishApprove(cono, divi, servicename, serviceno, status, multiApprove, form.approveBy,
 				form.remark);
@@ -283,6 +285,29 @@ public class ServiceFormEngine {
 
 		Workflow.notify(cono, divi, servicename, serviceno, requesttype, nextStatus);
 		return Result.ok("Complete" + fileWarning);
+	}
+
+	/**
+	 * FHDES2: what the Interface of the status answers wins (a code that only exists once the ERP made it),
+	 * else the form's vReference (the code the form decided, e.g. the customer code preview).
+	 */
+	static String referenceOf(FormInterface.Answer answer, ServiceForm form) {
+		return answer.reference.isEmpty() ? form.reference() : answer.reference;
+	}
+
+	/**
+	 * Title (FHDES1, SERVICE-NUMBER-REQUESTTYPE-title) and reference (FHDES2) again from the form of each
+	 * resubmit / approve, so a name or code changed along the flow (e.g. the customer code preview ICT fills
+	 * in at 80) shows. Written with the approve, after the Interface passed: a refused approve writes neither.
+	 * An empty title or reference keeps what the head has.
+	 */
+	private static void writeHeadTexts(String cono, String divi, String servicename, String serviceno,
+			String requesttype, FormInterface.Answer answer, ServiceForm form) throws Exception {
+		String title = form.titleOrEmpty();
+		String fullTitle = title.isEmpty() ? ""
+				: servicename + "-" + serviceno + "-" + requesttype.toUpperCase() + "-" + title;
+		FlowUpdate.updateServiceHeadTexts(cono, divi, servicename, serviceno, fullTitle, referenceOf(answer, form),
+				form.approveBy);
 	}
 
 	/**
@@ -326,8 +351,90 @@ public class ServiceFormEngine {
 		// built first, so a condition that cannot be checked throws before any write
 		List<MultiApproveData.SubGroup> subGroups = MultiApproveData.buildSubGroups(cono, divi, servicename,
 				requesttype, form.json);
+		List<String[]> subGroupApprovers = subGroupApprovers(cono, divi, servicename, requesttype, form.json);
 		syncApproverNames(cono, divi, servicename, serviceno, requesttype, status, form.json, form.approveBy);
 		MultiApproveData.saveSubGroups(cono, divi, servicename, serviceno, subGroups, form.approveBy);
+		saveSubGroupApprovers(cono, divi, servicename, serviceno, subGroupApprovers, form.approveBy);
+	}
+
+	/**
+	 * Lanes of approve mode ANY. VI_PROCESS (so the first FAAPLI) holds only the default sub group (PMDES2 '1')
+	 * of each status, and the condition of the default row is the condition of the status (false = the status
+	 * is skipped, e.g. CMRQ GFD 60 creditLimit3Main >= 500001). The condition of any other sub group of the
+	 * status picks its lane: the users of every sub group whose condition holds approve instead of the default
+	 * (more than one = all their users, any one approves), e.g. CMRQ COLLECTION 30: LOCAL saleTypeMain <> 2,
+	 * EXPORT saleTypeMain = 2. No lane holds, or a sub group without a condition or users = the default.
+	 * Answers { status, users } of every status with more than one sub group, so a resubmit whose form now
+	 * picks another lane writes them again. Read before any write: a condition that cannot be checked (field
+	 * missing in the form) or users that do not fit FAAPLI throw.
+	 */
+	static List<String[]> subGroupApprovers(String cono, String divi, String servicename, String requesttype,
+			JSONObject data) throws Exception {
+		return chooseSubGroupApprovers(FlowQuery.getProcessSubGroupUsers(cono, divi, servicename, requesttype),
+				data);
+	}
+
+	private static class Lane {
+		final List<String> users = new ArrayList<>();
+		boolean isDefault;
+		String field = "", operator = "", value = "";
+	}
+
+	// rows = FlowQuery.getProcessSubGroupUsers: { status, sub group, PMDES2, user, PMCFLD, PMCOPR, PMCVAL }
+	static List<String[]> chooseSubGroupApprovers(List<String[]> rows, JSONObject data) throws Exception {
+		Map<String, Map<String, Lane>> statuses = new LinkedHashMap<>();
+		for (String[] row : rows) {
+			Lane lane = statuses.computeIfAbsent(row[0], s -> new LinkedHashMap<>()).computeIfAbsent(row[1],
+					g -> new Lane());
+			if (!row[3].isEmpty()) {
+				lane.users.add(row[3]);
+			}
+			lane.isDefault = "1".equals(row[2]);
+			lane.field = row[4];
+			lane.operator = row[5];
+			lane.value = row[6];
+		}
+
+		List<String[]> approvers = new ArrayList<>();
+		for (Map.Entry<String, Map<String, Lane>> status : statuses.entrySet()) {
+			Map<String, Lane> lanes = status.getValue();
+			if (lanes.size() < 2) {
+				continue;
+			}
+			Set<String> users = new LinkedHashSet<>();
+			List<String> defaultUsers = new ArrayList<>();
+			for (Lane lane : lanes.values()) {
+				if (lane.isDefault) {
+					defaultUsers = lane.users;
+				} else if (!lane.field.isEmpty()
+						&& conditionHolds(data, status.getKey(), lane.field, lane.operator, lane.value)) {
+					users.addAll(lane.users);
+				}
+			}
+			if (users.isEmpty()) {
+				users.addAll(defaultUsers);
+			}
+			if (users.isEmpty()) {
+				continue;
+			}
+			String list = String.join(",", users);
+			if (list.length() > MultiApproveData.APPROVER_LIST_LENGTH) {
+				throw new Exception("Status " + status.getKey() + " has too many approvers for one request ("
+						+ list.length() + " characters, max " + MultiApproveData.APPROVER_LIST_LENGTH
+						+ "). Remove users from its sub groups.");
+			}
+			approvers.add(new String[] { status.getKey(), list });
+		}
+		return approvers;
+	}
+
+	private static void saveSubGroupApprovers(String cono, String divi, String servicename, String serviceno,
+			List<String[]> approvers, String username) throws Exception {
+		for (String[] approver : approvers) {
+			logger.info("Approver of status {} (sub group): {}", approver[0], approver[1]);
+			FlowUpdate.updateServiceUserFlowApprove(cono, divi, servicename, serviceno, approver[0], username,
+					approver[1]);
+		}
 	}
 
 	/**
