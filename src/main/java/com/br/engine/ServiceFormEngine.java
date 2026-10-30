@@ -84,7 +84,7 @@ public class ServiceFormEngine {
 
 			// --- writes ---
 			String serviceNumber = createRequest(cono, divi, servicename, requesttype, nextStatus, requestDate, title,
-					data, referenceToWrite(requesttype, answer, form, false), form);
+					data, referenceOf(answer, form), form);
 			assignApprovers(cono, divi, servicename, serviceNumber, requesttype, json, subGroups, form.requester);
 			saveSubGroupApprovers(cono, divi, servicename, serviceNumber, subGroupApprovers, form.requester);
 			nextStatus = skipToFirstNeededStatus(cono, divi, servicename, serviceNumber, requesttype, status,
@@ -117,7 +117,7 @@ public class ServiceFormEngine {
 	}
 
 	/**
-	 * Head (new service number, title SERVICE-NUMBER-REQUESTTYPE-title, reference = referenceToWrite), detail (the
+	 * Head (new service number, title SERVICE-NUMBER-REQUESTTYPE-title, reference = referenceOf), detail (the
 	 * form data) and one flow approve row per status of the Process Flow. Answers the new number.
 	 */
 	private static String createRequest(String cono, String divi, String servicename, String requesttype,
@@ -172,9 +172,6 @@ public class ServiceFormEngine {
 	private static final String HEAD_WAIT_SUBMIT = "1";
 	private static final String HEAD_WAIT_APPROVE = "2";
 	private static final String HEAD_APPROVE_COMPLETE = "3";
-
-	// SR_REQUESTTYPE.RQNAME of a new code (FHDES2 only once it is made, referenceToWrite)
-	private static final String REQUEST_CREATE = "create";
 	private static final String HEAD_CANCEL_COMPLETE = "9";
 
 	/**
@@ -265,7 +262,7 @@ public class ServiceFormEngine {
 		if (multiApprove.kind == MultiApproveData.Outcome.Kind.WAIT) {
 			// other sub groups still have to approve: the status stays, no workflow email
 			FlowUpdate.updateServiceDetail(cono, divi, servicename, serviceno, status, status, saveData, form.approveBy);
-			writeHeadTexts(cono, divi, servicename, serviceno, requesttype, answer, form, false);
+			writeHeadTexts(cono, divi, servicename, serviceno, requesttype, answer, form);
 			return Result.ok(multiApprove.message
 					+ saveFiles(cono, divi, servicename, serviceno, file, fieldname, form.approveBy));
 		}
@@ -277,7 +274,7 @@ public class ServiceFormEngine {
 		// --- write the approve (ApproveGuard checked it is still open, one call at a time per request) ---
 		FlowUpdate.updateServiceHead(cono, divi, servicename, serviceno, status, nextStatus, form.approveBy, form.depthead);
 		FlowUpdate.updateServiceDetail(cono, divi, servicename, serviceno, status, nextStatus, saveData, form.approveBy);
-		writeHeadTexts(cono, divi, servicename, serviceno, requesttype, answer, form, step.isLast());
+		writeHeadTexts(cono, divi, servicename, serviceno, requesttype, answer, form);
 		FlowUpdate.updateServiceFlowApproveBy(cono, divi, servicename, serviceno, status, form.remark, form.approveBy);
 		MultiApproveData.finishApprove(cono, divi, servicename, serviceno, status, multiApprove, form.approveBy,
 				form.remark);
@@ -299,28 +296,18 @@ public class ServiceFormEngine {
 	}
 
 	/**
-	 * FHDES2 to write now, "" = keep the head's. A create only gets it when the request completes (FHHSTA 3):
-	 * before that the code is only a preview (e.g. CMRQ customer code preview), not yet made in the ERP.
-	 * Update / enable / disable name an existing code, written from the first submit.
-	 */
-	static String referenceToWrite(String requesttype, FormInterface.Answer answer, ServiceForm form,
-			boolean complete) {
-		return REQUEST_CREATE.equals(requesttype) && !complete ? "" : referenceOf(answer, form);
-	}
-
-	/**
 	 * Title (FHDES1, SERVICE-NUMBER-REQUESTTYPE-title) and reference (FHDES2) again from the form of each
-	 * resubmit / approve, so a name or code changed along the flow shows (a create: reference only on the
-	 * approve that completes it, referenceToWrite). Written with the approve, after the Interface passed: a
-	 * refused approve writes neither. An empty title or reference keeps what the head has.
+	 * resubmit / approve, so a name or code changed along the flow (e.g. the customer code preview ICT fills
+	 * in at 80) shows. Written with the approve, after the Interface passed: a refused approve writes neither.
+	 * An empty title or reference keeps what the head has.
 	 */
 	private static void writeHeadTexts(String cono, String divi, String servicename, String serviceno,
-			String requesttype, FormInterface.Answer answer, ServiceForm form, boolean complete) throws Exception {
+			String requesttype, FormInterface.Answer answer, ServiceForm form) throws Exception {
 		String title = form.titleOrEmpty();
 		String fullTitle = title.isEmpty() ? ""
 				: servicename + "-" + serviceno + "-" + requesttype.toUpperCase() + "-" + title;
-		FlowUpdate.updateServiceHeadTexts(cono, divi, servicename, serviceno, fullTitle,
-				referenceToWrite(requesttype, answer, form, complete), form.approveBy);
+		FlowUpdate.updateServiceHeadTexts(cono, divi, servicename, serviceno, fullTitle, referenceOf(answer, form),
+				form.approveBy);
 	}
 
 	/**
