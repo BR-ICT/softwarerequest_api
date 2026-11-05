@@ -346,20 +346,20 @@ public class FlowQuery {
 			ResultSet mRes = stmt.executeQuery(query);
 
 			while (mRes.next()) {
-				return mRes.getString("FAAPLI").trim()
-						+ " ; " + mRes.getString("PMSTAT").trim()
-						+ " ; " + mRes.getString("NEXT_STAT").trim()
-						+ " ; " + mRes.getString("NEXT_APPROVE").trim()
-						+ " ; " + mRes.getString("NEXT_GROUP").trim()
-						+ " ; " + mRes.getString("PREVIOUS_STAT").trim()
-						+ " ; " + mRes.getString("PREVIOUS_APPROVE").trim()
-						+ " ; " + mRes.getString("PMM3IF").trim()
-						+ " ; " + mRes.getString("NEXT_CFLD").trim()
-						+ " ; " + mRes.getString("NEXT_COPR").trim()
-						+ " ; " + mRes.getString("NEXT_CVAL").trim()
-						+ " ; " + mRes.getString("PREVIOUS_CFLD").trim()
-						+ " ; " + mRes.getString("PREVIOUS_COPR").trim()
-						+ " ; " + mRes.getString("PREVIOUS_CVAL").trim();
+				return str(mRes, "FAAPLI")
+						+ " ; " + str(mRes, "PMSTAT")
+						+ " ; " + str(mRes, "NEXT_STAT")
+						+ " ; " + str(mRes, "NEXT_APPROVE")
+						+ " ; " + str(mRes, "NEXT_GROUP")
+						+ " ; " + str(mRes, "PREVIOUS_STAT")
+						+ " ; " + str(mRes, "PREVIOUS_APPROVE")
+						+ " ; " + str(mRes, "PMM3IF")
+						+ " ; " + str(mRes, "NEXT_CFLD")
+						+ " ; " + str(mRes, "NEXT_COPR")
+						+ " ; " + str(mRes, "NEXT_CVAL")
+						+ " ; " + str(mRes, "PREVIOUS_CFLD")
+						+ " ; " + str(mRes, "PREVIOUS_COPR")
+						+ " ; " + str(mRes, "PREVIOUS_CVAL");
 
 			}
 
@@ -387,6 +387,12 @@ public class FlowQuery {
 
 		return null;
 
+	}
+
+	/** Trimmed column value; "" when the column is NULL (e.g. NEXT_GROUP of the last status, from the LEFT JOIN). */
+	private static String str(ResultSet rs, String column) throws SQLException {
+		String value = rs.getString(column);
+		return value == null ? "" : value.trim();
 	}
 
 	/** { FHDSTA (status the request is at), FHHSTA (1 wait submit, 2 wait approve, 3 complete, 9 cancel) }, null = no request. */
