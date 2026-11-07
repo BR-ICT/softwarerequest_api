@@ -33,6 +33,9 @@
         <servlet-name>Jersey Web Application</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
+	<listener>
+		<listener-class>com.br.utility.EurekaContextListener</listener-class>
+	</listener>
     <filter>
         <filter-name>MetricsFilter</filter-name>
         <filter-class>com.br.config.MetricsFilter</filter-class>
