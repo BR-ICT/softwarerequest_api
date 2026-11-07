@@ -25,8 +25,8 @@ import com.sun.jersey.multipart.FormDataBodyPart;
  * The request flow of every form (SR_FLOWHEAD / SR_FLOWDETAIL / SR_FLOWAPPROVE, Process Flow VI_PROCESS):
  * first submit (prepareAddServiceForm), approve / reject (prepareUpdateServiceForm), cancel.
  *
- * Same file in every form API (servicerequest_api, itemreq_api, supplier_request_api, customerrequest_api,
- * userrequest_api): change it in servicerequest_api first, then copy the whole com.br.engine package.
+ * Same file in every form API (servicerequest_api, itemrequest_api, supplierrequest_api, customerrequest_api,
+ * userrequest_api, softwarerequest_api): change it in servicerequest_api first, then copy the whole com.br.engine package.
  * What only one form does (M3, duplicate checks) goes in that API's FormInterfaceImpl, never in here.
  */
 public class ServiceFormEngine {

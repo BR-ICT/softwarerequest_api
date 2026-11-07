@@ -1,6 +1,6 @@
 # Engine (com.br.engine) - flow ของใบคำขอที่ทุก Form API ใช้ร่วมกัน
 
-ตัดสินใจ 2026-10-28: ไม่ใช้ API กลาง แต่ละ Form API (itemreq_api, supplier_request_api, customerrequest_api,
+ตัดสินใจ 2026-10-28: ไม่ใช้ API กลาง แต่ละ Form API (itemrequest_api, supplierrequest_api, customerrequest_api,
 userrequest_api, softwarerequest_api) รัน engine ของตัวเอง เพื่อให้ API หนึ่งล่มแล้วไม่กระทบตัวอื่น
 engine ใช้วิธี **copy ไฟล์** (ไม่ใช่ jar)
 
