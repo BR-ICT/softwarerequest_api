@@ -6,8 +6,8 @@ import java.util.Set;
 /**
  * What one form does with the ERP when its request reaches a status flagged Interface M3
  * (SR_PROCESS.PMM3IF '1' interface, '2' check). Each form API implements it once, in
- * com.br.form.FormInterfaceImpl (not part of the engine copy): e.g. itemreq_api runs its MMS001 / MMS015 /
- * MMS002 calls there, supplier_request_api its CRS620 calls and the duplicate tax ID check.
+ * com.br.form.FormInterfaceImpl (not part of the engine copy): e.g. itemrequest_api runs its MMS001 / MMS015 /
+ * MMS002 calls there, supplierrequest_api its CRS620 calls and the duplicate tax ID check.
  *
  * Called before anything of the approve / first submit is written: throwing refuses it (the message goes to
  * the user), nothing is written. One attempt only, no retry: the form may have written to M3 already.
