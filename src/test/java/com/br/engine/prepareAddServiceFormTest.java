@@ -1,6 +1,7 @@
 package com.br.engine;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -233,10 +234,11 @@ public class prepareAddServiceFormTest {
 				buildData(VERSION), null, null, null, "token", REQUESTER);
 
 		assertEquals("ok", new JSONObject(result).getString("result"));
-		assertTrue(executedQueries().stream()
-				.anyMatch(sql -> sql.contains("SR_FLOWDETAIL") && sql.contains("\"checked\":\"Y\"")));
+		// the detail is prepared: the changed data is its FDDATA parameter
+		verify(ps).setString(9, changed);
 		verify(ps).setString(4, "REF01");
-		verify(ps).executeUpdate();
+		// detail INSERT + head texts UPDATE
+		verify(ps, times(2)).executeUpdate();
 	}
 
 	private String buildData(String version) {
@@ -349,26 +351,41 @@ public class prepareAddServiceFormTest {
 
 	@Test
 	public void testaddServiceDetail_query_isValid() throws Exception {
-		FlowInsert.addServiceDetail(CONO, DIVI, SERVICENAME, SERVICE_NO, REQUESTTYPE, buildData(VERSION), NEXT_STATUS, REQUESTER,
+		String data = buildData(VERSION);
+		FlowInsert.addServiceDetail(CONO, DIVI, SERVICENAME, SERVICE_NO, REQUESTTYPE, data, NEXT_STATUS, REQUESTER,
 				DEPTHEAD);
-		String sql = captureExecutedQuery();
 
-		SqlSyntaxAssertions.assertValidSyntax(sql);
-		assertTargetsTable(sql, "SR_FLOWDETAIL");
+		ArgumentCaptor<String> sqlCaptor = ArgumentCaptor.forClass(String.class);
+		verify(ConnectDB2.doConnect()).prepareStatement(sqlCaptor.capture());
+		assertTargetsTable(sqlCaptor.getValue(), "SR_FLOWDETAIL");
 
-		Map<String, String> values = SqlSyntaxAssertions.insertColumnValues(sql);
-		assertEquals("'" + CONO + "'", values.get("FDCONO"));
-		assertEquals("'" + DIVI + "'", values.get("FDDIVI"));
-		assertEquals("'" + SERVICENAME + "'", values.get("FDCODE"));
-		assertEquals("'" + SERVICE_NO + "'", values.get("FDSRNO"));
-		assertEquals("'" + REQUESTER + "'", values.get("FDENUS"));
+		verify(mockPrepared).setString(1, CONO);
+		verify(mockPrepared).setString(2, DIVI);
+		verify(mockPrepared).setString(3, SERVICENAME);
+		verify(mockPrepared).setString(4, SERVICE_NO);
+		// FDTYPE: the request-type lookup subquery
+		verify(mockPrepared).setString(5, CONO);
+		verify(mockPrepared).setString(6, DIVI);
+		verify(mockPrepared).setString(7, SERVICENAME);
+		verify(mockPrepared).setString(8, REQUESTTYPE);
+		verify(mockPrepared).setString(9, data);
+		verify(mockPrepared).setString(10, NEXT_STATUS);
+		verify(mockPrepared).setString(11, REQUESTER);
+		verify(mockPrepared).executeUpdate();
+		verify(mockStatement, Mockito.never()).execute(Mockito.anyString());
+	}
 
-		// FDTYPE (index 4) is the request-type lookup subquery
-		Map<String, String> subWhere = SqlSyntaxAssertions.subqueryWhereConditions(sql, 4);
-		assertEquals("'" + CONO + "'", subWhere.get("RQCONO"));
-		assertEquals("'" + DIVI + "'", subWhere.get("RQDIVI"));
-		assertEquals("'" + SERVICENAME + "'", subWhere.get("RQCODE"));
-		assertEquals("'" + REQUESTTYPE + "'", subWhere.get("RQNAME"));
+	@Test
+	public void testaddServiceDetail_apostropheInData_isAParameterNotSql() throws Exception {
+		// a ' in the form (shop "Tom's Kitchen") broke the concatenated INSERT: the head stayed without detail
+		String data = buildData(VERSION).replace("}", ",\"customerNameMain\":\"Tom's Kitchen\"}");
+		FlowInsert.addServiceDetail(CONO, DIVI, SERVICENAME, SERVICE_NO, REQUESTTYPE, data, NEXT_STATUS, REQUESTER,
+				DEPTHEAD);
+
+		ArgumentCaptor<String> sqlCaptor = ArgumentCaptor.forClass(String.class);
+		verify(ConnectDB2.doConnect()).prepareStatement(sqlCaptor.capture());
+		assertFalse(sqlCaptor.getValue().contains("Tom"));
+		verify(mockPrepared).setString(9, data);
 	}
 
 	// -----------------------------------------------------------------------

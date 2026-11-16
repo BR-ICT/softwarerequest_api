@@ -1,6 +1,7 @@
 package com.br.engine;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -9,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.codehaus.jettison.json.JSONObject;
 
 import com.br.connection.ConnectDB2;
+import com.br.utility.SqlLog;
 
 /** Inserts of the request flow: SR_FLOWHEAD, SR_FLOWDETAIL, SR_FLOWAPPROVE (one row per status), SR_FILE. */
 public class FlowInsert {
@@ -98,36 +100,31 @@ public class FlowInsert {
 		logger.info("addServiceDetail");
 
 		JSONObject mJsonObj = new JSONObject();
-		Connection conn = null;
-		Statement stmt = null;
-		try {
-			conn = ConnectDB2.doConnect();
-			stmt = conn.createStatement();
-
-			// String getYear4 = requestdate.substring(0, 4);
-
-			String query = "INSERT INTO " + DBNAME + ".SR_FLOWDETAIL \n"
-					+ "(FDCONO, FDDIVI, FDCODE, FDSRNO, FDTYPE, FDDATA, FDDES1, FDDES2, FDDSTA, FDENDA, FDENTI, FDENUS) \n"
-					+ "VALUES('" + cono + "' \n"
-					+ ", '" + divi + "' \n"
-					+ ", '" + servicename + "' \n"
-					+ ", '" + serviceno + "' \n"
-					+ ", (SELECT RQTYPE \n"
-					+ "FROM " + DBNAME + ".SR_REQUESTTYPE \n"
-					+ "WHERE RQCONO = '" + cono + "' \n"
-					+ "AND RQDIVI = '" + divi + "' \n"
-					+ "AND RQCODE = '" + servicename + "' \n"
-					+ "AND RQNAME = '" + requesttype + "') \n"
-					+ ", '" + data + "' \n"
-					+ ", '' \n"
-					+ ", '' \n"
-					+ ", '" + status + "' \n"
-					+ ", CURRENT DATE \n"
-					+ ", CURRENT TIME \n"
-					+ ", '" + username + "')";
-			// System.out.println("addADRHead\n" + query);
-			logger.debug(query);
-			stmt.execute(query);
+		// prepared, as updateServiceDetail: the form data is free text, a ' in it (e.g. a shop name "Tom's")
+		// broke the concatenated SQL and left the head without its detail
+		String query = "INSERT INTO " + DBNAME + ".SR_FLOWDETAIL \n"
+				+ "(FDCONO, FDDIVI, FDCODE, FDSRNO, FDTYPE, FDDATA, FDDES1, FDDES2, FDDSTA, FDENDA, FDENTI, FDENUS) \n"
+				+ "VALUES(?, ?, ?, ? \n"
+				+ ", (SELECT RQTYPE \n"
+				+ "FROM " + DBNAME + ".SR_REQUESTTYPE \n"
+				+ "WHERE RQCONO = ? \n"
+				+ "AND RQDIVI = ? \n"
+				+ "AND RQCODE = ? \n"
+				+ "AND RQNAME = ?) \n"
+				+ ", ?, '', '', ?, CURRENT DATE, CURRENT TIME, ?)";
+		try (Connection conn = ConnectDB2.doConnect(); PreparedStatement ps = SqlLog.prepare(conn, query)) {
+			ps.setString(1, cono);
+			ps.setString(2, divi);
+			ps.setString(3, servicename);
+			ps.setString(4, serviceno);
+			ps.setString(5, cono);
+			ps.setString(6, divi);
+			ps.setString(7, servicename);
+			ps.setString(8, requesttype);
+			ps.setString(9, data);
+			ps.setString(10, status);
+			ps.setString(11, username);
+			ps.executeUpdate();
 
 			mJsonObj.put("result", "ok");
 			mJsonObj.put("message", "Create complete.");
@@ -135,25 +132,6 @@ public class FlowInsert {
 		} catch (SQLException e) {
 			logger.error(e.getMessage());
 			throw new Exception(e.getMessage());
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			throw e;
-		} finally {
-			try {
-				if (stmt != null) {
-					stmt.close();
-				}
-			} catch (SQLException e) {
-				logger.error(e.getMessage());
-			}
-			try {
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException e) {
-				logger.error(e.getMessage());
-			}
-
 		}
 
 		return mJsonObj.toString();
