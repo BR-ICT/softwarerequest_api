@@ -17,15 +17,23 @@
 			fileName="${logDir}/softwarerequest_api.log"
 			filePattern="${logDir}/softwarerequest_api-%d{yyyy-MM-dd}-%i.log">
 			<!-- <JsonLayout complete="false" compact="true" eventEol="true" properties="true" /> -->
-   			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [uuid=%X{UUID},trace_id=%X{trace_id},span_id=%X{span_id}] %-5level %logger{36} (%F:%L) - %msg%n" />compact="true" eventEol="true" properties="true" />
+   			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [uuid=%X{UUID},trace_id=%X{trace_id},span_id=%X{span_id}] %-5level %logger{36} (%F:%L) - %msg%n" />
 			<Policies>
-				<TimeBasedTriggeringPolicy />
+				<TimeBasedTriggeringPolicy interval="1" modulate="true"/>
 				<SizeBasedTriggeringPolicy size="100MB" />
 			</Policies>
 			<DefaultRolloverStrategy max="20" />
 		</RollingFile>
 	</Appenders>
 	<Loggers>
+		<Logger name="com.netflix.discovery" level="error" additivity="false">
+			<!-- Heartbeat/registry-fetch retries log at ERROR on every attempt while
+			     the Eureka server is unreachable; BurstFilter throttles the repeats
+			     to roughly one line per 5 minutes instead of one every ~30s. -->
+			<BurstFilter level="ERROR" rate="0.0033" maxBurst="1" onMatch="ACCEPT" onMismatch="DENY" />
+			<AppenderRef ref="console" />
+			<AppenderRef ref="file" />
+		</Logger>
 		<Logger name="com.br" level="debug" additivity="false">
 			<AppenderRef ref="console" />
 			<AppenderRef ref="file" />
